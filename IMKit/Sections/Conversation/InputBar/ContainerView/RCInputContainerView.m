@@ -11,12 +11,14 @@
 #import "RCChatSessionInputBarControl.h"
 #import "RCExtensionService.h"
 #import "RCKitConfig.h"
+
 #define TextViewLineHeight 20.f              //输入框每行文字高度
-#define TextViewSpaceHeight_LessThanMax 17.f //输入框小于最大行时除文字外上下空隙高度
+#define TextViewSpaceHeight_LessThanMax 13.f //输入框小于最大行时除文字外上下空隙高度
 #define TextViewSpaceHeight 13.f             //输入框大于等于最大行时除文字外上下空隙高度
 #define TextViewRectY 7
 #define TextViewMaxInputLines 6 //输入框最大行数设置
 #define TextViewMinInputLines 1 //输入框最小行数设置
+
 @interface RCInputContainerView ()<UITextViewDelegate, RCTextViewDelegate>
 {
     BOOL _hideEmojiButton;
@@ -61,24 +63,44 @@
 - (void)setBottomBarWithStatus:(KBottomBarStatus)bottomBarStatus {
     _currentBottomBarStatus = bottomBarStatus;
     switch (bottomBarStatus) {
-    case KBottomBarRecordStatus: {
-        [self inputTextViewBecomeFirstResponder:NO];
-        [self switchToRecord];
-    } break;
-    case KBottomBarKeyboardStatus: {
-        [self inputTextViewBecomeFirstResponder:YES];
-        [self showInputTextView];
-    } break;
-    case KBottomBarDestructStatus:
-        [self beginDestructMsgMode];
-    case KBottomBarDefaultStatus:
-    case KBottomBarPluginStatus:
-    case KBottomBarEmojiStatus:
-    case KBottomBarCommonPhrasesStatus:
-    default:
-        [self inputTextViewBecomeFirstResponder:NO];
-        [self showInputTextView];
-        break;
+        case KBottomBarRecordStatus: { // 语音消息输入状态
+            DebugLog(@"RCInputContainerView 语音消息输入状态");
+            [self inputTextViewBecomeFirstResponder:NO];
+            [self switchToRecord];
+        } break;
+        case KBottomBarKeyboardStatus: { // 文本输入状态
+            DebugLog(@"RCInputContainerView 文本输入状态");
+            [self inputTextViewBecomeFirstResponder:YES];
+            [self showInputTextView];
+        } break;
+        case KBottomBarDestructStatus: { // 阅后即焚输入状态
+            DebugLog(@"RCInputContainerView 阅后即焚输入状态");
+            [self beginDestructMsgMode];
+        } break;
+        case KBottomBarDefaultStatus: { // 初始状态 ====
+            DebugLog(@"RCInputContainerView 初始状态");
+            [self inputTextViewBecomeFirstResponder:NO];
+            [self showInputTextView];
+        } break;
+        case KBottomBarPluginStatus: { // 功能板输入状态
+            DebugLog(@"RCInputContainerView 功能板输入状态");
+            [self inputTextViewBecomeFirstResponder:NO];
+            [self showInputTextView];
+        } break;
+        case KBottomBarEmojiStatus: { // 表情输入状态
+            DebugLog(@"RCInputContainerView 表情输入状态");
+            [self inputTextViewBecomeFirstResponder:NO];
+            [self showInputTextView];
+        } break;
+        case KBottomBarCommonPhrasesStatus: {  // 常用语输入状态
+            DebugLog(@"RCInputContainerView 常用语输入状态");
+            [self inputTextViewBecomeFirstResponder:NO];
+            [self showInputTextView];
+        } break;
+        default: {
+            [self inputTextViewBecomeFirstResponder:NO];
+            [self showInputTextView];
+        }  break;
     }
 }
 
@@ -97,7 +119,7 @@
 }
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView{
-     DebugLog(@"%s, %@", __FUNCTION__, textView);
+    DebugLog(@"%s, %@", __FUNCTION__, textView);
     self.textViewBeginEditing = YES;
     return YES;
 }
@@ -200,7 +222,7 @@
                        forState:UIControlStateHighlighted];
     [self.additionalButton setImage:RCResourceImage(@"close_burn") forState:UIControlStateNormal];
     [self.emojiButton setImage:RCResourceImage(@"photo_burn") forState:UIControlStateNormal];
-
+    
     [self.recordButton setTitleColor:HEXCOLOR(0xF4B50B) forState:UIControlStateNormal];
     self.recordButton.layer.borderWidth = 0.5;
     self.recordButton.layer.borderColor = HEXCOLOR(0xFA9d3b).CGColor;
@@ -209,7 +231,7 @@
 - (void)endDestructMsgMode {
     self.destructMessageMode = NO;
     [self.switchButton setImage:RCResourceImage(self.recordButton.hidden ? @"inputbar_voice"
-                                                                                  : @"inputbar_keyboard")
+                                                : @"inputbar_keyboard")
                        forState:UIControlStateNormal];
     [self.additionalButton setImage:RCResourceImage(@"inputbar_add")
                            forState:UIControlStateNormal];
@@ -262,21 +284,29 @@
         [self.emojiButton setImage:RCResourceImage(@"inputbar_keyboard")
                           forState:UIControlStateNormal];
     }
-
+    
     if (self.destructMessageMode) {
         [self.switchButton
-            setImage:RCResourceImage(self.recordButton.hidden ? @"voice_burn" : @"keyboard_burn")
-            forState:UIControlStateNormal];
+         setImage:RCResourceImage(self.recordButton.hidden ? @"voice_burn" : @"keyboard_burn")
+         forState:UIControlStateNormal];
     } else {
         [self.switchButton setImage:RCResourceImage(self.recordButton.hidden ? @"inputbar_voice"
-                                                                                      : @"inputbar_keyboard")
+                                                    : @"inputbar_keyboard")
                            forState:UIControlStateNormal];
+    }
+    
+    if (self.currentBottomBarStatus != KBottomBarPluginStatus) {
+        [self.additionalButton setImage:RCResourceImage(@"inputbar_add")
+                          forState:UIControlStateNormal];
+    } else {
+        [self.additionalButton setImage:RCResourceImage(@"close_burn")
+                          forState:UIControlStateNormal];
     }
 }
 
 - (void)layoutInputBoxUIIfNeed {
     CGFloat changedBeforeHeight = self.frame.size.height;
-     CGRect rectFrame = self.frame;
+    CGRect rectFrame = self.frame;
     if (self.currentBottomBarStatus == KBottomBarRecordStatus) {
         self.inputTextView.hidden = YES;
         self.recordButton.hidden = NO;
@@ -284,10 +314,10 @@
     }else{
         self.recordButton.hidden = YES;
         self.inputTextView.hidden = NO;
-
+        
         self.inputTextView.frame = [self getInputTextViewFrame];
         rectFrame.size.height = RC_ChatSessionInputBar_Height +
-                                (self.inputTextView.frame.size.height - [self getTextViewHeightWithLines:1]);
+        (self.inputTextView.frame.size.height - [self getTextViewHeightWithLines:1]);
     }
     
     if (changedBeforeHeight != rectFrame.size.height) {
@@ -336,7 +366,7 @@
         [self removeConstraints:self.inputContainerSubViewConstraints];
         [self.inputContainerSubViewConstraints removeAllObjects];
     }
-
+    
     if (self.switchButton) {
         [self.switchButton removeFromSuperview];
         self.switchButton = nil;
@@ -367,82 +397,82 @@
     self.emojiButton.translatesAutoresizingMaskIntoConstraints = NO;
     self.additionalButton.translatesAutoresizingMaskIntoConstraints = NO;
     self.inputTextView.translatesAutoresizingMaskIntoConstraints = NO;
-
+    
     NSDictionary *_bindingViews =
-        NSDictionaryOfVariableBindings(_switchButton, _inputTextView, _recordButton, _emojiButton, _additionalButton);
-
+    NSDictionaryOfVariableBindings(_switchButton, _inputTextView, _recordButton, _emojiButton, _additionalButton);
+    
     NSString *format;
-
+    
     switch (style) {
-    case RC_CHAT_INPUT_BAR_STYLE_SWITCH_CONTAINER_EXTENTION:
-        format = @"H:|-8-[_switchButton(BUTTONWIDTH)]-8-[_recordButton]-8-[_emojiButton("
-                @"EMOJIBUTTONWIDTH)]-8-[_additionalButton(BUTTONWIDTH)]-8-|";
-        break;
-    case RC_CHAT_INPUT_BAR_STYLE_EXTENTION_CONTAINER_SWITCH:
-        format = @"H:|-8-[_additionalButton(BUTTONWIDTH)]-8-[_recordButton]-8-[_"
-                @"emojiButton(EMOJIBUTTONWIDTH)]-8-[_switchButton(BUTTONWIDTH)]-8-|";
-        break;
-    case RC_CHAT_INPUT_BAR_STYLE_CONTAINER_SWITCH_EXTENTION:
-        format = @"H:|-8-[_recordButton]-8-[_emojiButton(EMOJIBUTTONWIDTH)]-8-[_switchButton("
-                @"BUTTONWIDTH)]-8-[_additionalButton(BUTTONWIDTH)]-8-|";
-        break;
-    case RC_CHAT_INPUT_BAR_STYLE_CONTAINER_EXTENTION_SWITCH:
-        format = @"H:|-8-[_recordButton]-8-[_emojiButton(EMOJIBUTTONWIDTH)]-8-[_"
-                @"additionalButton(BUTTONWIDTH)]-8-[_switchButton(BUTTONWIDTH)]-8-|";
-        break;
-    case RC_CHAT_INPUT_BAR_STYLE_SWITCH_CONTAINER:
-        format = @"H:|-8-[_switchButton(BUTTONWIDTH)]-8-[_recordButton]-8-[_emojiButton("
-                @"EMOJIBUTTONWIDTH)]-8-[_additionalButton(0)]-8-|";
-        break;
-    case RC_CHAT_INPUT_BAR_STYLE_CONTAINER_SWITCH:
-        format = @"H:|-8-[_recordButton]-8-[_emojiButton(EMOJIBUTTONWIDTH)]-8-[_switchButton("
-                @"BUTTONWIDTH)]-8-[_additionalButton(0)]-8-|";
-        break;
-    case RC_CHAT_INPUT_BAR_STYLE_EXTENTION_CONTAINER:
-        format = @"H:|-8-[_additionalButton(BUTTONWIDTH)]-8-[_recordButton]-8-[_"
-                @"emojiButton(EMOJIBUTTONWIDTH)]-8-[_switchButton(0)]-8-|";
-        break;
-    case RC_CHAT_INPUT_BAR_STYLE_CONTAINER_EXTENTION:
-        format = @"H:|-8-[_recordButton]-8-[_emojiButton(EMOJIBUTTONWIDTH)]-8-[_"
-                @"additionalButton(BUTTONWIDTH)]-8-[_switchButton(0)]-8-|";
-        break;
-    case RC_CHAT_INPUT_BAR_STYLE_CONTAINER:
-        format = @"H:|-0-[_switchButton(0)]-8-[_recordButton]-8-[_emojiButton(EMOJIBUTTONWIDTH)"
-                @"]-8-[_additionalButton(0)]-8-|";
-        break;
-    default:
-        break;
+        case RC_CHAT_INPUT_BAR_STYLE_SWITCH_CONTAINER_EXTENTION:
+            format = @"H:|-8-[_switchButton(BUTTONWIDTH)]-8-[_recordButton]-8-[_emojiButton("
+            @"EMOJIBUTTONWIDTH)]-8-[_additionalButton(BUTTONWIDTH)]-8-|";
+            break;
+        case RC_CHAT_INPUT_BAR_STYLE_EXTENTION_CONTAINER_SWITCH:
+            format = @"H:|-8-[_additionalButton(BUTTONWIDTH)]-8-[_recordButton]-8-[_"
+            @"emojiButton(EMOJIBUTTONWIDTH)]-8-[_switchButton(BUTTONWIDTH)]-8-|";
+            break;
+        case RC_CHAT_INPUT_BAR_STYLE_CONTAINER_SWITCH_EXTENTION:
+            format = @"H:|-8-[_recordButton]-8-[_emojiButton(EMOJIBUTTONWIDTH)]-8-[_switchButton("
+            @"BUTTONWIDTH)]-8-[_additionalButton(BUTTONWIDTH)]-8-|";
+            break;
+        case RC_CHAT_INPUT_BAR_STYLE_CONTAINER_EXTENTION_SWITCH:
+            format = @"H:|-8-[_recordButton]-8-[_emojiButton(EMOJIBUTTONWIDTH)]-8-[_"
+            @"additionalButton(BUTTONWIDTH)]-8-[_switchButton(BUTTONWIDTH)]-8-|";
+            break;
+        case RC_CHAT_INPUT_BAR_STYLE_SWITCH_CONTAINER:
+            format = @"H:|-8-[_switchButton(BUTTONWIDTH)]-8-[_recordButton]-8-[_emojiButton("
+            @"EMOJIBUTTONWIDTH)]-8-[_additionalButton(0)]-8-|";
+            break;
+        case RC_CHAT_INPUT_BAR_STYLE_CONTAINER_SWITCH:
+            format = @"H:|-8-[_recordButton]-8-[_emojiButton(EMOJIBUTTONWIDTH)]-8-[_switchButton("
+            @"BUTTONWIDTH)]-8-[_additionalButton(0)]-8-|";
+            break;
+        case RC_CHAT_INPUT_BAR_STYLE_EXTENTION_CONTAINER:
+            format = @"H:|-8-[_additionalButton(BUTTONWIDTH)]-8-[_recordButton]-8-[_"
+            @"emojiButton(EMOJIBUTTONWIDTH)]-8-[_switchButton(0)]-8-|";
+            break;
+        case RC_CHAT_INPUT_BAR_STYLE_CONTAINER_EXTENTION:
+            format = @"H:|-8-[_recordButton]-8-[_emojiButton(EMOJIBUTTONWIDTH)]-8-[_"
+            @"additionalButton(BUTTONWIDTH)]-8-[_switchButton(0)]-8-|";
+            break;
+        case RC_CHAT_INPUT_BAR_STYLE_CONTAINER:
+            format = @"H:|-0-[_switchButton(0)]-8-[_recordButton]-8-[_emojiButton(EMOJIBUTTONWIDTH)"
+            @"]-8-[_additionalButton(0)]-8-|";
+            break;
+        default:
+            break;
     }
-
+    
     NSInteger emojiBtnWidth = self.hideEmojiButton ? 0 : 32;
     [self.inputContainerSubViewConstraints
-        addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:format
-                                                                    options:0
-                                                                    metrics:@{@"BUTTONWIDTH":@(32), @"EMOJIBUTTONWIDTH":@(emojiBtnWidth)}
-                                                                      views:_bindingViews]];
-
+     addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:format
+                                                                 options:0
+                                                                 metrics:@{@"BUTTONWIDTH":@(32), @"EMOJIBUTTONWIDTH":@(emojiBtnWidth)}
+                                                                   views:_bindingViews]];
+    
     [self.inputContainerSubViewConstraints
-        addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-8.5-[_switchButton(BUTTONWIDTH)]"
-                                                                    options:0
-                                                                    metrics:@{@"BUTTONWIDTH":@(32)}
-                                                                      views:_bindingViews]];
+     addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-8.5-[_switchButton(BUTTONWIDTH)]"
+                                                                 options:0
+                                                                 metrics:@{@"BUTTONWIDTH":@(32)}
+                                                                   views:_bindingViews]];
     [self.inputContainerSubViewConstraints
-        addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-6-[_recordButton(36)]"
-                                                                    options:0
-                                                                    metrics:nil
-                                                                      views:_bindingViews]];
-
+     addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-6-[_recordButton(36)]"
+                                                                 options:0
+                                                                 metrics:nil
+                                                                   views:_bindingViews]];
+    
     [self.inputContainerSubViewConstraints
-        addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-8.5-[_emojiButton(BUTTONWIDTH)]"
-                                                                    options:kNilOptions
-                                                                    metrics:@{@"BUTTONWIDTH":@(32)}
-                                                                      views:_bindingViews]];
-
+     addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-8.5-[_emojiButton(BUTTONWIDTH)]"
+                                                                 options:kNilOptions
+                                                                 metrics:@{@"BUTTONWIDTH":@(32)}
+                                                                   views:_bindingViews]];
+    
     [self.inputContainerSubViewConstraints
-        addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-8.5-[_additionalButton(BUTTONWIDTH)]"
-                                                                    options:kNilOptions
-                                                                    metrics:@{@"BUTTONWIDTH":@(32)}
-                                                                      views:_bindingViews]];
+     addObjectsFromArray:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-8.5-[_additionalButton(BUTTONWIDTH)]"
+                                                                 options:kNilOptions
+                                                                 metrics:@{@"BUTTONWIDTH":@(32)}
+                                                                   views:_bindingViews]];
     
     [self.inputContainerSubViewConstraints addObjectsFromArray:@[[NSLayoutConstraint constraintWithItem:self.recordButton attribute:NSLayoutAttributeLeft relatedBy:(NSLayoutRelationEqual) toItem:self.inputTextView attribute:NSLayoutAttributeLeft multiplier:1 constant:0]]];
     
@@ -451,9 +481,9 @@
     [self.inputContainerSubViewConstraints addObjectsFromArray:@[[NSLayoutConstraint constraintWithItem:self.recordButton attribute:NSLayoutAttributeTop relatedBy:(NSLayoutRelationEqual) toItem:self.inputTextView attribute:NSLayoutAttributeTop multiplier:1 constant:0]]];
     
     [self.inputContainerSubViewConstraints addObjectsFromArray:@[[NSLayoutConstraint constraintWithItem:self.inputTextView attribute:NSLayoutAttributeBottom relatedBy:(NSLayoutRelationEqual) toItem:self attribute:NSLayoutAttributeBottom multiplier:1 constant:-6]]];
-
+    
     [self addConstraints:self.inputContainerSubViewConstraints];
-
+    
     [self updateConstraintsIfNeeded];
     [self layoutIfNeeded];
 }
@@ -487,7 +517,7 @@
         [_inputTextView setReturnKeyType:UIReturnKeySend];
         _inputTextView.backgroundColor = RCDYCOLOR(0xffffff, 0x2d2d2d);
         _inputTextView.enablesReturnKeyAutomatically = YES;
-        _inputTextView.layer.cornerRadius = 8;
+        _inputTextView.layer.cornerRadius = 20;
         _inputTextView.layer.masksToBounds = YES;
         [_inputTextView setAccessibilityLabel:@"chat_input_textView"];
     }
