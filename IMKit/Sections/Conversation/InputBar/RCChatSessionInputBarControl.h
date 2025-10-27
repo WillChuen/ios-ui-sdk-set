@@ -15,8 +15,10 @@
 #import "RCInputContainerView.h"
 #import "RCMenuContainerView.h"
 #import "RCBaseNavigationController.h"
-#define RC_ChatSessionInputBar_Height 49.5f
-///输入栏扩展输入的唯一标识
+
+///
+#define RC_ChatSessionInputBar_Height 72.0f
+/// 输入栏扩展输入的唯一标识
 #define INPUT_MENTIONED_SELECT_TAG 1000
 #define PLUGIN_BOARD_ITEM_ALBUM_TAG 1001
 #define PLUGIN_BOARD_ITEM_CAMERA_TAG 1002
