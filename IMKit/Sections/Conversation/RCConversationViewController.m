@@ -253,11 +253,8 @@ static NSString *const rcMessageBaseCellIndentifier = @"rcMessageBaseCellIndenti
     [[RongIMKitExtensionManager sharedManager] extensionViewWillAppear:self.conversationType
                                                               targetId:self.targetId
                                                          extensionView:self.extensionView];
-    if(self.placeholderLabel) {
-        [self.placeholderLabel removeFromSuperview];
-        [self.chatSessionInputBarControl.inputTextView addSubview:self.placeholderLabel];
-        self.placeholderLabel.hidden = self.chatSessionInputBarControl.draft.length > 0;
-    }
+    
+    [self layoutInputBarPlaceholder];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -562,6 +559,15 @@ static NSString *const rcMessageBaseCellIndentifier = @"rcMessageBaseCellIndenti
                 self.chatSessionInputBarControl.draft = draft;
             });
         }];
+    }
+}
+
+/// 布局输入框的占位符
+- (void)layoutInputBarPlaceholder {
+    if(self.placeholderLabel) {
+        [self.placeholderLabel removeFromSuperview];
+        [self.chatSessionInputBarControl.inputTextView addSubview:self.placeholderLabel];
+        self.placeholderLabel.hidden = self.chatSessionInputBarControl.draft.length > 0;
     }
 }
 

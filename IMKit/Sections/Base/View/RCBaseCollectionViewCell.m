@@ -16,7 +16,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         [self updateRTLUI];
-        [self openTester];
+//        [self openTester];
     }
     return self;
 }
