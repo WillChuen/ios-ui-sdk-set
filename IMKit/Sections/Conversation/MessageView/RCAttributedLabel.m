@@ -413,7 +413,7 @@
         return;
     }
     self.originalString = text;
-    //设置内容的时候，先做一次解析，保证准确性
+    // 设置内容的时候，先做一次解析，保证准确性
     [super setText:text];
     self.needGenerateAttributed = YES;
     [self generateAttributed];

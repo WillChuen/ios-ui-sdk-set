@@ -11,10 +11,14 @@
 #import "RCKitUtility.h"
 
 @implementation RCMessageCellTool
+
+/// 获取消息Cell默认的背景图片
 + (UIImage *)getDefaultMessageCellBackgroundImage:(RCMessageModel *)model{
     UIImage *bubbleImage;
+    // 接收
     if (MessageDirection_RECEIVE == model.messageDirection) {
         bubbleImage = RCResourceImage(@"chat_from_bg_normal");
+        // 发送
     } else {
         if ([self isWhiteBubbleImageWithSendMesageCell:model.objectName]) {
             bubbleImage = RCResourceImage(@"chat_to_bg_white");
@@ -22,10 +26,13 @@
             bubbleImage = RCResourceImage(@"chat_to_bg_normal");
         }
     }
+    // RTL 适配
     if ([RCKitUtility isRTL]) {
         bubbleImage = [bubbleImage imageFlippedForRightToLeftLayoutDirection];
     }
+    // 拉伸图片
     bubbleImage = [self getResizableImage:bubbleImage];
+    // 返回图片
     return bubbleImage;
 }
 
@@ -36,7 +43,9 @@
 }
 
 + (BOOL)isWhiteBubbleImageWithSendMesageCell:(NSString *)objectName{
-    NSArray *list = @[@"RC:FileMsg",@"RC:CardMsg",@"RC:LBSMsg"];
+    // 消息类型名
+    NSArray *list = @[@"RC:FileMsg", @"RC:CardMsg", @"RC:LBSMsg"];
+    //
     if ([list containsObject:objectName]) {
         return YES;
     }
@@ -152,7 +161,8 @@
 }
 
 #pragma mark - Private Methods
-+ (UIImage *)getResizableImage:(UIImage *)image{
+/// 获取可拉伸的图片
++ (UIImage *)getResizableImage:(UIImage *)image {
     return [image resizableImageWithCapInsets:UIEdgeInsetsMake(image.size.height * 0.5, image.size.width * 0.5, image.size.height * 0.5, image.size.width * 0.5)];
 }
 @end

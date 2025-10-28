@@ -17,26 +17,31 @@
 #import "RCResendManager.h"
 #import "RCCoreClient+Destructing.h"
 #import <RongPublicService/RongPublicService.h>
-// 头像
-#define PortraitImageViewTop 0
-// 气泡
-#define ContentViewBottom 14
-#define DefaultMessageContentViewWidth 200
-#define StatusContentViewWidth 100
-#define DestructBtnWidth 20
-#define StatusViewAndContentViewSpace 8
+
+#define PortraitImageViewTop 0 // 头像顶部间隔
+#define ContentViewBottom 14 // 气泡地底部间隔
+#define DefaultMessageContentViewWidth 200 // 消息内容宽度
+#define StatusContentViewWidth 100 // 消息状态宽度
+#define DestructBtnWidth 20 // 阅后即焚按钮宽度
+#define StatusViewAndContentViewSpace 8 // 状态和内容视图间距
 
 NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     @"KNotificationMessageBaseCellUpdateCanReceiptStatus";
+
 @interface RCMessageCell() {
     BOOL _showPortrait;
 }
+
+/// 是否显示气泡背景视图
 @property (nonatomic, assign) BOOL showBubbleBackgroundView;
-//当前 cell 正在展示的用户信息，消息携带用户信息且频发发送，会导致 cell 频发刷新
-//cell 复用的时候，检测如果是即将刷新的是同一个用户信息，那么就跳过刷新
-//IMSDK-2705
+
+// 当前 cell 正在展示的用户信息，消息携带用户信息且频发发送，会导致 cell 频发刷新
+// cell 复用的时候，检测如果是即将刷新的是同一个用户信息，那么就跳过刷新
+// IMSDK-2705
 @property (nonatomic, strong) RCUserInfo *currentDisplayedUserInfo;
+
 @end
+
 @implementation RCMessageCell
 
 #pragma mark - Life Cycle
@@ -236,24 +241,26 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     [self setPortraitStyle:RCKitConfigCenter.ui.globalMessageAvatarStyle];
 }
 
-- (void)registerMessageCellNotification{
+- (void)registerMessageCellNotification {
+    // 用户信息更新通知
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(onUserInfoUpdate:)
                                                  name:RCKitDispatchUserInfoUpdateNotification
                                                object:nil];
+    // 群组信息更新通知
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(onGroupUserInfoUpdate:)
                                                  name:RCKitDispatchGroupUserInfoUpdateNotification
                                                object:nil];
-
+    // 阅读回执状态更新通知
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(onReceiptStatusUpdate:)
                                                  name:KNotificationMessageBaseCellUpdateCanReceiptStatus
                                                object:nil];
-    
+    // 注册Frame变化监听
     [self registerFrameUpdateLayoutIfNeed];
+    // 注册Size变化监听
     [self registerSizeUpdateLayoutIfNeed];
-    
 }
 
 - (void)registerFrameUpdateLayoutIfNeed{

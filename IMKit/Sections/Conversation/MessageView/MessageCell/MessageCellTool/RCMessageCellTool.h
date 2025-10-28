@@ -14,10 +14,17 @@
 #define DestructBackGroundHeight 132
 
 @interface RCMessageCellTool : NSObject
+
+/// 获取消息Cell默认的背景图片
 + (UIImage *)getDefaultMessageCellBackgroundImage:(RCMessageModel *)model;
+
 + (CGFloat)getMessageContentViewMaxWidth;
+
 + (CGSize)getThumbnailImageSize:(UIImage *)image;
+
 + (NSDictionary *)getTextLinkOrPhoneNumberAttributeDictionary:(RCMessageDirection)msgDirection;
+
 + (UIImage *)translationTextBackgroundImage;
+
 @end
 

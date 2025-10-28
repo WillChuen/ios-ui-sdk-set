@@ -9,8 +9,12 @@
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
 /// - Since: 5.4.0
 @interface RCBaseCollectionViewCell : UICollectionViewCell
+
+/// 随机获取颜色
+- (UIColor *)randomColor;
 
 @end
 

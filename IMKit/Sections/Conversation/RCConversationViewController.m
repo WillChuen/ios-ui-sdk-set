@@ -84,9 +84,9 @@ RCChatSessionInputBarControlDataSource, RCMessagesMultiSelectedProtocol, RCRefer
 
 #pragma mark flag
 @property (nonatomic, assign) BOOL isConversationAppear;
-@property (nonatomic, assign) BOOL isTakeNewPhoto;//发送的图片是否是刚拍摄的，是拍摄的则决定是否写入相册
-@property (nonatomic, assign) BOOL isContinuousPlaying;     //是否正在连续播放语音消息
-@property (nonatomic, assign) BOOL isTouchScrolled; /// 表示是否是触摸滚动
+@property (nonatomic, assign) BOOL isTakeNewPhoto; // 发送的图片是否是刚拍摄的，是拍摄的则决定是否写入相册
+@property (nonatomic, assign) BOOL isContinuousPlaying;     // 是否正在连续播放语音消息
+@property (nonatomic, assign) BOOL isTouchScrolled; // 表示是否是触摸滚动
 @property (nonatomic, assign) BOOL sendMsgAndNeedScrollToBottom;
 
 #pragma mark data
@@ -316,7 +316,7 @@ static NSString *const rcMessageBaseCellIndentifier = @"rcMessageBaseCellIndenti
     
 }
 - (void)registerAllInternalClass {
-    //常见消息
+    // 常见消息
     [self registerClass:[RCTextMessageCell class] forMessageClass:[RCTextMessage class]];
     [self registerClass:[RCImageMessageCell class] forMessageClass:[RCImageMessage class]];
     [self registerClass:[RCGIFMessageCell class] forMessageClass:[RCGIFMessage class]];
@@ -344,7 +344,7 @@ static NSString *const rcMessageBaseCellIndentifier = @"rcMessageBaseCellIndenti
     [self registerClass:[RCOldMessageNotificationMessageCell class]
         forMessageClass:[RCOldMessageNotificationMessage class]];
     [self registerClass:[RCMessageBaseCell class] forCellWithReuseIdentifier:rcMessageBaseCellIndentifier];
-    //注册 Extention 消息，如 callkit 的
+    // 注册 Extention 消息，如 callkit 的
     self.extensionMessageCellInfoList =
         [[RongIMKitExtensionManager sharedManager] getMessageCellInfoList:self.conversationType targetId:self.targetId];
     for (RCExtensionMessageCellInfo *cellInfo in self.extensionMessageCellInfoList) {

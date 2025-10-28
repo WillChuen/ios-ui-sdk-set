@@ -13,10 +13,12 @@
 #import "RCButton.h"
 #import "RCBaseButton.h"
 #import "RCBaseImageView.h"
-#define HeadAndContentSpacing 8
-#define PortraitViewEdgeSpace 12//头像与屏幕边缘距离
-#define NameAndContentSpace 2
-#define NameHeight 14
+
+#define HeadAndContentSpacing 8 // 头像与内容的间距
+#define PortraitViewEdgeSpace 12 // 头像与屏幕边缘距离
+#define NameAndContentSpace 2   // 名称与内容的间距
+#define NameHeight 14         // 名称高度
+
 @class RCloudImageView;
 
 /*!
@@ -88,6 +90,7 @@
 
  */
 @property (nonatomic, assign) BOOL showPortrait;
+
 /*!
  设置当前消息Cell的数据模型
 
@@ -125,4 +128,5 @@
 点击消息视图 messageContentView 回调
 */
 - (void)didTapMessageContentView;
+
 @end
