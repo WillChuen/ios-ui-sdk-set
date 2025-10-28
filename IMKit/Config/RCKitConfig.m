@@ -28,7 +28,6 @@
         self.message = [[RCKitMessageConf alloc] init];
         self.ui = [[RCKitUIConf alloc] init];
         self.font = [[RCKitFontConf alloc] init];
-        self.custom = [[RCKitCustomConfig alloc] init];
     }
     return self;
 }

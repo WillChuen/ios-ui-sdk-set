@@ -23,9 +23,6 @@
 /// 文本输入框
 @property (nonatomic, strong) RCTextView *inputTextView;
 
-/// 文本输入框背景视图
-@property (nonatomic, strong) UIImageView *inputTextViewBackgroundView;
-
 /// 表情的按钮
 @property (nonatomic, strong) RCButton *emojiButton;
 
@@ -41,10 +38,10 @@
  */
 @property (nonatomic, assign) NSInteger maxInputLines;
 
-/// 是否处于阅后即焚模式
+//是否处于阅后即焚模式
 @property (nonatomic, assign) BOOL destructMessageMode;
 
-/// 隐藏表情按钮
+// 隐藏表情按钮
 @property(nonatomic, assign) BOOL hideEmojiButton;
 
 @property (nonatomic, weak) id<RCInputContainerViewDelegate> delegate;

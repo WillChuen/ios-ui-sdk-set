@@ -15,10 +15,8 @@
 #import "RCInputContainerView.h"
 #import "RCMenuContainerView.h"
 #import "RCBaseNavigationController.h"
-
-///
-#define RC_ChatSessionInputBar_Height 72.0f
-/// 输入栏扩展输入的唯一标识
+#define RC_ChatSessionInputBar_Height 49.5f
+///输入栏扩展输入的唯一标识
 #define INPUT_MENTIONED_SELECT_TAG 1000
 #define PLUGIN_BOARD_ITEM_ALBUM_TAG 1001
 #define PLUGIN_BOARD_ITEM_CAMERA_TAG 1002
@@ -267,6 +265,8 @@
  重置到默认状态
  */
 - (void)resetToDefaultStatus;
+
+- (void)clearInputData;
 
 /*!
  内容区域大小发生变化。
@@ -553,6 +553,8 @@
  */
 - (void)chatSessionInputBarStatusChanged:(KBottomBarStatus)bottomBarStatus;
 
+- (void)didSetDraft:(NSDictionary *)info;
+
 @end
 
 @protocol RCChatSessionInputBarControlDataSource <NSObject>
@@ -572,6 +574,12 @@
  - Returns: 用户信息
  */
 - (RCUserInfo *)getSelectingUserInfo:(NSString *)userId;
+
+/*!
+ 获取需要存入草稿的信息
+ - Returns: 草稿信息
+ */
+- (NSDictionary *)getDraftExtraInfo;
 
 @end
 
