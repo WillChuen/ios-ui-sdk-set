@@ -29,6 +29,7 @@
 // 单个cell的高度是70（RCPlaginBoardCellSize）*2 + 上下padding的高度14*2 ＋
 // 上下两个图标之间的padding
 #define Height_EmojBoardView 223.5f
+// 扩展面板的高度
 #define Height_PluginBoardView 223.5f
 #define Height_CommonPhrasesView 223.5f
 #define RC_CommonPhrasesView_Height 38
@@ -1378,46 +1379,55 @@ NSString *const RCKitKeyboardWillShowNotification = @"RCKitKeyboardWillShowNotif
 - (RCPluginBoardView *)pluginBoardView {
     if (!_pluginBoardView) {
         _pluginBoardView = [[RCPluginBoardView alloc]
-            initWithFrame:CGRectMake(0, [self getBoardViewBottomOriginY], self.containerView.bounds.size.width,
-                                     Height_PluginBoardView)];
-
-        //添加底部多功能栏功能，可以根据需求自定义
+                            initWithFrame:CGRectMake(0, [self getBoardViewBottomOriginY], self.containerView.bounds.size.width,
+                                                     Height_PluginBoardView)];
+        // 相册标题
+        NSString * pictureItemText = [RCKitConfig defaultConfig].custom.extensionPanelAlbumTitle;
+        if (!pictureItemText) {
+            pictureItemText = RCLocalizedString(@"Photos");
+        }
+        // 相册功能
         [_pluginBoardView insertItem:RCResourceImage(@"plugin_item_picture")
                     highlightedImage:RCResourceImage(@"plugin_item_picture_highlighted")
-                               title:RCLocalizedString(@"Photos")
+                               title:pictureItemText
                              atIndex:0
                                  tag:PLUGIN_BOARD_ITEM_ALBUM_TAG];
-        
+        // 相机标题
+        NSString * cameraItemText = [RCKitConfig defaultConfig].custom.extensionPanelCameraTitle;
+        if (!cameraItemText) {
+            cameraItemText = RCLocalizedString(@"Camera");
+        }
+        // 相机功能
         [_pluginBoardView insertItem:RCResourceImage(@"plugin_item_camera")
-                    highlightedImage:RCResourceImage(@"plugin_item_camera_highlighted")
-                               title:RCLocalizedString(@"Camera")
+                    highlightedImage:RCResourceImage(@"plugin_item_camera")
+                               title:cameraItemText
                              atIndex:1
                                  tag:PLUGIN_BOARD_ITEM_CAMERA_TAG];
-
-        if (self.conversationType == ConversationType_PRIVATE) {
-            [_pluginBoardView insertItem:RCResourceImage(@"plugin_item_burn")
-                        highlightedImage:RCResourceImage(@"plugin_item_burn_highlighted")
-                                   title:RCLocalizedString(@"Burn_After_Read")
-                                 atIndex:3
-                                     tag:PLUGIN_BOARD_ITEM_DESTRUCT_TAG];
-        }
-
-        NSInteger index = 100;
-        NSArray *pluginItemInfoList =
-            [[RCExtensionService sharedService] getPluginBoardItemInfoList:self.conversationType
-                                                                  targetId:self.targetId];
-        for (RCExtensionPluginItemInfo *itemInfo in pluginItemInfoList) {
-            NSInteger tag;
-            if (itemInfo.tag > 0) {
-                tag = itemInfo.tag;
-            } else {
-                tag = PLUGIN_BOARD_ITEM_RED_PACKET_TAG;
-            }
-            [self.pluginBoardView insertItem:itemInfo.normalImage highlightedImage:itemInfo.highlightedImage title:itemInfo.title atIndex:index tag:tag];
-            [self.pluginTapBlockDic setObject:itemInfo.tapBlock forKey:@(tag)];
-            index++;
-        }
-        RCLogF(@"pluginItemInfoList count:==============> %ld", (long)pluginItemInfoList.count);
+        // 个人聊天有阅后即焚功能
+//        if (self.conversationType == ConversationType_PRIVATE) {
+//            [_pluginBoardView insertItem:RCResourceImage(@"plugin_item_burn")
+//                        highlightedImage:RCResourceImage(@"plugin_item_burn_highlighted")
+//                                   title:RCLocalizedString(@"Burn_After_Read")
+//                                 atIndex:3
+//                                     tag:PLUGIN_BOARD_ITEM_DESTRUCT_TAG];
+//        }
+        // 读取其他模块扩展单元
+//        NSInteger index = 100;
+//        NSArray *pluginItemInfoList =
+//            [[RCExtensionService sharedService] getPluginBoardItemInfoList:self.conversationType
+//                                                                  targetId:self.targetId];
+//        for (RCExtensionPluginItemInfo *itemInfo in pluginItemInfoList) {
+//            NSInteger tag;
+//            if (itemInfo.tag > 0) {
+//                tag = itemInfo.tag;
+//            } else {
+//                tag = PLUGIN_BOARD_ITEM_RED_PACKET_TAG;
+//            }
+//            [self.pluginBoardView insertItem:itemInfo.normalImage highlightedImage:itemInfo.highlightedImage title:itemInfo.title atIndex:index tag:tag];
+//            [self.pluginTapBlockDic setObject:itemInfo.tapBlock forKey:@(tag)];
+//            index++;
+//        }
+//        RCLogF(@"pluginItemInfoList count:==============> %ld", (long)pluginItemInfoList.count);
         _pluginBoardView.hidden = YES;
         _pluginBoardView.pluginBoardDelegate = self;
         [self.containerView addSubview:_pluginBoardView];
