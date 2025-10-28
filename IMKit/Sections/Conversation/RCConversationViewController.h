@@ -185,6 +185,10 @@ typedef enum : NSUInteger {
 /// self.placeholderLabel.textColor = [UIColor grayColor];
 @property (nonatomic, strong) UILabel *placeholderLabel;
 
+/// 布局输入框的占位符
+/// 子类可以重写此方法，定制占位符的布局
+- (void)layoutInputBarPlaceholder;
+
 /// 输入框中内容发生变化的回调
 /// - Parameter inputTextView: 文本输入框
 /// - Parameter range:         当前操作的范围

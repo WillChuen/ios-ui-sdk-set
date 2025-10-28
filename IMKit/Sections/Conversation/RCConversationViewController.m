@@ -276,12 +276,18 @@ static NSString *const rcMessageBaseCellIndentifier = @"rcMessageBaseCellIndenti
     [[RongIMKitExtensionManager sharedManager] extensionViewWillAppear:self.conversationType
                                                               targetId:self.targetId
                                                          extensionView:self.extensionView];
+    [self layoutInputBarPlaceholder];
+}
+
+/// 布局输入框的占位符
+- (void)layoutInputBarPlaceholder {
     if(self.placeholderLabel) {
         [self.placeholderLabel removeFromSuperview];
         [self.chatSessionInputBarControl.inputTextView addSubview:self.placeholderLabel];
         self.placeholderLabel.hidden = self.chatSessionInputBarControl.draft.length > 0;
     }
 }
+
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];

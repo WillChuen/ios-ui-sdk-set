@@ -335,7 +335,7 @@ NSString *const RCKitKeyboardWillShowNotification = @"RCKitKeyboardWillShowNotif
 }
 
 - (void)containerViewSizeChanged {
-    [self animationLayoutBottomBarWithStatus:self.currentBottomBarStatus animated:YES];
+    [self animationLayoutBottomBarWithStatus:self.currentBottomBarStatus animated:NO];
 }
 
 - (void)updateStatus:(KBottomBarStatus)inputBarStatus animated:(BOOL)animated {
@@ -345,18 +345,18 @@ NSString *const RCKitKeyboardWillShowNotification = @"RCKitKeyboardWillShowNotif
 - (void)resetToDefaultStatus {
     [self dismissPublicServiceMenuPopupView];
     if (self.currentBottomBarStatus != KBottomBarDefaultStatus) {
-        [self animationLayoutBottomBarWithStatus:KBottomBarDefaultStatus animated:YES];
+        [self animationLayoutBottomBarWithStatus:KBottomBarDefaultStatus animated:NO];
     }
 }
 
 - (void)setDefaultInputType:(RCChatSessionInputBarInputType)defaultInputType {
     if (defaultInputType == RCChatSessionInputBarInputVoice) {
-        [self animationLayoutBottomBarWithStatus:KBottomBarRecordStatus animated:YES];
+        [self animationLayoutBottomBarWithStatus:KBottomBarRecordStatus animated:NO];
     } else if (defaultInputType == RCChatSessionInputBarInputExtention) {
-        [self animationLayoutBottomBarWithStatus:KBottomBarPluginStatus animated:YES];
+        [self animationLayoutBottomBarWithStatus:KBottomBarPluginStatus animated:NO];
     } else if (defaultInputType == RCChatSessionInputBarInputDestructMode) {
         [self resetToDefaultStatus];
-        [self animationLayoutBottomBarWithStatus:KBottomBarDestructStatus animated:YES];
+        [self animationLayoutBottomBarWithStatus:KBottomBarDestructStatus animated:NO];
     }
 }
 
@@ -412,9 +412,9 @@ NSString *const RCKitKeyboardWillShowNotification = @"RCKitKeyboardWillShowNotif
 #pragma mark - RCInputContainerViewDelegate
 - (void)inputContainerViewSwitchButtonClicked:(RCInputContainerView *)inputContainerView {
     if (self.currentBottomBarStatus == KBottomBarRecordStatus) {
-        [self animationLayoutBottomBarWithStatus:KBottomBarKeyboardStatus animated:YES];
+        [self animationLayoutBottomBarWithStatus:KBottomBarKeyboardStatus animated:NO];
     } else {
-        [self animationLayoutBottomBarWithStatus:KBottomBarRecordStatus animated:YES];
+        [self animationLayoutBottomBarWithStatus:KBottomBarRecordStatus animated:NO];
     }
 }
 
@@ -424,22 +424,22 @@ NSString *const RCKitKeyboardWillShowNotification = @"RCKitKeyboardWillShowNotif
         return;
     }
     if (self.currentBottomBarStatus == KBottomBarEmojiStatus) {
-        [self animationLayoutBottomBarWithStatus:KBottomBarKeyboardStatus animated:YES];
+        [self animationLayoutBottomBarWithStatus:KBottomBarKeyboardStatus animated:NO];
     } else {
-        [self animationLayoutBottomBarWithStatus:KBottomBarEmojiStatus animated:YES];
+        [self animationLayoutBottomBarWithStatus:KBottomBarEmojiStatus animated:NO];
     }
     [self enableEmojiBoardViewSendButton];
 }
 
 - (void)inputContainerViewAdditionalButtonClicked:(RCInputContainerView *)inputContainerView {
     if (self.destructMessageMode) {
-        [self animationLayoutBottomBarWithStatus:KBottomBarDefaultStatus animated:YES];
+        [self animationLayoutBottomBarWithStatus:KBottomBarDefaultStatus animated:NO];
         return;
     }
     if (self.currentBottomBarStatus == KBottomBarPluginStatus) {
-        [self animationLayoutBottomBarWithStatus:KBottomBarKeyboardStatus animated:YES];
+        [self animationLayoutBottomBarWithStatus:KBottomBarKeyboardStatus animated:NO];
     } else {
-        [self animationLayoutBottomBarWithStatus:KBottomBarPluginStatus animated:YES];
+        [self animationLayoutBottomBarWithStatus:KBottomBarPluginStatus animated:NO];
     }
 }
 
@@ -961,12 +961,12 @@ NSString *const RCKitKeyboardWillShowNotification = @"RCKitKeyboardWillShowNotif
                     [self showChooseUserViewController:^(RCUserInfo *selectedUserInfo) {
                         [weakSelf insertMentionedUser:selectedUserInfo symbolRequset:NO];
                         dispatch_async(dispatch_get_main_queue(), ^{
-                            [weakSelf animationLayoutBottomBarWithStatus:(KBottomBarKeyboardStatus) animated:YES];
+                            [weakSelf animationLayoutBottomBarWithStatus:(KBottomBarKeyboardStatus) animated:NO];
                         });
                     }
                         cancel:^{
                             dispatch_async(dispatch_get_main_queue(), ^{
-                                [weakSelf animationLayoutBottomBarWithStatus:(KBottomBarKeyboardStatus) animated:YES];
+                                [weakSelf animationLayoutBottomBarWithStatus:(KBottomBarKeyboardStatus) animated:NO];
                             });
                         }];
                 }
@@ -1224,15 +1224,15 @@ NSString *const RCKitKeyboardWillShowNotification = @"RCKitKeyboardWillShowNotif
 
 - (void)didTouchPubSwitchButton:(BOOL)switched {
     if (self.currentBottomBarStatus != KBottomBarDefaultStatus) {
-        [self animationLayoutBottomBarWithStatus:KBottomBarDefaultStatus animated:YES];
+        [self animationLayoutBottomBarWithStatus:KBottomBarDefaultStatus animated:NO];
     }
 }
 
 - (void)didTouchCommonPhrasesButton:(UIButton *)button {
     if (self.currentBottomBarStatus == KBottomBarCommonPhrasesStatus) {
-        [self animationLayoutBottomBarWithStatus:KBottomBarDefaultStatus animated:YES];
+        [self animationLayoutBottomBarWithStatus:KBottomBarDefaultStatus animated:NO];
     } else {
-        [self animationLayoutBottomBarWithStatus:KBottomBarCommonPhrasesStatus animated:YES];
+        [self animationLayoutBottomBarWithStatus:KBottomBarCommonPhrasesStatus animated:NO];
     }
 }
 
@@ -1328,7 +1328,7 @@ NSString *const RCKitKeyboardWillShowNotification = @"RCKitKeyboardWillShowNotif
 - (void)changeTextViewHeight:(NSString *)text {
     if (self.menuContainerView == nil || self.menuContainerView.hidden == YES) {
         if (text.length != 0) {
-            [self animationLayoutBottomBarWithStatus:(KBottomBarKeyboardStatus) animated:YES];
+            [self animationLayoutBottomBarWithStatus:(KBottomBarKeyboardStatus) animated:NO];
         }
     }
 }
@@ -1405,17 +1405,28 @@ NSString *const RCKitKeyboardWillShowNotification = @"RCKitKeyboardWillShowNotif
         _pluginBoardView = [[RCPluginBoardView alloc]
             initWithFrame:CGRectMake(0, [self getBoardViewBottomOriginY], self.containerView.bounds.size.width,
                                      Height_PluginBoardView)];
-
+        
+        
+        NSString *extensionPanelAlbumTitle = [RCKitConfig defaultConfig].custom.extensionPanelAlbumTitle;
+        if (!extensionPanelAlbumTitle) {
+            extensionPanelAlbumTitle = RCLocalizedString(@"Photos");
+        }
+        
         //添加底部多功能栏功能，可以根据需求自定义
         [_pluginBoardView insertItem:RCResourceImage(@"plugin_item_picture")
-                    highlightedImage:RCResourceImage(@"plugin_item_picture_highlighted")
-                               title:RCLocalizedString(@"Photos")
+                    highlightedImage:RCResourceImage(@"plugin_item_picture")
+                               title:extensionPanelAlbumTitle
                              atIndex:0
                                  tag:PLUGIN_BOARD_ITEM_ALBUM_TAG];
         
+        NSString *extensionPanelCameraTitle = [RCKitConfig defaultConfig].custom.extensionPanelCameraTitle;
+        if (!extensionPanelCameraTitle) {
+            extensionPanelCameraTitle = RCLocalizedString(@"Camera");
+        }
+        
         [_pluginBoardView insertItem:RCResourceImage(@"plugin_item_camera")
-                    highlightedImage:RCResourceImage(@"plugin_item_camera_highlighted")
-                               title:RCLocalizedString(@"Camera")
+                    highlightedImage:RCResourceImage(@"plugin_item_camera")
+                               title:extensionPanelCameraTitle
                              atIndex:1
                                  tag:PLUGIN_BOARD_ITEM_CAMERA_TAG];
 
@@ -1426,7 +1437,7 @@ NSString *const RCKitKeyboardWillShowNotification = @"RCKitKeyboardWillShowNotif
                                  atIndex:3
                                      tag:PLUGIN_BOARD_ITEM_DESTRUCT_TAG];
         }
-
+        
         NSInteger index = 100;
         NSArray *pluginItemInfoList =
             [[RCExtensionService sharedService] getPluginBoardItemInfoList:self.conversationType

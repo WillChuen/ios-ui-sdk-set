@@ -23,6 +23,9 @@
 /// 文本输入框
 @property (nonatomic, strong) RCTextView *inputTextView;
 
+/// 文本输入框背景视图
+@property (nonatomic, strong) UIImageView *inputTextViewBackgroundView;
+
 /// 表情的按钮
 @property (nonatomic, strong) RCButton *emojiButton;
 

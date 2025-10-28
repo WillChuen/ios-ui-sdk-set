@@ -10,6 +10,7 @@
 #import "RCKitFontConf.h"
 #import "RCKitMessageConf.h"
 #import "RCKitUIConf.h"
+#import "RCKitCustomConfig.h"
 
 #define RCKitConfigCenter [RCKitConfig defaultConfig]
 
@@ -26,4 +27,8 @@
 
 /// 字体配置
 @property (nonatomic, strong) RCKitFontConf *font;
+
+/// 自定义的配置
+@property (nonatomic, strong) RCKitCustomConfig * custom;
+
 @end
