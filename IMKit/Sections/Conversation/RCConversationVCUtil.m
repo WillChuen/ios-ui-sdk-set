@@ -218,7 +218,10 @@ NSInteger const RCMessageCellDisplayTimeHeightForHQVoice = 36;
     }
     if ([cellClass isSubclassOfClass:RCMessageCell.class]) {
         // name label height
-        if (model.isDisplayNickname && model.messageDirection == MessageDirection_RECEIVE) {
+//        if (model.isDisplayNickname && model.messageDirection == MessageDirection_RECEIVE) {
+//            extraHeight += NameHeight + NameAndContentSpace;
+//        }
+        if (model.isDisplayNickname) {
             extraHeight += NameHeight + NameAndContentSpace;
         }
     }

@@ -1021,7 +1021,7 @@ static BOOL msgRoamingServiceAvailable = YES;
     if (model.messageDirection == MessageDirection_RECEIVE) {
         model.isDisplayNickname = self.chatVC.displayUserNameInCell;
     } else {
-        model.isDisplayNickname = NO;
+        model.isDisplayNickname = YES;
     }
     [self hideUnreadButtonAfterLoadMetionedMessageWith:model];
     return model;

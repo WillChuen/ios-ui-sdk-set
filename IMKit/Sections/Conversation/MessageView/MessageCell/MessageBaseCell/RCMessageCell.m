@@ -30,7 +30,7 @@
 #define StatusViewAndContentViewSpace 8
 
 NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
-    @"KNotificationMessageBaseCellUpdateCanReceiptStatus";
+@"KNotificationMessageBaseCellUpdateCanReceiptStatus";
 @interface RCMessageCell() {
     BOOL _showPortrait;
 }
@@ -90,13 +90,21 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 #pragma mark - Super Methods
 
 - (void)setDataModel:(RCMessageModel *)model {
+    // 调用父类方法
     [super setDataModel:model];
+    // 显示气派
     [self p_showBubbleBackgroundView];
+    // 隐藏失败状态
     self.messageFailedStatusView.hidden = YES;
+    // 设置已读状态
     [self p_setReadStatus];
+    // 设置用户信息
     [self p_setUserInfo];
+    // 布局
     [self setCellAutoLayout];
+    // 设置阅后即焚
     [self messageDestructing];
+    // 编辑状态
     [self edit_showEditStatusIfNeeded];
 }
 
@@ -242,7 +250,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 - (void)setupMessageCellView {
     self.allowsSelection = YES;
     self.delegate = nil;
-
+    
     [self.baseContentView addSubview:self.portraitImageView];
     [self.baseContentView addSubview:self.nicknameLabel];
     [self.baseContentView addSubview:self.messageContentView];
@@ -275,7 +283,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
                                              selector:@selector(onGroupUserInfoUpdate:)
                                                  name:RCKitDispatchGroupUserInfoUpdateNotification
                                                object:nil];
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(onReceiptStatusUpdate:)
                                                  name:KNotificationMessageBaseCellUpdateCanReceiptStatus
@@ -346,7 +354,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
         if (strongSelf.model){
             CGRect rect = CGRectMake(0, 0, size.width, size.height);
             CGFloat protraitWidth = RCKitConfigCenter.ui.globalMessagePortraitSize.width;
-
+            
             if ([RCKitUtility isRTL]) {
                 if(strongSelf.model.messageDirection == MessageDirection_RECEIVE) {
                     if (strongSelf.showPortrait) {
@@ -384,8 +392,12 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
                     } else {
                         rect.origin.x = strongSelf.baseContentView.bounds.size.width - (size.width + PortraitViewEdgeSpace);
                     }
-                
-                    rect.origin.y = PortraitImageViewTop;
+                    CGFloat messageContentViewY = PortraitImageViewTop;
+                    if (strongSelf.model.isDisplayNickname) {
+                        messageContentViewY = PortraitImageViewTop + NameHeight + NameAndContentSpace;
+                    }
+                    rect.origin.y = messageContentViewY;
+//                    rect.origin.y = PortraitImageViewTop;
                 }
             }
             strongSelf.messageContentView.frame = rect;
@@ -433,40 +445,37 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
             } else {
                 contentFrame.origin.x = PortraitViewEdgeSpace;
             }
-            
         }
-
     } else {
         // receiver
-           if (MessageDirection_RECEIVE == self.model.messageDirection) {
-               CGFloat nameOffset_X = 0;
-               if (self.showPortrait) {
-                   contentFrame.origin.x = PortraitViewEdgeSpace + protraitWidth + HeadAndContentSpacing;
-                   nameOffset_X = self.portraitImageView.frame.origin.x + self.portraitImageView.bounds.size.width + HeadAndContentSpacing;
-               } else {
-                   contentFrame.origin.x = PortraitViewEdgeSpace;
-                   nameOffset_X = self.portraitImageView.frame.origin.x;
-               }
-               nicknameFrame.origin = CGPointMake(nameOffset_X, PortraitImageViewTop);
-               self.nicknameLabel.frame = nicknameFrame;
-           } else { // owner
-               if (self.showPortrait) {
-                   contentFrame.origin.x = self.baseContentView.bounds.size.width - (size.width + HeadAndContentSpacing + protraitWidth + PortraitViewEdgeSpace);
-               } else {
-                   contentFrame.origin.x = self.baseContentView.bounds.size.width - (size.width + PortraitViewEdgeSpace);
-               }
-           }
+        if (MessageDirection_RECEIVE == self.model.messageDirection) {
+            CGFloat nameOffset_X = 0;
+            if (self.showPortrait) {
+                contentFrame.origin.x = PortraitViewEdgeSpace + protraitWidth + HeadAndContentSpacing;
+                nameOffset_X = self.portraitImageView.frame.origin.x + self.portraitImageView.bounds.size.width + HeadAndContentSpacing;
+            } else {
+                contentFrame.origin.x = PortraitViewEdgeSpace;
+                nameOffset_X = self.portraitImageView.frame.origin.x;
+            }
+            nicknameFrame.origin = CGPointMake(nameOffset_X, PortraitImageViewTop);
+            self.nicknameLabel.frame = nicknameFrame;
+        } else { // owner
+            if (self.showPortrait) {
+                contentFrame.origin.x = self.baseContentView.bounds.size.width - (size.width + HeadAndContentSpacing + protraitWidth + PortraitViewEdgeSpace);
+            } else {
+                contentFrame.origin.x = self.baseContentView.bounds.size.width - (size.width + PortraitViewEdgeSpace);
+            }
+        }
     }
     self.nicknameLabel.frame = nicknameFrame;
     self.messageContentView.frame = contentFrame;
     [self messageContentViewFrameDidChanged];
-
 }
 
 - (void)setCellAutoLayout {
     CGFloat protraitWidth = RCKitConfigCenter.ui.globalMessagePortraitSize.width;
     CGFloat protraitHeight = RCKitConfigCenter.ui.globalMessagePortraitSize.height;
-
+    
     if ([RCKitUtility isRTL]) {
         // receiver
         if (MessageDirection_RECEIVE == self.model.messageDirection) {
@@ -487,28 +496,43 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
         self.messageContentView.contentSize = CGSizeMake(DefaultMessageContentViewWidth,self.baseContentView.bounds.size.height - ContentViewBottom);
     } else {
         // receiver
-           if (MessageDirection_RECEIVE == self.model.messageDirection) {
-               [self.nicknameLabel setTextAlignment:NSTextAlignmentLeft];
-               self.nicknameLabel.hidden = !self.model.isDisplayNickname;
-               CGFloat portraitImageX = PortraitViewEdgeSpace;
-               self.portraitImageView.frame =
-               CGRectMake(portraitImageX, PortraitImageViewTop, protraitWidth,
-                          protraitHeight);
+        if (MessageDirection_RECEIVE == self.model.messageDirection) {
+            [self.nicknameLabel setTextAlignment:NSTextAlignmentLeft];
+            self.nicknameLabel.hidden = !self.model.isDisplayNickname;
+            CGFloat portraitImageX = PortraitViewEdgeSpace;
+            self.portraitImageView.frame =
+            CGRectMake(portraitImageX, PortraitImageViewTop, protraitWidth,
+                       protraitHeight);
             if (self.showPortrait) {
-                   self.nicknameLabel.frame =
-                   CGRectMake(portraitImageX + self.portraitImageView.bounds.size.width + HeadAndContentSpacing, PortraitImageViewTop, DefaultMessageContentViewWidth, NameHeight);
-               } else {
-                   self.nicknameLabel.frame =
-                   CGRectMake(portraitImageX , PortraitImageViewTop, DefaultMessageContentViewWidth, NameHeight);               }
-           } else { // owner
-               self.nicknameLabel.hidden = YES;
-               CGFloat portraitImageX =
-               self.baseContentView.bounds.size.width - (protraitWidth + PortraitViewEdgeSpace);
-               self.portraitImageView.frame =
-               CGRectMake(portraitImageX, PortraitImageViewTop, protraitWidth,
-                          protraitHeight);
-           }
-           self.messageContentView.contentSize = CGSizeMake(DefaultMessageContentViewWidth,self.baseContentView.bounds.size.height - ContentViewBottom);
+                self.nicknameLabel.frame =
+                CGRectMake(portraitImageX + self.portraitImageView.bounds.size.width + HeadAndContentSpacing, PortraitImageViewTop, DefaultMessageContentViewWidth, NameHeight);
+            } else {
+                self.nicknameLabel.frame =
+                CGRectMake(portraitImageX , PortraitImageViewTop, DefaultMessageContentViewWidth, NameHeight);
+            }
+        } else { // owner
+//            self.nicknameLabel.hidden = YES;
+//            CGFloat portraitImageX =
+//            self.baseContentView.bounds.size.width - (protraitWidth + PortraitViewEdgeSpace);
+//            self.portraitImageView.frame =
+//            CGRectMake(portraitImageX, PortraitImageViewTop, protraitWidth,
+//                       protraitHeight);
+            [self.nicknameLabel setTextAlignment:NSTextAlignmentRight];
+            self.nicknameLabel.hidden = !self.model.isDisplayNickname;
+            CGFloat portraitImageX = self.baseContentView.bounds.size.width - (protraitWidth + PortraitViewEdgeSpace);
+            self.portraitImageView.frame =
+            CGRectMake(portraitImageX, PortraitImageViewTop, protraitWidth,
+                       protraitHeight);
+            CGFloat nickNameX = portraitImageX - HeadAndContentSpacing - DefaultMessageContentViewWidth;
+            if (self.showPortrait) {
+                self.nicknameLabel.frame =
+                CGRectMake(nickNameX, PortraitImageViewTop, DefaultMessageContentViewWidth, NameHeight);
+            } else {
+                self.nicknameLabel.frame =
+                CGRectMake(nickNameX, PortraitImageViewTop, DefaultMessageContentViewWidth, NameHeight);
+            }
+        }
+        self.messageContentView.contentSize = CGSizeMake(DefaultMessageContentViewWidth,self.baseContentView.bounds.size.height - ContentViewBottom);
     }
     [self updateStatusContentView:self.model];
 }
@@ -545,14 +569,14 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 
 - (void)messageDestructing {
     NSNumber *whisperMsgDuration =
-        [[RCCoreClient sharedCoreClient] getDestructMessageRemainDuration:self.model.messageUId];
+    [[RCCoreClient sharedCoreClient] getDestructMessageRemainDuration:self.model.messageUId];
     if (whisperMsgDuration == nil) {
         [self.destructBtn setTitle:@"" forState:UIControlStateNormal];
         [self.destructBtn setImage:RCResourceImage(@"fire_identify") forState:UIControlStateNormal];
         self.destructBtn.backgroundColor = [UIColor clearColor];
     } else {
         NSDecimalNumber *subTime =
-            [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%@", whisperMsgDuration]];
+        [NSDecimalNumber decimalNumberWithString:[NSString stringWithFormat:@"%@", whisperMsgDuration]];
         NSDecimalNumber *divTime = [NSDecimalNumber decimalNumberWithString:@"1"];
         NSDecimalNumberHandler *handel = [NSDecimalNumberHandler decimalNumberHandlerWithRoundingMode:NSRoundBankers
                                                                                                 scale:0
@@ -629,7 +653,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
             self.receiptStatusLabel.hidden = NO;
             self.receiptStatusLabel.userInteractionEnabled = YES;
             self.receiptStatusLabel.text = [NSString
-                stringWithFormat:RCLocalizedString(@"readNum"), notifyModel.progress];
+                                            stringWithFormat:RCLocalizedString(@"readNum"), notifyModel.progress];
             [self updateStatusContentView:self.model];
         }
     }
@@ -680,13 +704,13 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
         self.receiptStatusLabel.hidden = NO;
         self.receiptStatusLabel.userInteractionEnabled = YES;
         self.receiptStatusLabel.text = [NSString
-            stringWithFormat:RCLocalizedString(@"readNum"), self.model.readReceiptCount];
+                                        stringWithFormat:RCLocalizedString(@"readNum"), self.model.readReceiptCount];
     } else {
         self.receiptStatusLabel.hidden = YES;
         self.receiptStatusLabel.userInteractionEnabled = NO;
         self.receiptStatusLabel.text = nil;
     }
-
+    
     if (self.model.messageDirection == MessageDirection_SEND && self.model.sentStatus == SentStatus_SENT) {
         if (self.model.isCanSendReadReceipt) {
             self.receiptView.hidden = NO;
@@ -725,7 +749,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
                 [self.portraitImageView setImageURL:[NSURL URLWithString:model.content.senderUserInfo.portraitUri]];
             }
             [self.nicknameLabel setText:[RCKitUtility getDisplayName:model.content.senderUserInfo]];
-
+            
         } else {
             RCUserInfo *userInfo = [[RCUserInfoCacheManager sharedManager] getUserInfo:userId];
             model.userInfo = userInfo;
@@ -745,7 +769,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 - (void)p_setCustomerServiceInfo:(RCMessageModel *)model{
     if (model.messageDirection == MessageDirection_RECEIVE) {
         [self.portraitImageView setPlaceholderImage:RCResourceImage(@"portrait_kefu")];
-
+        
         model.userInfo = model.content.senderUserInfo;
         if (model.content.senderUserInfo != nil) {
             [self.portraitImageView setImageURL:[NSURL URLWithString:model.content.senderUserInfo.portraitUri]];
@@ -775,8 +799,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
             serviceProfile = [[RCUserInfoCacheManager sharedManager] getPublicServiceProfile:model.targetId];
         } else {
             serviceProfile =
-                [[RCPublicServiceClient sharedPublicServiceClient] getPublicServiceProfile:(RCPublicServiceType)model.conversationType
-                                                       publicServiceId:model.targetId];
+            [[RCPublicServiceClient sharedPublicServiceClient] getPublicServiceProfile:(RCPublicServiceType)model.conversationType
+                                                                       publicServiceId:model.targetId];
         }
         model.userInfo = model.content.senderUserInfo;
         if (serviceProfile) {
@@ -984,7 +1008,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
         _receiptStatusLabel.textColor = RCDYCOLOR(0x0099ff, 0x595959);
         _receiptStatusLabel.hidden = YES;
         UITapGestureRecognizer *clickReceiptCountView =
-            [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(clickReceiptCountView:)];
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(clickReceiptCountView:)];
         [_receiptStatusLabel addGestureRecognizer:clickReceiptCountView];
     }
     return _receiptStatusLabel;
@@ -1016,12 +1040,12 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     if (!_messageActivityIndicatorView) {
         if (@available(iOS 13.0, *)) {
             _messageActivityIndicatorView =
-                [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+            [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
         } else {
             _messageActivityIndicatorView =
-                [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
         }
-         _messageActivityIndicatorView.hidden = YES;
+        _messageActivityIndicatorView.hidden = YES;
     }
     return _messageActivityIndicatorView;
 }
@@ -1043,15 +1067,15 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
         _portraitImageView = [[RCloudImageView alloc] initWithPlaceholderImage:RCResourceImage(@"default_portrait_msg")];
         //点击头像
         UITapGestureRecognizer *portraitTap =
-            [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapUserPortaitEvent:)];
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapUserPortaitEvent:)];
         portraitTap.numberOfTapsRequired = 1;
         portraitTap.numberOfTouchesRequired = 1;
         [_portraitImageView addGestureRecognizer:portraitTap];
-
+        
         UILongPressGestureRecognizer *portraitLongPress =
-            [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressUserPortaitEvent:)];
+        [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressUserPortaitEvent:)];
         [_portraitImageView addGestureRecognizer:portraitLongPress];
-
+        
         _portraitImageView.userInteractionEnabled = YES;
     }
     return _portraitImageView;
@@ -1063,7 +1087,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
         _nicknameLabel.backgroundColor = [UIColor clearColor];
         [_nicknameLabel setFont:[[RCKitConfig defaultConfig].font fontOfAnnotationLevel]];
         [_nicknameLabel
-            setTextColor:[RCKitUtility generateDynamicColor:[UIColor grayColor] darkColor:HEXCOLOR(0x707070)]];
+         setTextColor:[RCKitUtility generateDynamicColor:[UIColor grayColor] darkColor:HEXCOLOR(0x707070)]];
     }
     return _nicknameLabel;
 }
@@ -1082,9 +1106,9 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
         UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressedMessageContentView:)];
         [_messageContentView addGestureRecognizer:longPress];
-
+        
         UITapGestureRecognizer *tap =
-            [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapMessageContentView)];
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapMessageContentView)];
         tap.numberOfTapsRequired = 1;
         tap.numberOfTouchesRequired = 1;
         [_messageContentView addGestureRecognizer:tap];

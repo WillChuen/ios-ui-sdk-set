@@ -262,7 +262,7 @@
 
 + (CGFloat)getMessageContentHeight:(RCMessageModel *)model{
     CGSize textMessageSize = [self getTextSize:model];
-    //背景图的最小高度
+    // 背景图的最小高度
     CGFloat messagecontentview_height = textMessageSize.height + TEXT_SPACE_TOP + TEXT_SPACE_BOTTOM;
 
     if ([model isKindOfClass:[RCCustomerServiceMessageModel class]] &&

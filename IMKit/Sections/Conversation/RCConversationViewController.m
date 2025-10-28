@@ -1212,7 +1212,9 @@ static NSString *const rcMessageBaseCellIndentifier = @"rcMessageBaseCellIndenti
     NSString *objectName = [[messageContent class] getObjectName];
     Class cellClass = self.cellMsgDict[objectName];
     if([cellClass respondsToSelector:@selector(sizeForMessageModel:withCollectionViewWidth:referenceExtraHeight:)]) {
+        // 额外的高度
         CGFloat extraHeight = [self.util referenceExtraHeight:cellClass messageModel:model];
+        // 计算大小
         CGSize size = [cellClass sizeForMessageModel:model
                              withCollectionViewWidth:collectionView.frame.size.width
                                 referenceExtraHeight:extraHeight];
@@ -1240,7 +1242,6 @@ static NSString *const rcMessageBaseCellIndentifier = @"rcMessageBaseCellIndenti
         _size.height += [self.util referenceExtraHeight:RCUnknownMessageCell.class messageModel:model];
         model.cellSize = _size;
     }
-
     return model.cellSize;
 }
 
