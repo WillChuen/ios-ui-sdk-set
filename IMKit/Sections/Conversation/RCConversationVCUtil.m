@@ -221,8 +221,13 @@ NSInteger const RCMessageCellDisplayTimeHeightForHQVoice = 36;
 //        if (model.isDisplayNickname && model.messageDirection == MessageDirection_RECEIVE) {
 //            extraHeight += NameHeight + NameAndContentSpace;
 //        }
+        //
         if (model.isDisplayNickname) {
             extraHeight += NameHeight + NameAndContentSpace;
+        }
+        //
+        if (model.messageDirection == MessageDirection_SEND) {
+            extraHeight += ReceiptStatusLabelSpacing + ReceiptStatusLabelSize;
         }
     }
     return extraHeight;

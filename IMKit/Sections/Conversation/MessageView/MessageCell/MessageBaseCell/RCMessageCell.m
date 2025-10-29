@@ -20,6 +20,7 @@
 #import <RongPublicService/RongPublicService.h>
 #import "RCIM.h"
 #import "RCMessageModel+StreamCellVM.h"
+
 // 头像
 #define PortraitImageViewTop 0
 // 气泡
@@ -102,6 +103,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     [self p_setUserInfo];
     // 布局
     [self setCellAutoLayout];
+    // 设置已读状态图标布局
+    [self p_setReadStatusImageViewLayout];
     // 设置阅后即焚
     [self messageDestructing];
     // 编辑状态
@@ -255,21 +258,25 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     [self.baseContentView addSubview:self.nicknameLabel];
     [self.baseContentView addSubview:self.messageContentView];
     [self.baseContentView addSubview:self.statusContentView];
+    [self.baseContentView addSubview:self.editStatusContentView];
+    [self.baseContentView addSubview:self.receiptStatusImageView];
     
+    // 阅后即焚视图
     [self.messageContentView addSubview:self.destructView];
-    
     [self.destructView addSubview:self.destructBtn];
     
+    // 状态视图
     [self.statusContentView addSubview:self.messageFailedStatusView];
     [self.statusContentView addSubview:self.messageActivityIndicatorView];
-    self.messageActivityIndicatorView.hidden = YES;
     [self.statusContentView addSubview:self.receiptStatusLabel];
     [self.statusContentView addSubview:self.receiptView];
     
-    [self.baseContentView addSubview:self.editStatusContentView];
+    // 编辑状态视图
     [self.editStatusContentView addSubview:self.editStatusLabel];
     [self.editStatusContentView addSubview:self.editRetryButton];
     [self.editStatusContentView addSubview:self.editCircularLoadingView];
+    
+    self.messageActivityIndicatorView.hidden = YES;
     
     [self setPortraitStyle:RCKitConfigCenter.ui.globalMessageAvatarStyle];
 }
@@ -536,6 +543,40 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
     [self updateStatusContentView:self.model];
 }
+
+/// 设置已读状态
+- (void)p_setReadStatusImageViewLayout {
+    //
+    CGFloat protraitWidth = RCKitConfigCenter.ui.globalMessagePortraitSize.width;
+    //
+    if ([RCKitUtility isRTL]) {
+        self.receiptStatusImageView.hidden = YES;
+    } else {
+        // receiver
+        if (MessageDirection_RECEIVE == self.model.messageDirection) {
+            self.receiptStatusImageView.hidden = YES;
+            CGFloat receiptStatusImageX = PortraitViewEdgeSpace + protraitWidth + HeadAndContentSpacing + ReceiptStatusLabelSpacingPadding;
+            CGFloat receiptStatusImageY = self.baseContentView.bounds.size.height - ReceiptStatusLabelSize;
+            self.receiptStatusImageView.frame = CGRectMake(receiptStatusImageX, receiptStatusImageY, ReceiptStatusLabelSize, ReceiptStatusLabelSize);
+        } else { // owner
+            self.receiptStatusImageView.hidden = NO;
+            CGFloat receiptStatusImageX = self.baseContentView.bounds.size.width - (protraitWidth + PortraitViewEdgeSpace + HeadAndContentSpacing + ReceiptStatusLabelSize + ReceiptStatusLabelSpacingPadding);
+            CGFloat receiptStatusImageY = self.baseContentView.bounds.size.height - ReceiptStatusLabelSize;
+            self.receiptStatusImageView.frame = CGRectMake(receiptStatusImageX, receiptStatusImageY, ReceiptStatusLabelSize, ReceiptStatusLabelSize);
+        }
+    }
+}
+
+/// 显示已读状态图标
+- (void)p_setReadStatus:(BOOL)isRead {
+    // 对方是否已读
+    if (isRead) {
+        self.receiptStatusImageView.image = RCResourceImage(@"message_read_status_send_and_read");
+    } else {
+        self.receiptStatusImageView.image = RCResourceImage(@"message_read_status_only_send");
+    }
+}
+
 - (void)setDestructViewLayout {
     self.destructBtn.frame = CGRectMake(0, 0, DestructBtnWidth, DestructBtnWidth);
     if (self.model.content.destructDuration > 0) {
@@ -705,10 +746,12 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
         self.receiptStatusLabel.userInteractionEnabled = YES;
         self.receiptStatusLabel.text = [NSString
                                         stringWithFormat:RCLocalizedString(@"readNum"), self.model.readReceiptCount];
+        [self p_setReadStatus:YES];
     } else {
         self.receiptStatusLabel.hidden = YES;
         self.receiptStatusLabel.userInteractionEnabled = NO;
         self.receiptStatusLabel.text = nil;
+        [self p_setReadStatus:NO];
     }
     
     if (self.model.messageDirection == MessageDirection_SEND && self.model.sentStatus == SentStatus_SENT) {
@@ -1012,6 +1055,17 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
         [_receiptStatusLabel addGestureRecognizer:clickReceiptCountView];
     }
     return _receiptStatusLabel;
+}
+
+- (UIImageView *)receiptStatusImageView {
+    
+    if (!_receiptStatusImageView) {
+        _receiptStatusImageView = [[UIImageView alloc] init];
+        _receiptStatusImageView.image = RCResourceImage(@"message_read_status_only_send");
+        _receiptStatusImageView.hidden = YES;
+        _receiptStatusImageView.backgroundColor = [UIColor clearColor];
+    }
+    return _receiptStatusImageView;
 }
 
 - (UIView *)destructView {

@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// - Since: 5.4.0
 @interface RCBaseCollectionViewCell : UICollectionViewCell
 
+- (UIColor *)randomColor;
 @end
 
 NS_ASSUME_NONNULL_END

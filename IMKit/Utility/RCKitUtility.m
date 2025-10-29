@@ -840,14 +840,14 @@
 }
 
 + (BOOL)isRTL {
-    if (RCKitConfigCenter.ui.layoutDirection == RCKitInterfaceLayoutDirectionUnspecified){
-        UIWindow *window = [self getKeyWindow];
-        UISemanticContentAttribute attr = window.semanticContentAttribute;
-        UIUserInterfaceLayoutDirection _layoutDirection = [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:attr];
-        return _layoutDirection == UIUserInterfaceLayoutDirectionRightToLeft;
-    } else if (RCKitConfigCenter.ui.layoutDirection == RCKitInterfaceLayoutDirectionRightToLeft){
-        return YES;
-    }
+//    if (RCKitConfigCenter.ui.layoutDirection == RCKitInterfaceLayoutDirectionUnspecified){
+//        UIWindow *window = [self getKeyWindow];
+//        UISemanticContentAttribute attr = window.semanticContentAttribute;
+//        UIUserInterfaceLayoutDirection _layoutDirection = [UIView userInterfaceLayoutDirectionForSemanticContentAttribute:attr];
+//        return _layoutDirection == UIUserInterfaceLayoutDirectionRightToLeft;
+//    } else if (RCKitConfigCenter.ui.layoutDirection == RCKitInterfaceLayoutDirectionRightToLeft){
+//        return YES;
+//    }
     return NO;
 }
 

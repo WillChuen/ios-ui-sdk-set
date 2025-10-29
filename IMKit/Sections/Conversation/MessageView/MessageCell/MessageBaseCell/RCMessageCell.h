@@ -14,11 +14,13 @@
 #import "RCBaseButton.h"
 #import "RCBaseImageView.h"
 
-
-#define HeadAndContentSpacing 8
-#define PortraitViewEdgeSpace 12//头像与屏幕边缘距离
-#define NameAndContentSpace 8
-#define NameHeight 14
+#define HeadAndContentSpacing 8  // 头像与内容的间距
+#define PortraitViewEdgeSpace 12 // 头像与屏幕边缘距离
+#define NameAndContentSpace 8   // 昵称与内容的间距
+#define NameHeight 14 // 昵称高度
+#define ReceiptStatusLabelSize 14 // 已读标签的高度
+#define ReceiptStatusLabelSpacing 4 // 已读标签与内容的间距
+#define ReceiptStatusLabelSpacingPadding 4 // 已读标签与内容的间距补全
 
 @class RCloudImageView;
 @class RCCircularLoadingView;
@@ -95,9 +97,18 @@
 
 /*!
  消息阅读状态的 Label
-
+ 
+ 显示已读数
  */
 @property (nonatomic, strong) UILabel *receiptStatusLabel;
+
+/*!
+ 消息已读状态的 Image View
+ 已发送未读一个 勾
+ 已读两个 勾
+ 显示已读数
+ */
+@property (nonatomic, strong) UIImageView * receiptStatusImageView;
 
 /*!
  是否显示头像

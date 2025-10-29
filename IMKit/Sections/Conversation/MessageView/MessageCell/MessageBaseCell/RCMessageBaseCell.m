@@ -95,6 +95,7 @@ NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificatio
                                                object:nil];
     self.model = nil;
     self.baseContentView = [[UIView alloc] initWithFrame:CGRectZero];
+    self.baseContentView.backgroundColor = [UIColor redColor];
     self.isDisplayReadStatus = NO;
     [self.contentView addSubview:_baseContentView];
 }
