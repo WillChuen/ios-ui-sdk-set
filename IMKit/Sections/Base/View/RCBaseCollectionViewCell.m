@@ -13,7 +13,6 @@
     self = [super initWithFrame:frame];
     if (self) {
         [self updateRTLUI];
-        [self doTester];
     }
     return self;
 }

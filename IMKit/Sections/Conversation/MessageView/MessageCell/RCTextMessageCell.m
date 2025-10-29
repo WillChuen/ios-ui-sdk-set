@@ -16,6 +16,7 @@
 #import "RCCoreClient+Destructing.h"
 #import "RCAttributedLabel+Edit.h"
 #import "RCMessageCell+Edit.h"
+
 #define TEXT_SPACE_LEFT 12
 #define TEXT_SPACE_RIGHT 12
 #define TEXT_SPACE_TOP 9.5
