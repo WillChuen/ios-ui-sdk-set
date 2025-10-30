@@ -29,6 +29,16 @@
     return bubbleImage;
 }
 
++ (UIImage *)getSendBubbleImage {
+    UIImage *bubbleImage = RCResourceImage(@"chat_to_bg_normal");
+    return [self getResizableImage:bubbleImage];
+}
+
++ (UIImage *)getReceiveBubbleImage {
+    UIImage *bubbleImage = RCResourceImage(@"chat_from_bg_normal");
+    return [self getResizableImage:bubbleImage];
+}
+
 + (UIImage *)translationTextBackgroundImage {
     UIImage *bubbleImage = RCResourceImage(@"translation_from_bg_normal");
     bubbleImage = [self getResizableImage:bubbleImage];
