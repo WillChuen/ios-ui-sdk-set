@@ -6,15 +6,69 @@
 //
 
 #import "EasyFunReferencedLinkView.h"
+#import "RCloudImageView.h"
+#import "RCKitUtility.h"
+#import "RCBaseLabel.h"
+#import "RCKitConfig.h"
+
+#define EasyFunReferencedLinkImageWidth 12
+#define EasyFunReferencedLinkImageHeight 12
 
 @implementation EasyFunReferencedLinkView
 
-/*
-// Only override drawRect: if you perform custom drawing.
-// An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
-    // Drawing code
+///
+- (instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self) {
+        [self setUpUI];
+    }
+    return self;
 }
-*/
+
+/// 设置UI
+- (void)setUpUI {
+    
+//    [self addSubview:self.imageView];
+//    [self addSubview:self.textLabel];
+//    
+//    self.imageView.translatesAutoresizingMaskIntoConstraints = NO;
+//    self.textLabel.translatesAutoresizingMaskIntoConstraints = NO;
+//    
+//    [NSLayoutConstraint activateConstraints:@[
+//        //
+//        [self.imageView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+//        [self.imageView.topAnchor constraintEqualToAnchor:self.topAnchor],
+//        [self.imageView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+//        [self.imageView.widthAnchor constraintEqualToConstant:EasyFunReferencedLinkImageWidth],
+//        [self.imageView.heightAnchor constraintEqualToConstant:EasyFunReferencedLinkImageHeight],
+//        //
+//        [self.textLabel.leadingAnchor constraintEqualToAnchor:self.imageView.trailingAnchor constant:4],
+//        [self.textLabel.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
+//        [self.textLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor]
+//    ]];
+}
+
+/// 图片引用视图
+- (RCloudImageView *)imageView {
+    if (!_imageView) {
+        _imageView = [[RCloudImageView alloc] init];
+        _imageView.contentMode = UIViewContentModeScaleAspectFill;
+        _imageView.layer.cornerRadius = 2;
+        _imageView.layer.masksToBounds = YES;
+        _imageView.backgroundColor = [UIColor lightGrayColor];
+    }
+    return _imageView;
+}
+
+///
+- (RCBaseLabel *)textLabel {
+    if (!_textLabel) {
+        _textLabel = [[RCBaseLabel alloc] initWithFrame:CGRectZero];
+        _textLabel.numberOfLines = 1;
+        [_textLabel setLineBreakMode:NSLineBreakByTruncatingTail];
+        _textLabel.font = [[RCKitConfig defaultConfig].font fontOfFourthLevel];
+    }
+    return _textLabel;
+}
 
 @end

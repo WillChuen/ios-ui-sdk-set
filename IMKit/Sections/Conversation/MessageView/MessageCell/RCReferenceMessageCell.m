@@ -160,9 +160,6 @@
                bubble_bottom_space + refer_and_text_space);
     //
     self.messageContentView.contentSize = CGSizeMake(messageContentSize.width, messageContentSize.height);
-    //
-    self.messageContentView.backgroundColor = [UIColor blueColor];
-    self.bubbleBackgroundView.backgroundColor = [UIColor yellowColor];
 }
 
 ///
@@ -179,18 +176,18 @@
 }
 
 + (CGSize)contentInfoSizeWithContent:(RCMessageModel *)model maxWidth:(CGFloat)maxWidth {
-    RCReferenceMessage *refenceMessage = (RCReferenceMessage *)model.content;
-    RCMessageContent *content = refenceMessage.referMsg;
-    CGFloat height = 17;//名字显示高度
-    BOOL isDeletedOrRecalled = (refenceMessage.referMsgStatus == RCReferenceMessageStatusRecalled
-                                || refenceMessage.referMsgStatus == RCReferenceMessageStatusDeleted);
-    if ([content isKindOfClass:[RCImageMessage class]] && !isDeletedOrRecalled) {
-        RCImageMessage *msg = (RCImageMessage *)content;
-        height = [RCMessageCellTool getThumbnailImageSize:msg.thumbnailImage].height + height + name_and_image_view_space;
-    } else {
-        height = 34;//两行文本高度
-    }
-    return CGSizeMake(maxWidth, height);
+//    RCReferenceMessage *refenceMessage = (RCReferenceMessage *)model.content;
+//    RCMessageContent *content = refenceMessage.referMsg;
+//    CGFloat height = 17;//名字显示高度
+//    BOOL isDeletedOrRecalled = (refenceMessage.referMsgStatus == RCReferenceMessageStatusRecalled
+//                                || refenceMessage.referMsgStatus == RCReferenceMessageStatusDeleted);
+//    if ([content isKindOfClass:[RCImageMessage class]] && !isDeletedOrRecalled) {
+//        RCImageMessage *msg = (RCImageMessage *)content;
+//        height = [RCMessageCellTool getThumbnailImageSize:msg.thumbnailImage].height + height + name_and_image_view_space;
+//    } else {
+//        height = 34;//两行文本高度
+//    }
+    return CGSizeMake(maxWidth, 32);
 }
 
 + (CGSize)getTextLabelSize:(NSString *)message maxWidth:(CGFloat)maxWidth font:(UIFont *)font {
@@ -201,6 +198,11 @@
     } else {
         return CGSizeZero;
     }
+}
+
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    [self.referencedContentView prepareForReuse];
 }
 
 #pragma mark - Getter
@@ -214,7 +216,6 @@
         [_contentLabel setLineBreakMode:NSLineBreakByWordWrapping];
         _contentLabel.delegate = self;
         _contentLabel.userInteractionEnabled = YES;
-        _contentLabel.backgroundColor = [UIColor greenColor];
     }
     return _contentLabel;
 }
@@ -223,6 +224,8 @@
     if (!_referencedContentView) {
         _referencedContentView = [[EasyFunReferencedContentView alloc] init];
         _referencedContentView.delegate = self;
+        _referencedContentView.layer.cornerRadius = 6;
+        _referencedContentView.layer.masksToBounds = YES;
     }
     return _referencedContentView;
 }

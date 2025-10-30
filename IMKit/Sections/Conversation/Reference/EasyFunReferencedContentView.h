@@ -12,14 +12,11 @@
 #import "RCAttributedLabel.h"
 
 /// 被引用消息内容显示的 View
-
 @class EasyFunReferencedTextView;
 @class EasyFunReferencedImageView;
 @class EasyFunReferencedSightView;
 @class EasyFunReferencedLinkView;
 @class EasyFunReferencedGameView;
-
-#define easy_fun_name_and_image_view_space 5
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,28 +32,31 @@ NS_ASSUME_NONNULL_BEGIN
 /// 被引用消息内容显示的 View
 @interface EasyFunReferencedContentView : UIView
 
-/// 全部内容
-@property (nonatomic, strong) UIStackView * stackView;
-
-/// 被引用消息发送者名称
-@property (nonatomic, strong) RCBaseLabel *nameLabel;
-
 /// 代理
 @property (nonatomic, weak) id<EasyFunReferencedContentViewDelegate> delegate;
 
+/// 背景内容
+@property (nonatomic, strong, nullable) UIView * backgroundContentView;
+/// 全部内容
+@property (nonatomic, strong, nullable) UIView * contentView;
+/// 被引用消息发送者名称
+@property (nonatomic, strong, nullable) RCBaseLabel *nameLabel;
 /// 显示文本引用的视图
-@property (nonatomic, strong) EasyFunReferencedTextView * textView;
+@property (nonatomic, strong, nullable) EasyFunReferencedTextView * textView;
 /// 显示图片引用的视图
-@property (nonatomic, strong) EasyFunReferencedImageView * imageView;
+@property (nonatomic, strong, nullable) EasyFunReferencedImageView * imageView;
 /// 显示小视频引用的视图
-@property (nonatomic, strong) EasyFunReferencedSightView * sightView;
+@property (nonatomic, strong, nullable) EasyFunReferencedSightView * sightView;
 /// 显示链接引用的视图
-@property (nonatomic, strong) EasyFunReferencedLinkView * linkView;
+@property (nonatomic, strong, nullable) EasyFunReferencedLinkView * linkView;
 /// 显示游戏引用的视图
-@property (nonatomic, strong) EasyFunReferencedGameView * gameView;
+@property (nonatomic, strong, nullable) EasyFunReferencedGameView * gameView;
 
 /// 设置被引用的消息内容和大小
 - (void)setMessage:(RCMessageModel *)message contentSize:(CGSize)contentSize;
+
+/// 在Cell重用的时候调用
+- (void)prepareForReuse;
 
 @end
 

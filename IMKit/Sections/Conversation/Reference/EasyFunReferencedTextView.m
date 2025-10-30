@@ -9,6 +9,7 @@
 #import "RCKitUtility.h"
 #import "RCBaseLabel.h"
 #import "RCKitConfig.h"
+#import <Masonry/Masonry.h>
 
 @implementation EasyFunReferencedTextView
 
@@ -24,13 +25,17 @@
 ///
 - (void)setUpUI {
     [self addSubview:self.textLabel];
-    self.textLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [NSLayoutConstraint activateConstraints:@[
-        [self.textLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-        [self.textLabel.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
-        [self.textLabel.topAnchor constraintEqualToAnchor:self.topAnchor],
-        [self.textLabel.bottomAnchor constraintEqualToAnchor:self.bottomAnchor]
-    ]];
+    [self.textLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(self.mas_leading);
+        make.trailing.mas_equalTo(self.mas_trailing);
+        make.top.mas_equalTo(self.mas_top);
+        make.bottom.mas_equalTo(self.mas_bottom);
+    }];
+}
+
+///
+- (void)updateLableText:(NSString *)contentText {
+    self.textLabel.text = contentText;
 }
 
 ///
@@ -38,7 +43,7 @@
     if (!_textLabel) {
         _textLabel = [[RCBaseLabel alloc] initWithFrame:CGRectZero];
         _textLabel.numberOfLines = 1;
-        [_textLabel setLineBreakMode:NSLineBreakByTruncatingMiddle];
+        [_textLabel setLineBreakMode:NSLineBreakByTruncatingTail];
         _textLabel.font = [[RCKitConfig defaultConfig].font fontOfFourthLevel];
     }
     return _textLabel;

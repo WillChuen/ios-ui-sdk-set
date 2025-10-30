@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EasyFunReferencedTextView : UIView
 /// 被引用消息内容文本 label
 @property (nonatomic, strong) RCBaseLabel *textLabel;
+/// 直接更新文本
+- (void)updateLableText:(NSString *)contentText;
 
 @end
 
