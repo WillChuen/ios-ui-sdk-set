@@ -38,7 +38,6 @@
     if (self = [super init]) {
         self.backgroundColor = [RCKitUtility generateDynamicColor:HEXCOLOR(0xffffff) darkColor:HEXCOLOR(0x1c1c1c)];
         self.inView = view;
-        self.isReferencingImage = NO;
         self.referModel = model;
         [self addNotification];
         [self setContentInfo];
@@ -63,27 +62,18 @@
 - (void)setupSubviews {
     //
     CGFloat referencingViewHeight = referencingView_height;
-    self.imageView.hidden = YES;
-    if ([self.referModel.content isKindOfClass:[RCRichContentMessage class]]
-        || [self.referModel.content isKindOfClass:[RCImageMessage class]]
-        || [self.referModel.content isKindOfClass:[RCSightMessage class]]) { // 引用的是图文消息、 图片消息、视频消息
-        self.textLabel.hidden = YES;
-        self.imageView.hidden = NO;
-        self.isReferencingImage = YES;
-        referencingViewHeight = referencingView_image_height;
-    }
     CGFloat referencingView_w = self.inView.frame.size.width - 2 * referencingView_x;
     self.frame = CGRectMake(referencingView_x, self.inView.frame.size.height, referencingView_w, referencingViewHeight);
     
     [self addSubview:self.dismissButton];
     [self addSubview:self.nameLabel];
     [self addSubview:self.textLabel];
-    [self addSubview:self.imageView];
+//    [self addSubview:self.imageView];
     
     self.dismissButton.translatesAutoresizingMaskIntoConstraints = NO;
     self.nameLabel.translatesAutoresizingMaskIntoConstraints = NO;
     self.textLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    self.imageView.translatesAutoresizingMaskIntoConstraints = NO;
+//    self.imageView.translatesAutoresizingMaskIntoConstraints = NO;
     
     CGFloat nameLabelMaxWidth = 100;
     
@@ -102,10 +92,10 @@
             [self.nameLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
             [self.nameLabel.widthAnchor constraintLessThanOrEqualToConstant:nameLabelMaxWidth],
             
-            [self.imageView.leadingAnchor constraintEqualToAnchor:self.nameLabel.trailingAnchor constant:4],
-            [self.imageView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-            [self.imageView.widthAnchor constraintEqualToConstant:referencingImageView_width],
-            [self.imageView.heightAnchor constraintEqualToConstant:referencingImageView_height]
+//            [self.imageView.leadingAnchor constraintEqualToAnchor:self.nameLabel.trailingAnchor constant:4],
+//            [self.imageView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+//            [self.imageView.widthAnchor constraintEqualToConstant:referencingImageView_width],
+//            [self.imageView.heightAnchor constraintEqualToConstant:referencingImageView_height]
         ]];
         
         [self.textLabel setContentCompressionResistancePriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisHorizontal];
@@ -126,10 +116,10 @@
             [self.textLabel.trailingAnchor constraintLessThanOrEqualToAnchor:self.dismissButton.leadingAnchor constant:-textlabel_and_dismiss_space],
             [self.textLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
             
-            [self.imageView.leadingAnchor constraintEqualToAnchor:self.nameLabel.trailingAnchor constant:4],
-            [self.imageView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-            [self.imageView.widthAnchor constraintEqualToConstant:referencingImageView_width],
-            [self.imageView.heightAnchor constraintEqualToConstant:referencingImageView_height]
+//            [self.imageView.leadingAnchor constraintEqualToAnchor:self.nameLabel.trailingAnchor constant:4],
+//            [self.imageView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
+//            [self.imageView.widthAnchor constraintEqualToConstant:referencingImageView_width],
+//            [self.imageView.heightAnchor constraintEqualToConstant:referencingImageView_height]
         ]];
         
         [self.textLabel setContentCompressionResistancePriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisHorizontal];
@@ -148,12 +138,12 @@
                        stringWithFormat:@"%@ %@", RCLocalizedString(@"RC:FileMsg"), msg.name];
     } else if ([self.referModel.content isKindOfClass:[RCRichContentMessage class]]) { // 引用的是图文消息
         NSURL *imageURL = [NSURL URLWithString:((RCRichContentMessage *)self.referModel.content).imageURL];
-        [self.imageView setImageURL:imageURL];
+//        [self.imageView setImageURL:imageURL];
     } else if ([self.referModel.content isKindOfClass:[RCImageMessage class]]) { // 引用的是图片消息
-        self.imageView.image = ((RCImageMessage *)self.referModel.content).thumbnailImage;
+//        self.imageView.image = ((RCImageMessage *)self.referModel.content).thumbnailImage;
     } else if ([self.referModel.content isKindOfClass:[RCSightMessage class]]) { // 引用的是视频消息
-        self.imageView.image = ((RCSightMessage *)self.referModel.content).thumbnailImage;
-        self.sightView.hidden = NO;
+//        self.imageView.image = ((RCSightMessage *)self.referModel.content).thumbnailImage;
+//        self.sightView.hidden = NO;
     } else if ([self.referModel.content isKindOfClass:[RCTextMessage class]] ||
                [self.referModel.content isKindOfClass:[RCReferenceMessage class]]) { // 引用的是文本消息或者引用消息
         messageInfo = [RCKitUtility formatMessage:self.referModel.content
@@ -303,33 +293,33 @@
     return _textLabel;
 }
 
-- (RCloudImageView *)imageView {
-    if (!_imageView) {
-        _imageView = [[RCloudImageView alloc] init];
-        _imageView.backgroundColor = [UIColor clearColor];
-        _imageView.contentMode = UIViewContentModeScaleAspectFill;
-        _imageView.layer.cornerRadius = 2;
-        _imageView.layer.masksToBounds = YES;
-        [_imageView addSubview:self.sightView];
-        
-        self.sightView.translatesAutoresizingMaskIntoConstraints = NO;
-        [NSLayoutConstraint activateConstraints:@[
-            [self.sightView.centerYAnchor constraintEqualToAnchor:_imageView.centerYAnchor],
-            [self.sightView.centerXAnchor constraintEqualToAnchor:_imageView.centerXAnchor],
-            [self.sightView.widthAnchor constraintEqualToConstant:sightView_width],
-            [self.sightView.heightAnchor constraintEqualToConstant:sightView_height]
-        ]];
-    }
-    return _imageView;
-}
-
-- (UIImageView *)sightView {
-    if (!_sightView) {
-        _sightView = [[UIImageView alloc] initWithImage:RCResourceImage(@"chat_sight_message_play_icon")];
-        _sightView.contentMode = UIViewContentModeScaleAspectFit;
-        _sightView.hidden = YES;
-    }
-    return _sightView;
-}
+//- (RCloudImageView *)imageView {
+//    if (!_imageView) {
+//        _imageView = [[RCloudImageView alloc] init];
+//        _imageView.backgroundColor = [UIColor clearColor];
+//        _imageView.contentMode = UIViewContentModeScaleAspectFill;
+//        _imageView.layer.cornerRadius = 2;
+//        _imageView.layer.masksToBounds = YES;
+//        [_imageView addSubview:self.sightView];
+//        
+//        self.sightView.translatesAutoresizingMaskIntoConstraints = NO;
+//        [NSLayoutConstraint activateConstraints:@[
+//            [self.sightView.centerYAnchor constraintEqualToAnchor:_imageView.centerYAnchor],
+//            [self.sightView.centerXAnchor constraintEqualToAnchor:_imageView.centerXAnchor],
+//            [self.sightView.widthAnchor constraintEqualToConstant:sightView_width],
+//            [self.sightView.heightAnchor constraintEqualToConstant:sightView_height]
+//        ]];
+//    }
+//    return _imageView;
+//}
+//
+//- (UIImageView *)sightView {
+//    if (!_sightView) {
+//        _sightView = [[UIImageView alloc] initWithImage:RCResourceImage(@"chat_sight_message_play_icon")];
+//        _sightView.contentMode = UIViewContentModeScaleAspectFit;
+//        _sightView.hidden = YES;
+//    }
+//    return _sightView;
+//}
 
 @end

@@ -138,6 +138,9 @@
 */
 - (void)showBubbleBackgroundView:(BOOL)show;
 
+/// 更新气泡背景视图的布局
+- (void)updateBubbleBackgroundViewFrame;
+
 /*!
 阅后即焚的回调
 

@@ -11,13 +11,17 @@
 #import "RCBaseImageView.h"
 #import "RCBaseLabel.h"
 #import "RCAttributedLabel.h"
-#define name_and_image_view_space 5
-@protocol RCReferencedContentViewDelegate <NSObject>
-@optional
 
+#define name_and_image_view_space 5
+
+@protocol RCReferencedContentViewDelegate <NSObject>
+
+@optional
 - (void)didTapReferencedContentView:(RCMessageModel *)message;
 
 @end
+
+///
 @interface RCReferencedContentView : UIView
 /// 被引用消息显示左边线
 @property (nonatomic, strong) UIView *leftLimitLine;
@@ -34,4 +38,5 @@
 @property (nonatomic, weak) id<RCReferencedContentViewDelegate> delegate;
 
 - (void)setMessage:(RCMessageModel *)message contentSize:(CGSize)contentSize;
+
 @end

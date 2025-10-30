@@ -14,18 +14,24 @@
 #import "RCKitConfig.h"
 #import "RCIM.h"
 #import "RCMessageEditUtil.h"
+
 #define leftLine_width 2
 #define name_and_leftLine_space 4
 #define name_height 17
+
 @interface RCReferencedContentView ()
+
 @property (nonatomic, strong) RCMessageModel *referModel;
 @property (nonatomic, assign) CGSize contentSize;
 @property (nonatomic, strong) UIView *contentView;
 @property (nonatomic, strong) RCMessageContent *referedContent;
 @property (nonatomic, copy) NSString *referedSenderId;
 @property (nonatomic, assign) RCReferenceMessageStatus referMsgStatus;
+
 @end
+
 @implementation RCReferencedContentView
+
 - (instancetype)init {
     if (self = [super init]) {
         self.frame = CGRectZero;
@@ -49,6 +55,7 @@
 
 #pragma mark - Private Methods
 - (BOOL)fetchReferedContentInfo {
+    
     if ([self.referModel.content isKindOfClass:[RCReferenceMessage class]]) {
         RCReferenceMessage *content = (RCReferenceMessage *)self.referModel.content;
         self.referedContent = content.referMsg;
@@ -65,6 +72,7 @@
 }
 
 - (void)setContentInfo {
+    
     if (self.referMsgStatus == RCReferenceMessageStatusDeleted) {
         self.textLabel.text = RCLocalizedString(@"ReferencedMessageDeleted");
     }else if (self.referMsgStatus == RCReferenceMessageStatusRecalled) {

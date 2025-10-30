@@ -346,12 +346,16 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
                     strongSelf.messageActivityIndicatorView.frame = strongSelf.messageFailedStatusView.frame;
                 }
             }
-            
-            if (strongSelf.showBubbleBackgroundView) {
-                strongSelf.bubbleBackgroundView.frame = strongSelf.messageContentView.bounds;
-            }
+            [strongSelf updateBubbleBackgroundViewFrame];
         }
     }];
+}
+
+/// 更新气泡的Frame
+- (void)updateBubbleBackgroundViewFrame {
+    if (self.showBubbleBackgroundView) {
+        self.bubbleBackgroundView.frame = self.messageContentView.bounds;
+    }
 }
 
 - (void)registerSizeUpdateLayoutIfNeed{

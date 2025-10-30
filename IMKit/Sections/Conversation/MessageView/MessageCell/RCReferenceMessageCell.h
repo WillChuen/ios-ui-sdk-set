@@ -8,12 +8,13 @@
 
 #import "RongIMKit.h"
 #import "RCAttributedLabel.h"
-#import "RCReferencedContentView.h"
+#import "EasyFunReferencedContentView.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface RCReferenceMessageCell : RCMessageCell
 /// 引用内容展示的容器
-@property (nonatomic, strong) RCReferencedContentView *referencedContentView;
+@property (nonatomic, strong) EasyFunReferencedContentView *referencedContentView;
 
 /// 文本内容的Label
 @property (nonatomic, strong) RCAttributedLabel *contentLabel;

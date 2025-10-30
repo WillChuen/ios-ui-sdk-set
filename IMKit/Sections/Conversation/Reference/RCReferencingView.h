@@ -35,13 +35,13 @@
 @property (nonatomic, strong) RCBaseLabel *textLabel;
 
 /// 当被引用的是图片消息时显示的 imageView
-@property (nonatomic, strong) RCloudImageView *imageView;
+//@property (nonatomic, strong) RCloudImageView *imageView;
 
 /// 当被引用的是小视频消息时显示的 sightView
-@property (nonatomic, strong) UIImageView * sightView;
+//@property (nonatomic, strong) UIImageView * sightView;
 
 /// 当前是否正在显示图片
-@property (nonatomic, assign) BOOL isReferencingImage;
+//@property (nonatomic, assign) BOOL isReferencingImage;
 
 /// 被引用消息体
 @property (nonatomic, strong) RCMessageModel *referModel;

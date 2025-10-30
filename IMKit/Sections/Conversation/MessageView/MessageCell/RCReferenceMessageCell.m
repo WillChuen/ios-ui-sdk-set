@@ -19,7 +19,8 @@
 #define refer_and_text_space 6
 #define content_space_left 12
 #define content_space_right 12
-@interface RCReferenceMessageCell () <RCAttributedLabelDelegate, RCReferencedContentViewDelegate>
+
+@interface RCReferenceMessageCell () <RCAttributedLabelDelegate, EasyFunReferencedContentViewDelegate>
 @end
 @implementation RCReferenceMessageCell
 
@@ -45,20 +46,29 @@
 + (CGSize)sizeForMessageModel:(RCMessageModel *)model
       withCollectionViewWidth:(CGFloat)collectionViewWidth
          referenceExtraHeight:(CGFloat)extraHeight {
+    // 最大宽度
     float maxWidth = [RCMessageCellTool getMessageContentViewMaxWidth];
+    // 引用内容[文本内容]
     RCReferenceMessage *refenceMessage = (RCReferenceMessage *)model.content;
+    // 获取的是文本显示内容
     NSString *displayText = [RCMessageEditUtil displayTextForOriginalText:refenceMessage.content isEdited:model.hasChanged];
+    // 计算文本大小
     CGSize textLabelSize = [[self class] getTextLabelSize:displayText
                                                  maxWidth:maxWidth - 33
                                                      font:[[RCKitConfig defaultConfig].font fontOfSecondLevel]];
+    // 计算引用内容尺寸
     CGSize contentSize = [[self class] contentInfoSizeWithContent:model maxWidth:maxWidth - 33];
+    // 计算消息内容尺寸
     CGSize messageContentSize =
-        CGSizeMake(textLabelSize.width, textLabelSize.height + contentSize.height + bubble_top_space +
-                                            bubble_bottom_space + refer_and_text_space);
+    CGSizeMake(textLabelSize.width, textLabelSize.height + contentSize.height + bubble_top_space +
+               bubble_bottom_space + refer_and_text_space);
+    // 计算最终高度
     CGFloat __messagecontentview_height = messageContentSize.height;
+    // 附加高度
     __messagecontentview_height += extraHeight;
+    // 编辑状态栏高度
     __messagecontentview_height += [self edit_editStatusBarHeightWithModel:model];
-    
+    // 返回最终大小
     return CGSizeMake(collectionViewWidth, __messagecontentview_height);
 }
 
@@ -69,7 +79,7 @@
 
 #pragma mark - RCReferencedContentViewDelegate
 
-- (void)didTapReferencedContentView:(RCMessageModel *)message {
+- (void)easyFunDidTapReferencedContentView:(RCMessageModel *)message {
     RCReferenceMessage *refer = (RCReferenceMessage *)message.content;
     if ([refer.referMsg isKindOfClass:[RCFileMessage class]] ||
         [refer.referMsg isKindOfClass:[RCRichContentMessage class]] ||
@@ -115,35 +125,53 @@
 #pragma mark - Private Methods
 - (void)initialize {
     [self showBubbleBackgroundView:YES];
-
     [self.messageContentView addSubview:self.referencedContentView];
     [self.messageContentView addSubview:self.contentLabel];
 }
 
 - (void)setAutoLayout {
+    // 文本颜色
     if(self.model.messageDirection == MessageDirection_RECEIVE){
         [self.contentLabel setTextColor:[RCKitUtility generateDynamicColor:HEXCOLOR(0x262626) darkColor:RCMASKCOLOR(0xffffff, 0.8)]];
     }else{
         [self.contentLabel setTextColor:RCDYCOLOR(0x262626, 0x040A0F)];
     }
+    // 回复消息[文本的内容]
     RCReferenceMessage *refenceMessage = (RCReferenceMessage *)self.model.content;
     if (refenceMessage) {
         [self.contentLabel edit_setTextWithEditedState:refenceMessage.content isEdited:self.model.hasChanged];
     }
+    // 计算文本大小
     float maxWidth = [RCMessageCellTool getMessageContentViewMaxWidth];
     CGSize textLabelSize = [[self class] getTextLabelSize:self.contentLabel.text
                                                  maxWidth:maxWidth - 33
                                                      font:[[RCKitConfig defaultConfig].font fontOfSecondLevel]];
-    CGSize contentSize = [[self class] contentInfoSizeWithContent:self.model maxWidth:maxWidth - 33];
-    CGSize messageContentSize =
-        CGSizeMake(textLabelSize.width + 16 + 10, textLabelSize.height + contentSize.height + bubble_top_space +
-                                                      bubble_bottom_space + refer_and_text_space);
-    [self.referencedContentView setMessage:self.model contentSize:contentSize];
-    
-    self.referencedContentView.frame = CGRectMake(content_space_left, 10, contentSize.width, contentSize.height);
-    self.contentLabel.frame = CGRectMake(content_space_left, CGRectGetMaxY(self.referencedContentView.frame) + refer_and_text_space,
+    self.contentLabel.frame = CGRectMake(content_space_left, bubble_top_space,
                                          textLabelSize.width, textLabelSize.height);
+    // 引用内容尺寸
+    CGSize contentSize = [[self class] contentInfoSizeWithContent:self.model maxWidth:maxWidth - 33];
+    // 设置引用内容
+    [self.referencedContentView setMessage:self.model contentSize:contentSize];
+    // 引用内容位置
+    self.referencedContentView.frame = CGRectMake(content_space_left, CGRectGetMaxY(self.contentLabel.frame) + bubble_bottom_space + refer_and_text_space, contentSize.width, contentSize.height);
+    // 消息内容尺寸
+    CGSize messageContentSize =
+    CGSizeMake(textLabelSize.width + 16 + 10, textLabelSize.height + contentSize.height + bubble_top_space +
+               bubble_bottom_space + refer_and_text_space);
+    //
     self.messageContentView.contentSize = CGSizeMake(messageContentSize.width, messageContentSize.height);
+    //
+    self.messageContentView.backgroundColor = [UIColor blueColor];
+    self.bubbleBackgroundView.backgroundColor = [UIColor yellowColor];
+}
+
+///
+- (void)updateBubbleBackgroundViewFrame {
+    // 这里的气泡只包含文本内容
+    CGSize textLabelSize = self.contentLabel.frame.size;
+    CGSize messageContentSize = self.messageContentView.frame.size;
+    CGRect bubbleBackgroundFrame = CGRectMake(0, 0, messageContentSize.width, textLabelSize.height + bubble_top_space + bubble_bottom_space);
+    self.bubbleBackgroundView.frame = bubbleBackgroundFrame;
 }
 
 - (NSDictionary *)attributeDictionary {
@@ -186,15 +214,17 @@
         [_contentLabel setLineBreakMode:NSLineBreakByWordWrapping];
         _contentLabel.delegate = self;
         _contentLabel.userInteractionEnabled = YES;
+        _contentLabel.backgroundColor = [UIColor greenColor];
     }
     return _contentLabel;
 }
 
-- (RCReferencedContentView *)referencedContentView{
+- (EasyFunReferencedContentView *)referencedContentView{
     if (!_referencedContentView) {
-        _referencedContentView = [[RCReferencedContentView alloc] init];
+        _referencedContentView = [[EasyFunReferencedContentView alloc] init];
         _referencedContentView.delegate = self;
     }
     return _referencedContentView;
 }
+
 @end
