@@ -1992,7 +1992,7 @@ static NSString *const rcMessageBaseCellIndentifier = @"rcMessageBaseCellIndenti
 - (void)noMoreMessageToFetch {}
 
 #pragma mark - 单条消息处理
-//复制消息内容
+/// 复制消息内容
 - (void)onCopyMessage:(id)sender {
     // self.msgInputBar.msgColumnTextView.disableActionMenu = NO;
     self.chatSessionInputBarControl.inputTextView.disableActionMenu = NO;
@@ -2518,9 +2518,9 @@ static NSString *const rcMessageBaseCellIndentifier = @"rcMessageBaseCellIndenti
     return [self stt_getLongTouchSTTInfoMenuList:model];
 }
 
-//长按消息内容
+/// 长按消息内容
 - (void)didLongTouchMessageCell:(RCMessageModel *)model inView:(UIView *)view {
-    //长按消息需要停止播放语音消息
+    // 长按消息需要停止播放语音消息
     [self.util stopVoiceMessageIfNeed:model];
     self.currentSelectedModel = model;
     
@@ -2532,7 +2532,7 @@ static NSString *const rcMessageBaseCellIndentifier = @"rcMessageBaseCellIndenti
     }
     inputTextView.disableActionMenu = YES;
     if (![inputTextView isFirstResponder]) {
-        //聊天界面不为第一响应者时，长按消息，UIMenuController不能正常显示菜单
+        // 聊天界面不为第一响应者时，长按消息，UIMenuController不能正常显示菜单
         // inputTextView 是第一响应者时，不需要再设置 self 为第一响应者，否则会导致键盘收起
         [self becomeFirstResponder];
     }
@@ -2550,6 +2550,7 @@ static NSString *const rcMessageBaseCellIndentifier = @"rcMessageBaseCellIndenti
 }
 
 - (NSArray<UIMenuItem *> *)getLongTouchMessageCellMenuList:(RCMessageModel *)model {
+    //
     if ([model.content isKindOfClass:RCStreamMessage.class]) {
         return [self getLongTouchStreamMessageCellMenuList:model];
     }

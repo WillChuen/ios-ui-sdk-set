@@ -274,7 +274,7 @@
         return @"";
     } else if ([messageContent respondsToSelector:@selector(conversationDigest)]) {
         NSString *formatedMsg = [messageContent performSelector:@selector(conversationDigest)];
-        //当会话最后一条消息是文本且长度超过1W时，滑动会话列表卡顿,所以这里做截取
+        // 当会话最后一条消息是文本且长度超过1W时，滑动会话列表卡顿,所以这里做截取
         if (!isAllMessage && formatedMsg.length > 500) {
             formatedMsg = [formatedMsg substringToIndex:500];
             formatedMsg = [formatedMsg stringByAppendingString:@"..."];

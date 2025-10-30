@@ -175,7 +175,7 @@ typedef enum : NSUInteger {
 @property (nonatomic, strong) UIView *extensionView;
 
 /// 输入框上方引用内容显示View
-@property (nonatomic, strong) RCReferencingView *referencingView;
+@property (nonatomic, strong, nullable) RCReferencingView *referencingView;
 
 /// 输入工具栏占位文本 label，默认为 nil，不显示占位
 ///
@@ -550,6 +550,15 @@ typedef enum : NSUInteger {
 /// - Parameter model:   消息Cell的数据模型
 /// SDK在此方法中会默认调用RCFilePreviewViewController下载并展示文件。
 - (void)presentFilePreviewViewController:(RCMessageModel *)model;
+
+/// 引用消息Cell中的引用内容编辑
+- (void)onReferenceMessageCellAndEditing:(BOOL)editing;
+
+/// 复制消息内容
+- (void)onCopyMessage:(id)sender;
+
+/// 引用消息内容
+- (void)onReferenceMessageCell:(id)sender;
 
 #pragma mark - 公众号
 
