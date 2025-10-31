@@ -170,6 +170,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 - (void)updateStatusContentViewForFailed:(RCMessageModel *)model {
     self.receiptView.hidden = YES;
     self.receiptStatusLabel.hidden = YES;
+    [self p_setReadStatus:NO];
     self.messageFailedStatusView.hidden = YES;
     if ([[RCResendManager sharedManager] needResend:model.messageId]) {
         if (self.messageActivityIndicatorView) {
@@ -211,9 +212,11 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
         self.receiptView.hidden = NO;
         self.receiptView.userInteractionEnabled = YES;
         self.receiptStatusLabel.hidden = YES;
+        [self p_setReadStatus:NO];
     } else {
         self.receiptView.hidden = YES;
         self.receiptStatusLabel.hidden = NO;
+        [self p_setReadStatus:YES];
     }
 }
 
@@ -226,6 +229,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
     if (model.messageUId.length > 0) {
         self.receiptStatusLabel.hidden = YES;
+        [self p_setReadStatus:NO];
         self.receiptStatusLabel.userInteractionEnabled = NO;
         self.receiptView.hidden = NO;
     }
@@ -649,10 +653,12 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
                 self.receiptView.hidden = NO;
                 self.receiptView.userInteractionEnabled = YES;
                 self.receiptStatusLabel.hidden = YES;
+                [self p_setReadStatus:NO];
                 self.model.isCanSendReadReceipt = YES;
             } else {
                 self.receiptView.hidden = YES;
                 self.receiptStatusLabel.hidden = NO;
+                [self p_setReadStatus:YES];
                 self.model.isCanSendReadReceipt = NO;
             }
         });
@@ -696,6 +702,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
                     self.model.conversationType == ConversationType_DISCUSSION)) {
             self.receiptView.hidden = YES;
             self.receiptStatusLabel.hidden = NO;
+            [self p_setReadStatus:YES];
             self.receiptStatusLabel.userInteractionEnabled = YES;
             self.receiptStatusLabel.text = [NSString
                                             stringWithFormat:RCLocalizedString(@"readNum"), notifyModel.progress];
@@ -716,6 +723,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
                 self.receiptView.hidden = YES;
                 self.receiptView.userInteractionEnabled = NO;
                 self.receiptStatusLabel.hidden = NO;
+                [self p_setReadStatus:YES];
                 self.receiptStatusLabel.userInteractionEnabled = YES;
                 self.receiptStatusLabel.text =
                 [NSString stringWithFormat:RCLocalizedString(@"readNum"), 0];
@@ -747,15 +755,15 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 - (void)p_setReadStatus{
     if (self.model.readReceiptInfo.isReceiptRequestMessage && self.model.messageDirection == MessageDirection_SEND && [RCKitConfigCenter.message.enabledReadReceiptConversationTypeList containsObject:@(self.model.conversationType)]) {
         self.receiptStatusLabel.hidden = NO;
+        [self p_setReadStatus:YES];
         self.receiptStatusLabel.userInteractionEnabled = YES;
         self.receiptStatusLabel.text = [NSString
                                         stringWithFormat:RCLocalizedString(@"readNum"), self.model.readReceiptCount];
-        [self p_setReadStatus:YES];
     } else {
         self.receiptStatusLabel.hidden = YES;
+        [self p_setReadStatus:NO];
         self.receiptStatusLabel.userInteractionEnabled = NO;
         self.receiptStatusLabel.text = nil;
-        [self p_setReadStatus:NO];
     }
     
     if (self.model.messageDirection == MessageDirection_SEND && self.model.sentStatus == SentStatus_SENT) {
@@ -763,9 +771,11 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
             self.receiptView.hidden = NO;
             self.receiptView.userInteractionEnabled = YES;
             self.receiptStatusLabel.hidden = YES;
+            [self p_setReadStatus:NO];
         } else {
             self.receiptView.hidden = YES;
             self.receiptStatusLabel.hidden = NO;
+            [self p_setReadStatus:YES];
         }
     }else{
         self.receiptView.hidden = YES;

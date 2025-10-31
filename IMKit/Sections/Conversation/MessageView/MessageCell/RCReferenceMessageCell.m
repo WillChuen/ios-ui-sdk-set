@@ -54,14 +54,16 @@
     NSString *displayText = [RCMessageEditUtil displayTextForOriginalText:refenceMessage.content isEdited:model.hasChanged];
     // 计算文本大小
     CGSize textLabelSize = [[self class] getTextLabelSize:displayText
-                                                 maxWidth:maxWidth - 33
+                                                 maxWidth:maxWidth - content_space_left - content_space_right
                                                      font:[[RCKitConfig defaultConfig].font fontOfSecondLevel]];
     // 计算引用内容尺寸
-    CGSize contentSize = [[self class] contentInfoSizeWithContent:model maxWidth:maxWidth - 33];
+    CGSize contentSize = [[self class] contentInfoSizeWithContent:model maxWidth:maxWidth];
     // 计算消息内容尺寸
+    
+    CGFloat messageContentSizeWidth = MAX(textLabelSize.width, contentSize.width);
+    
     CGSize messageContentSize =
-    CGSizeMake(textLabelSize.width, textLabelSize.height + contentSize.height + bubble_top_space +
-               bubble_bottom_space + refer_and_text_space);
+    CGSizeMake(messageContentSizeWidth, bubble_top_space + textLabelSize.height + bubble_bottom_space + refer_and_text_space + contentSize.height);
     // 计算最终高度
     CGFloat __messagecontentview_height = messageContentSize.height;
     // 附加高度
@@ -144,19 +146,21 @@
     // 计算文本大小
     float maxWidth = [RCMessageCellTool getMessageContentViewMaxWidth];
     CGSize textLabelSize = [[self class] getTextLabelSize:self.contentLabel.text
-                                                 maxWidth:maxWidth - 33
+                                                 maxWidth:maxWidth - content_space_left - content_space_right
                                                      font:[[RCKitConfig defaultConfig].font fontOfSecondLevel]];
     self.contentLabel.frame = CGRectMake(content_space_left, bubble_top_space,
                                          textLabelSize.width, textLabelSize.height);
     // 引用内容尺寸
-    CGSize contentSize = [[self class] contentInfoSizeWithContent:self.model maxWidth:maxWidth - 33];
+    CGSize contentSize = [[self class] contentInfoSizeWithContent:self.model maxWidth:maxWidth];
     // 设置引用内容
     [self.referencedContentView setMessage:self.model contentSize:contentSize];
     // 引用内容位置
-    self.referencedContentView.frame = CGRectMake(content_space_left, CGRectGetMaxY(self.contentLabel.frame) + bubble_bottom_space + refer_and_text_space, contentSize.width, contentSize.height);
+    self.referencedContentView.frame = CGRectMake(0, CGRectGetMaxY(self.contentLabel.frame) + bubble_bottom_space + refer_and_text_space, contentSize.width, contentSize.height);
+    
+    CGFloat messageContentSizeWidth = MAX(textLabelSize.width, contentSize.width);
     // 消息内容尺寸
     CGSize messageContentSize =
-    CGSizeMake(textLabelSize.width + 16 + 10, textLabelSize.height + contentSize.height + bubble_top_space +
+    CGSizeMake(messageContentSizeWidth, textLabelSize.height + contentSize.height + bubble_top_space +
                bubble_bottom_space + refer_and_text_space);
     //
     self.messageContentView.contentSize = CGSizeMake(messageContentSize.width, messageContentSize.height);
@@ -167,7 +171,7 @@
     // 这里的气泡只包含文本内容
     CGSize textLabelSize = self.contentLabel.frame.size;
     CGSize messageContentSize = self.messageContentView.frame.size;
-    CGRect bubbleBackgroundFrame = CGRectMake(0, 0, messageContentSize.width, textLabelSize.height + bubble_top_space + bubble_bottom_space);
+    CGRect bubbleBackgroundFrame = CGRectMake(0, 0, messageContentSize.width, bubble_top_space + textLabelSize.height + bubble_bottom_space);
     self.bubbleBackgroundView.frame = bubbleBackgroundFrame;
 }
 
@@ -194,7 +198,8 @@
     if ([message length] > 0) {
         CGSize textSize = [RCKitUtility getTextDrawingSize:message font:font constrainedSize:CGSizeMake(maxWidth, MAXFLOAT)];
         textSize.height = ceilf(textSize.height);
-        return CGSizeMake(maxWidth, textSize.height);
+        textSize.width = ceilf(textSize.width);
+        return CGSizeMake(textSize.width, textSize.height);
     } else {
         return CGSizeZero;
     }
@@ -224,8 +229,6 @@
     if (!_referencedContentView) {
         _referencedContentView = [[EasyFunReferencedContentView alloc] init];
         _referencedContentView.delegate = self;
-        _referencedContentView.layer.cornerRadius = 6;
-        _referencedContentView.layer.masksToBounds = YES;
     }
     return _referencedContentView;
 }

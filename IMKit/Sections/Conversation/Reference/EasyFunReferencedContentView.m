@@ -191,46 +191,54 @@
     
     if (self.referMsgStatus == RCReferenceMessageStatusDeleted) { // 引用被删除
         
-        [self layoutTextView];
-        [self.textView updateLableText:RCLocalizedString(@"ReferencedMessageDeleted")];
+        NSString * deletedText = RCLocalizedString(@"ReferencedMessageDeleted");
+        [self layoutTextView:deletedText];
         
     }else if (self.referMsgStatus == RCReferenceMessageStatusRecalled) { // 引用被取消
         
-        [self layoutTextView];
-        [self.textView updateLableText:RCLocalizedString(@"ReferencedMessageRecalled")];
+        NSString * recalledText = RCLocalizedString(@"ReferencedMessageRecalled");
+        [self layoutTextView:recalledText];
         
     } else if ([self.referedContent isKindOfClass:[RCFileMessage class]]) { // 引用文件消息
         
-        [self layoutTextView];
         RCFileMessage *msg = (RCFileMessage *)self.referedContent;
         NSString * messageInfo = [NSString
             stringWithFormat:@"%@ %@", RCLocalizedString(@"RC:FileMsg"), msg.name];
-        [self.textView updateLableText:messageInfo];
+        [self layoutTextView:messageInfo];
         
     }  else if ([self.referedContent isKindOfClass:[RCRichContentMessage class]]) { // 图文消息被引用
         
-        [self layoutTextView];
         RCRichContentMessage *msg = (RCRichContentMessage *)self.referedContent;
-        NSString * messageInfo = [NSString
-            stringWithFormat:@"%@ %@", RCLocalizedString(@"RC:ImgTextMsg"), msg.title];
-        [self.textView updateLableText:messageInfo];
+        [self layoutRichContentView: msg];
         
     } else if ([self.referedContent isKindOfClass:[RCImageMessage class]]) { // 图片消息被引用
         
-        [self layoutImageView];
         RCImageMessage *msg = (RCImageMessage *)self.referedContent;
-        [self.imageView updateImageMessage:msg];
+        [self layoutImageView:msg];
+        
+    } else if ([self.referedContent isKindOfClass:[RCSightMessage class]]) { // 小视频消息被引用
+      
+        RCSightMessage *msg = (RCSightMessage *)self.referedContent;
+        [self layoutSightView:msg];
+        
+    } else if ([[[self.referedContent class] getObjectName] isEqualToString:@"LD:LinkCardMsg"]) { // 链接消息被引用
+        
+        [self layoutLinkView:self.referedContent];
+        
+    } else if ([[[self.referedContent class] getObjectName] isEqualToString:@"LD:GameCardMsg"]) { // 游戏消息被引用
+        
+        [self layoutGameView:self.referedContent];
         
     } else if ([self.referedContent isKindOfClass:[RCTextMessage class]] ||
                [self.referedContent isKindOfClass:[RCReferenceMessage class]]) { // 文本消息 或者 引用消息被引用
         
         // 设置 text 之前设置 textColor，textLabel 的 attributeDictionary 设置才有效
-        [self layoutTextView];
         NSString * messageInfo = [RCKitUtility formatMessage:self.referedContent
                                                  targetId:self.referModel.targetId
                                          conversationType:self.referModel.conversationType
                                              isAllMessage:YES];
-        [self.textView updateLableText:messageInfo];
+        [self layoutTextView:messageInfo];
+        
     }
 }
 
@@ -258,8 +266,9 @@
     if (!_nameLabel) {
         _nameLabel = [[RCBaseLabel alloc] initWithFrame:CGRectZero];
         _nameLabel.text = @"NAME";
-        // 当文字超过100pt宽度时，尾部显示省略号
-        _nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        _nameLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
+        _nameLabel.font = [UIFont systemFontOfSize:12];
+        _nameLabel.textColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
     }
     return _nameLabel;
 }
@@ -269,12 +278,14 @@
     if (!_textView) {
         _textView = [[EasyFunReferencedTextView alloc] initWithFrame:CGRectZero];
         _textView.hidden = YES;
+        _textView.textLabel.font = [UIFont systemFontOfSize:12];
+        _textView.textLabel.textColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
     }
     return _textView;
 }
 
 /// 布局文本引用视图
-- (void)layoutTextView {
+- (void)layoutTextView:(NSString *)messageInfo {
     self.textView.hidden = NO;
     [self.contentView addSubview:self.textView];
     [self.textView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -283,6 +294,10 @@
         make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
+    messageInfo = [messageInfo stringByReplacingOccurrencesOfString:@"\r\n" withString:@" "];
+    messageInfo = [messageInfo stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+    messageInfo = [messageInfo stringByReplacingOccurrencesOfString:@"\r" withString:@" "];
+    [self.textView updateLableText:messageInfo];
 }
 
 /// 显示图片引用的视图
@@ -294,16 +309,28 @@
     return _imageView;
 }
 
-/// 布局图片引用视图
-- (void)layoutImageView {
+/// 布局富文本引用视图
+- (void)layoutRichContentView:(RCRichContentMessage *)message {
     self.imageView.hidden = NO;
     [self.contentView addSubview:self.imageView];
     [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.contentView.mas_top);
-        make.bottom.mas_equalTo(self.contentView.mas_bottom);
+        make.centerY.mas_equalTo(self.contentView.mas_centerY);
         make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
+    [self.imageView updateRichContentMessage:message];
+}
+
+/// 布局图片引用视图
+- (void)layoutImageView:(RCImageMessage *)message {
+    self.imageView.hidden = NO;
+    [self.contentView addSubview:self.imageView];
+    [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(self.contentView.mas_centerY);
+        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
+        make.trailing.mas_equalTo(self.contentView.mas_trailing);
+    }];
+    [self.imageView updateImageMessage:message];
 }
 
 /// 显示小视频引用的视图
@@ -316,15 +343,15 @@
 }
 
 /// 布局小视频引用视图
-- (void)layoutSightView {
+- (void)layoutSightView:(RCSightMessage *)message {
     self.sightView.hidden = NO;
     [self.contentView addSubview:self.sightView];
     [self.sightView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.contentView.mas_top);
-        make.bottom.mas_equalTo(self.contentView.mas_bottom);
+        make.centerY.mas_equalTo(self.contentView.mas_centerY);
         make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
+    [self.sightView updateSightMessage:message];
 }
 
 /// 显示链接引用的视图
@@ -337,15 +364,15 @@
 }
 
 /// 布局链接引用视图
-- (void)layoutLinkView {
+- (void)layoutLinkView:(RCMessageContent *)content {
     self.linkView.hidden = NO;
     [self.contentView addSubview:self.linkView];
     [self.linkView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.contentView.mas_top);
-        make.bottom.mas_equalTo(self.contentView.mas_bottom);
+        make.centerY.mas_equalTo(self.contentView.mas_centerY);
         make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
+    [self.linkView updateMessageContent:content];
 }
 
 /// 显示游戏引用的视图
@@ -353,20 +380,22 @@
     if (!_gameView) {
         _gameView = [[EasyFunReferencedGameView alloc] initWithFrame:CGRectZero];
         _gameView.hidden = YES;
+        _gameView.textLabel.font = [UIFont systemFontOfSize:12];
+        _gameView.textLabel.textColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
     }
     return _gameView;
 }
 
 /// 布局游戏引用视图
-- (void)layoutGameView {
+- (void)layoutGameView:(RCMessageContent *)content {
     self.gameView.hidden = NO;
     [self.contentView addSubview:self.gameView];
     [self.gameView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.contentView.mas_top);
-        make.bottom.mas_equalTo(self.contentView.mas_bottom);
+        make.centerY.mas_equalTo(self.contentView.mas_centerY);
         make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
+    [self.gameView updateMessageContent:content];
 }
 
 @end

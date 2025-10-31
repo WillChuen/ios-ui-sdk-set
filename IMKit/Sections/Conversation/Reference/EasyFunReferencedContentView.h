@@ -34,7 +34,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 代理
 @property (nonatomic, weak) id<EasyFunReferencedContentViewDelegate> delegate;
-
 /// 背景内容
 @property (nonatomic, strong, nullable) UIView * backgroundContentView;
 /// 全部内容
