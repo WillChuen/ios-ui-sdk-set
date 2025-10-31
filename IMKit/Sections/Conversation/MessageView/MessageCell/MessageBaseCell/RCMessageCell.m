@@ -21,32 +21,43 @@
 #import "RCIM.h"
 #import "RCMessageModel+StreamCellVM.h"
 
-// 头像
+/// 头像
 #define PortraitImageViewTop 0
-// 气泡
+/// 气泡
 #define ContentViewBottom 14
+/// 消息内容的宽度
 #define DefaultMessageContentViewWidth 200
+/// 状态内容的宽度
 #define StatusContentViewWidth 100
+/// 阅后即读宽度
 #define DestructBtnWidth 20
+/// 状态内容和内容的间距
 #define StatusViewAndContentViewSpace 8
 
+/// 更新可以回执状态的通知
 NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 @"KNotificationMessageBaseCellUpdateCanReceiptStatus";
+
+/// 需要展示用户信息和内容的消息Cell可以继承此类
 @interface RCMessageCell() {
     BOOL _showPortrait;
 }
+
+/// 是否显示气泡
 @property (nonatomic, assign) BOOL showBubbleBackgroundView;
-//当前 cell 正在展示的用户信息，消息携带用户信息且频发发送，会导致 cell 频发刷新
-//cell 复用的时候，检测如果是即将刷新的是同一个用户信息，那么就跳过刷新
-//IMSDK-2705
+/// 当前 cell 正在展示的用户信息，消息携带用户信息且频发发送，会导致 cell 频发刷新
+/// cell 复用的时候，检测如果是即将刷新的是同一个用户信息，那么就跳过刷新
 @property (nonatomic, strong) RCUserInfo *currentDisplayedUserInfo;
 
+/// 宿主 UICollectionView
 @property (nonatomic, weak, readwrite) UICollectionView *hostCollectionView;
 
 /// 消息编辑状态
 @property (nonatomic, assign) RCMessageModifyStatus editStatus;
 
 @end
+
+/// 需要展示用户信息和内容的消息Cell可以继承此类
 @implementation RCMessageCell
 
 #pragma mark - Life Cycle
@@ -67,7 +78,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return self;
 }
 
-- (void)rcinit{
+- (void)rcinit {
     _showPortrait = YES;
     [self setupMessageCellView];
     [self registerMessageCellNotification];
@@ -111,12 +122,15 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     [self edit_showEditStatusIfNeeded];
 }
 
+/// 宿主 UICollectionView
 - (UICollectionView *)hostCollectionView {
     if (!_hostCollectionView) {
         _hostCollectionView = [self parentCollectionView];
     }
     return _hostCollectionView;
 }
+
+/// 获取父级 UICollectionView
 - (UICollectionView *)parentCollectionView {
     UIView *view = self.superview;
     while (view) {
@@ -129,6 +143,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 }
 #pragma mark - Public Methods
 
+/// 消息发送状态更新
 - (void)updateStatusContentView:(RCMessageModel *)model {
     dispatch_async(dispatch_get_main_queue(), ^{
         self.messageActivityIndicatorView.hidden = YES;
@@ -136,19 +151,20 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
             return;
         }
         switch (model.sentStatus) {
-            case SentStatus_SENDING:
+            case SentStatus_SENDING: // 发送中
+                // 显示发送
                 [self updateStatusContentViewForSending:model];
                 break;
-            case SentStatus_FAILED:
+            case SentStatus_FAILED: // 发送失败
                 [self updateStatusContentViewForFailed:model];
                 break;
-            case SentStatus_CANCELED:
+            case SentStatus_CANCELED: // 发送已取消
                 [self updateStatusContentViewForCanceled:model];
                 break;
-            case SentStatus_SENT:
+            case SentStatus_SENT: // 已发送成功
                 [self updateStatusContentViewForSent:model];
                 break;
-            case SentStatus_READ:
+            case SentStatus_READ: // 对方已阅读
                 [self updateStatusContentViewForRead:model];
                 break;
             default:
@@ -157,6 +173,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     });
 }
 
+/// 显示发送中状态
 - (void)updateStatusContentViewForSending:(RCMessageModel *)model {
     self.messageFailedStatusView.hidden = YES;
     if (self.messageActivityIndicatorView) {
@@ -167,6 +184,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 显示发送失败状态
 - (void)updateStatusContentViewForFailed:(RCMessageModel *)model {
     self.receiptView.hidden = YES;
     self.receiptStatusLabel.hidden = YES;
@@ -190,6 +208,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 显示发送已取消状态
 - (void)updateStatusContentViewForCanceled:(RCMessageModel *)model {
     self.messageFailedStatusView.hidden = YES;
     if (self.messageActivityIndicatorView) {
@@ -200,6 +219,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 显示发送成功状态
 - (void)updateStatusContentViewForSent:(RCMessageModel *)model {
     self.messageFailedStatusView.hidden = YES;
     if (self.messageActivityIndicatorView) {
@@ -208,6 +228,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
             [self.messageActivityIndicatorView stopAnimating];
         }
     }
+    // 不能发送回执
     if (model.isCanSendReadReceipt) {
         self.receiptView.hidden = NO;
         self.receiptView.userInteractionEnabled = YES;
@@ -220,6 +241,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 显示已读状态
 - (void)updateStatusContentViewForRead:(RCMessageModel *)model {
     BOOL isDisplayReadStatus = self.isDisplayReadStatus;
     BOOL isReadStatusType = model.conversationType == ConversationType_PRIVATE ||
@@ -242,7 +264,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
-- (void)showBubbleBackgroundView:(BOOL)show{
+/// 显示或隐藏气泡背景
+- (void)showBubbleBackgroundView:(BOOL)show {
     self.showBubbleBackgroundView = show;
     self.bubbleBackgroundView.userInteractionEnabled = show;
     if (show){
@@ -255,9 +278,11 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 #pragma mark - Private Methods
 
 - (void)setupMessageCellView {
+    // 允许多选
     self.allowsSelection = YES;
+    // 重置代理
     self.delegate = nil;
-    
+    // 基础内容视图
     [self.baseContentView addSubview:self.portraitImageView];
     [self.baseContentView addSubview:self.nicknameLabel];
     [self.baseContentView addSubview:self.messageContentView];
@@ -285,27 +310,31 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     [self setPortraitStyle:RCKitConfigCenter.ui.globalMessageAvatarStyle];
 }
 
-- (void)registerMessageCellNotification{
+- (void)registerMessageCellNotification {
+    // 用户信息更新通知
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(onUserInfoUpdate:)
                                                  name:RCKitDispatchUserInfoUpdateNotification
                                                object:nil];
+    // 群成员信息更新通知
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(onGroupUserInfoUpdate:)
                                                  name:RCKitDispatchGroupUserInfoUpdateNotification
                                                object:nil];
-    
+    // 可以回执状态更新通知
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(onReceiptStatusUpdate:)
                                                  name:KNotificationMessageBaseCellUpdateCanReceiptStatus
                                                object:nil];
-    
+    // messageContentView的Frame更新注册
     [self registerFrameUpdateLayoutIfNeed];
+    // messageContentView的contentSize更新注册
     [self registerSizeUpdateLayoutIfNeed];
     
 }
 
-- (void)registerFrameUpdateLayoutIfNeed{
+/// 注册 messageContentView 的 Frame 更新
+- (void)registerFrameUpdateLayoutIfNeed {
     __weak typeof(self) weakSelf = self;
     [self.messageContentView registerFrameChangedEvent:^(CGRect frame) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
@@ -362,11 +391,12 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
-- (void)registerSizeUpdateLayoutIfNeed{
+/// 注册 messageContentView 的 Size 更新
+- (void)registerSizeUpdateLayoutIfNeed {
     __weak typeof(self) weakSelf = self;
     [self.messageContentView registerSizeChangedEvent:^(CGSize size) {
         __strong typeof(weakSelf) strongSelf = weakSelf;
-        if (strongSelf.model){
+        if (strongSelf.model) {
             CGRect rect = CGRectMake(0, 0, size.width, size.height);
             CGFloat protraitWidth = RCKitConfigCenter.ui.globalMessagePortraitSize.width;
             
@@ -412,7 +442,6 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
                         messageContentViewY = PortraitImageViewTop + NameHeight + NameAndContentSpace;
                     }
                     rect.origin.y = messageContentViewY;
-//                    rect.origin.y = PortraitImageViewTop;
                 }
             }
             strongSelf.messageContentView.frame = rect;
@@ -421,10 +450,9 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }];
 }
 
-- (void)messageContentViewFrameDidChanged {
-    
-}
+- (void)messageContentViewFrameDidChanged { }
 
+/// 设置头像样式
 - (void)setPortraitStyle:(RCUserAvatarStyle)portraitStyle {
     _portraitStyle = portraitStyle;
     if (_portraitStyle == RC_USER_AVATAR_RECTANGLE) {
@@ -526,12 +554,6 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
                 CGRectMake(portraitImageX , PortraitImageViewTop, DefaultMessageContentViewWidth, NameHeight);
             }
         } else { // owner
-//            self.nicknameLabel.hidden = YES;
-//            CGFloat portraitImageX =
-//            self.baseContentView.bounds.size.width - (protraitWidth + PortraitViewEdgeSpace);
-//            self.portraitImageView.frame =
-//            CGRectMake(portraitImageX, PortraitImageViewTop, protraitWidth,
-//                       protraitHeight);
             [self.nicknameLabel setTextAlignment:NSTextAlignmentRight];
             self.nicknameLabel.hidden = !self.model.isDisplayNickname;
             CGFloat portraitImageX = self.baseContentView.bounds.size.width - (protraitWidth + PortraitViewEdgeSpace);
@@ -585,6 +607,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 设置阅后即焚布局
 - (void)setDestructViewLayout {
     self.destructBtn.frame = CGRectMake(0, 0, DestructBtnWidth, DestructBtnWidth);
     if (self.model.content.destructDuration > 0) {
@@ -616,6 +639,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 阅后即焚中
 - (void)messageDestructing {
     NSNumber *whisperMsgDuration =
     [[RCCoreClient sharedCoreClient] getDestructMessageRemainDuration:self.model.messageUId];
@@ -641,6 +665,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 更新回执状态
 - (void)onReceiptStatusUpdate:(NSNotification *)notification {
     // 更新消息状态
     NSDictionary *statusDic = notification.object;
@@ -665,6 +690,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+///
 - (void)messageCellUpdateSendingStatusEvent:(NSNotification *)notification {
     RCMessageCellNotificationModel *notifyModel = notification.object;
     if (self.model.messageId == notifyModel.messageId) {
@@ -711,6 +737,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 发送回执请求
 - (void)sendMessageReadReceiptRequest:(NSString *)messageUId {
     RCMessage *message = [[RCCoreClient sharedCoreClient] getMessage:self.model.messageId];
     if (message) {
@@ -746,13 +773,16 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
-- (void)p_showBubbleBackgroundView{
+/// 设置气泡图片
+- (void)p_showBubbleBackgroundView {
     if (self.showBubbleBackgroundView) {
         self.bubbleBackgroundView.image = [RCMessageCellTool getDefaultMessageCellBackgroundImage:self.model];
     }
 }
 
-- (void)p_setReadStatus{
+/// 设置已读状态
+- (void)p_setReadStatus {
+    
     if (self.model.readReceiptInfo.isReceiptRequestMessage && self.model.messageDirection == MessageDirection_SEND && [RCKitConfigCenter.message.enabledReadReceiptConversationTypeList containsObject:@(self.model.conversationType)]) {
         self.receiptStatusLabel.hidden = NO;
         [self p_setReadStatus:YES];
@@ -777,15 +807,15 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
             self.receiptStatusLabel.hidden = NO;
             [self p_setReadStatus:YES];
         }
-    }else{
+    } else {
         self.receiptView.hidden = YES;
     }
 }
 
-- (void)p_setUserInfo{
+- (void)p_setUserInfo {
     RCMessageModel *model = self.model;
     // DebugLog(@"%s", __FUNCTION__);
-    //如果是客服，更换默认头像
+    // 如果是客服，更换默认头像
     if (ConversationType_CUSTOMERSERVICE == model.conversationType) {
         [self p_setCustomerServiceInfo:model];
     } else if (ConversationType_APPSERVICE == model.conversationType ||
@@ -794,8 +824,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     } else if (ConversationType_GROUP == model.conversationType) {
         [self p_setGroupInfo:model];
     } else {
-        //优先使用 RCMessage.senderUserId 确定用户，控制头像的显示
-        //否则使用 RCMessage.content.senderUserInfo.userId 确定用户，控制头像的显示
+        // 优先使用 RCMessage.senderUserId 确定用户，控制头像的显示
+        // 否则使用 RCMessage.content.senderUserInfo.userId 确定用户，控制头像的显示
         NSString *userId = model.senderUserId;
         if (userId.length <= 0) {
             userId = model.content.senderUserInfo.userId;
@@ -823,7 +853,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
-- (void)p_setCustomerServiceInfo:(RCMessageModel *)model{
+/// 设置客服信息
+- (void)p_setCustomerServiceInfo:(RCMessageModel *)model {
     if (model.messageDirection == MessageDirection_RECEIVE) {
         [self.portraitImageView setPlaceholderImage:RCResourceImage(@"portrait_kefu")];
         
@@ -849,7 +880,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
-- (void)p_setPublicServiceInfo:(RCMessageModel *)model{
+/// 设置公众号信息
+- (void)p_setPublicServiceInfo:(RCMessageModel *)model {
     if (model.messageDirection == MessageDirection_RECEIVE) {
         RCPublicServiceProfile *serviceProfile = nil;
         if ([RCIM sharedRCIM].publicServiceInfoDataSource) {
@@ -877,6 +909,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 设置群组信息
 - (void)p_setGroupInfo:(RCMessageModel *)model{
     if ([RCIM sharedRCIM].currentDataSourceType == RCDataSourceTypeInfoManagement && [model.content.senderUserInfo.userId isEqualToString:model.senderUserId]) {
         if (model.conversationType != ConversationType_Encrypted) {
@@ -903,6 +936,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 }
 
 #pragma mark - UserInfo Update
+
+/// 用户资料变更通知
 - (void)onUserInfoUpdate:(NSNotification *)notification {
     if ([RCIM sharedRCIM].currentDataSourceType == RCDataSourceTypeInfoManagement && [self.model.content.senderUserInfo.userId isEqualToString:self.model.senderUserId]) {
         return;
@@ -911,7 +946,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     dispatch_async(dispatch_get_main_queue(), ^{
         if ([self.model.senderUserId isEqualToString:userInfoDic[@"userId"]]) {
             if (self.model.conversationType == ConversationType_GROUP) {
-                //重新取一下混合的用户信息
+                // 重新取一下混合的用户信息
                 RCUserInfo *userInfo = [[RCUserInfoCacheManager sharedManager] getUserInfo:self.model.senderUserId inGroupId:self.model.targetId];
                 RCUserInfo *tempUserInfo = [[RCUserInfoCacheManager sharedManager] getUserInfo:self.model.senderUserId];
                 userInfo.alias = tempUserInfo.alias;
@@ -929,6 +964,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     });
 }
 
+/// 群组消息变更通知
 - (void)onGroupUserInfoUpdate:(NSNotification *)notification {
     if ([RCIM sharedRCIM].currentDataSourceType == RCDataSourceTypeInfoManagement && [self.model.content.senderUserInfo.userId isEqualToString:self.model.senderUserId]) {
         return;
@@ -938,7 +974,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
             NSDictionary *groupUserInfoDic = (NSDictionary *)notification.object;
             if ([self.model.targetId isEqualToString:groupUserInfoDic[@"inGroupId"]] &&
                 [self.model.senderUserId isEqualToString:groupUserInfoDic[@"userId"]]) {
-                //重新取一下混合的用户信息
+                // 重新取一下混合的用户信息
                 RCUserInfo *userInfo = [[RCUserInfoCacheManager sharedManager] getUserInfo:self.model.senderUserId inGroupId:self.model.targetId];
                 RCUserInfo *tempUserInfo = [[RCUserInfoCacheManager sharedManager] getUserInfo:self.model.senderUserId];
                 userInfo.alias = tempUserInfo.alias;
@@ -948,6 +984,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 更新用户信息UI
 - (void)updateUserInfoUI:(RCUserInfo *)userInfo {
     if ([self isSameUserInfo:self.currentDisplayedUserInfo other:userInfo]) {
         return;
@@ -961,6 +998,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     [self.nicknameLabel setText:[RCKitUtility getDisplayName:userInfo]];
 }
 
+/// 是不是同一个用户信息
 - (BOOL)isSameUserInfo:(RCUserInfo *)currentUserInfo other:(RCUserInfo *)other {
     if (!currentUserInfo || !other) {
         return NO;
@@ -981,6 +1019,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 }
 
 #pragma mark - Target Action
+
+/// 点击发送失败的消息
 - (void)didClickMsgFailedView:(UIButton *)button {
     self.messageFailedStatusView.hidden = YES;
     self.model.sentStatus = SentStatus_SENDING;
@@ -991,6 +1031,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 点击发送已读回执按钮
 - (void)enableShowReceiptView:(UIButton *)sender {
     if (!self.model.messageUId) {
         RCMessage *message = [[RCCoreClient sharedCoreClient] getMessage:self.model.messageId];
@@ -1002,6 +1043,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 点击已读数Label
 - (void)clickReceiptCountView:(id)sender {
     if ([self.delegate respondsToSelector:@selector(didTapReceiptCountView:)]) {
         if (self.receiptStatusLabel.text != nil) {
@@ -1011,6 +1053,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 点击头像
 - (void)tapUserPortaitEvent:(UIGestureRecognizer *)gestureRecognizer {
     __weak typeof(self) weakSelf = self;
     if ([self.delegate respondsToSelector:@selector(didTapCellPortrait:)]) {
@@ -1018,6 +1061,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 长按头像
 - (void)longPressUserPortaitEvent:(UIGestureRecognizer *)gestureRecognizer {
     __weak typeof(self) weakSelf = self;
     if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
@@ -1027,6 +1071,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 消息内容长按
 - (void)longPressedMessageContentView:(id)sender {
     UILongPressGestureRecognizer *press = (UILongPressGestureRecognizer *)sender;
     if (press.state == UIGestureRecognizerStateEnded) {
@@ -1036,7 +1081,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
-- (void)didTapMessageContentView{
+/// 点击消息内容
+- (void)didTapMessageContentView {
     DebugLog(@"%s", __FUNCTION__);
     if ([self.delegate respondsToSelector:@selector(didTapMessageCell:)]) {
         [self.delegate didTapMessageCell:self.model];
@@ -1044,6 +1090,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 }
 
 #pragma mark - Getter && Setter
+
+/// 显示是否消息回执的Button
 - (RCBaseButton *)receiptView {
     if (!_receiptView) {
         _receiptView = [[RCBaseButton alloc] init];
@@ -1057,6 +1105,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return _receiptView;
 }
 
+/// 消息阅读状态的 Label [阅读数]
 - (UILabel *)receiptStatusLabel {
     if (!_receiptStatusLabel) {
         _receiptStatusLabel = [[UILabel alloc] init];
@@ -1071,6 +1120,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return _receiptStatusLabel;
 }
 
+/// 业务消息已读状态图标
 - (UIImageView *)receiptStatusImageView {
     
     if (!_receiptStatusImageView) {
@@ -1082,6 +1132,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return _receiptStatusImageView;
 }
 
+/// 阅后即焚视图
 - (UIView *)destructView {
     if (!_destructView) {
         _destructView = [[UIView alloc] init];
@@ -1091,6 +1142,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return _destructView;
 }
 
+/// 阅后即焚按钮
 - (RCBaseButton *)destructBtn {
     if (_destructBtn == nil) {
         _destructBtn = [[RCBaseButton alloc] initWithFrame:CGRectZero];
@@ -1104,6 +1156,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return _destructBtn;
 }
 
+/// 消息发送中指示器
 - (UIActivityIndicatorView *)messageActivityIndicatorView {
     if (!_messageActivityIndicatorView) {
         if (@available(iOS 13.0, *)) {
@@ -1118,7 +1171,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return _messageActivityIndicatorView;
 }
 
-- (RCButton *)messageFailedStatusView{
+/// 消息发送失败按钮
+- (RCButton *)messageFailedStatusView {
     if (!_messageFailedStatusView) {
         _messageFailedStatusView = [[RCButton alloc] init];
         [_messageFailedStatusView setImage:RCResourceImage(@"sendMsg_failed_tip") forState:UIControlStateNormal];
@@ -1130,10 +1184,11 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return _messageFailedStatusView;
 }
 
-- (RCloudImageView *)portraitImageView{
+/// 用户头像
+- (RCloudImageView *)portraitImageView {
     if (!_portraitImageView) {
         _portraitImageView = [[RCloudImageView alloc] initWithPlaceholderImage:RCResourceImage(@"default_portrait_msg")];
-        //点击头像
+        // 点击头像
         UITapGestureRecognizer *portraitTap =
         [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapUserPortaitEvent:)];
         portraitTap.numberOfTapsRequired = 1;
@@ -1149,7 +1204,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return _portraitImageView;
 }
 
-- (UILabel *)nicknameLabel{
+/// 用户昵称
+- (UILabel *)nicknameLabel {
     if (!_nicknameLabel) {
         _nicknameLabel = [[UILabel alloc] initWithFrame:CGRectZero];
         _nicknameLabel.backgroundColor = [UIColor clearColor];
@@ -1160,7 +1216,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return _nicknameLabel;
 }
 
-- (UIView *)statusContentView{
+/// 消失状态内容
+- (UIView *)statusContentView {
     if (!_statusContentView) {
         _statusContentView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, StatusContentViewWidth, StatusContentViewWidth)];
         _statusContentView.backgroundColor = [UIColor clearColor];
@@ -1168,7 +1225,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return _statusContentView;
 }
 
-- (RCContentView *)messageContentView{
+/// 消息内容
+- (RCContentView *)messageContentView {
     if (!_messageContentView) {
         _messageContentView = [[RCContentView alloc] init];
         UILongPressGestureRecognizer *longPress =
@@ -1185,7 +1243,8 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return _messageContentView;
 }
 
-- (RCBaseImageView *)bubbleBackgroundView{
+/// 气泡背景视图
+- (RCBaseImageView *)bubbleBackgroundView {
     if (!_bubbleBackgroundView) {
         _bubbleBackgroundView = [[RCBaseImageView alloc] initWithFrame:CGRectZero];
         [self.messageContentView addSubview:self.bubbleBackgroundView];
@@ -1195,6 +1254,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 
 #pragma mark - Edit
 
+/// 编辑状态内容视图
 - (UIView *)editStatusContentView {
     if (!_editStatusContentView) {
         _editStatusContentView = [[UIView alloc] init];
@@ -1203,6 +1263,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return _editStatusContentView;
 }
 
+/// 编辑中指示器
 - (RCCircularLoadingView *)editCircularLoadingView {
     if (!_editCircularLoadingView) {
         _editCircularLoadingView = [[RCCircularLoadingView alloc] init];
@@ -1211,6 +1272,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return _editCircularLoadingView;
 }
 
+/// 编辑状态Label
 - (UILabel *)editStatusLabel {
     if (!_editStatusLabel) {
         _editStatusLabel = [[UILabel alloc] init];
@@ -1224,6 +1286,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     return _editStatusLabel;
 }
 
+/// 编辑重试按钮
 - (UIButton *)editRetryButton {
     if (!_editRetryButton) {
         NSString *title = [NSString stringWithFormat:@" %@", RCLocalizedString(@"MessageEditFailed")];
@@ -1237,5 +1300,4 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
     return _editRetryButton;
 }
-
 @end

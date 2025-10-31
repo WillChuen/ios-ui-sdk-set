@@ -20,9 +20,8 @@
 @interface RCConversationCell ()
 
 @property (nonatomic, strong) RCConversationHeaderView *headerView;
-//当前 cell 正在展示的用户信息，消息携带用户信息且频发发送，会导致 cell 频发刷新
-//cell 复用的时候，检测如果是即将刷新的是同一个用户信息，那么就跳过刷新
-//IMSDK-2705
+/// 当前 cell 正在展示的用户信息，消息携带用户信息且频发发送，会导致 cell 频发刷新
+/// cell 复用的时候，检测如果是即将刷新的是同一个用户信息，那么就跳过刷新
 @property (nonatomic, strong) RCUserInfo *currentDisplayedUserInfo;
 @end
 

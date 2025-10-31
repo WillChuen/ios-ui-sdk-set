@@ -13,15 +13,23 @@
 #import "RCAlertView.h"
 #import "RCKitConfig.h"
 #import "RCBaseButton.h"
-NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificationMessageBaseCellUpdateSendingStatus";
-#define SelectButtonSize CGSizeMake(20, 20)
-#define SelectButtonSpaceLeft 8 //选择按钮据屏幕左侧 5
 
-@interface RCMessageBaseCell ()
-{
+/// 消息发送状态更新的Notification
+NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificationMessageBaseCellUpdateSendingStatus";
+/// 选择按钮尺寸
+#define SelectButtonSize CGSizeMake(20, 20)
+/// 选择按钮据屏幕左侧 5
+#define SelectButtonSpaceLeft 8
+
+///
+@interface RCMessageBaseCell () {
+    // 消息Cell点击的回调
     __weak id<RCMessageCellDelegate> _delegate;
 }
+
+/// 多选收拾
 @property (nonatomic, strong) UITapGestureRecognizer *multiSelectTap;
+/// 选择按钮
 @property (nonatomic, strong) RCBaseButton *selectButton;
 
 @end
@@ -88,7 +96,9 @@ NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificatio
 
 #pragma mark - Private Methods
 
+/// 设置基础UI
 - (void)setupMessageBaseCellView {
+    // 消息发送状态监听
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(messageCellUpdateSendingStatusEvent:)
                                                  name:KNotificationMessageBaseCellUpdateSendingStatus
@@ -99,7 +109,9 @@ NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificatio
     [self.contentView addSubview:_baseContentView];
 }
 
+/// 设置基础的UI布局
 - (void)setBaseAutoLayout {
+    // 显示时间内容
     if (self.isDisplayMessageTime) {
         CGSize timeTextSize_ = [RCKitUtility getTextDrawingSize:self.messageTimeLabel.text
                                                            font:[[RCKitConfig defaultConfig].font fontOfAnnotationLevel]
@@ -109,7 +121,8 @@ NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificatio
         self.messageTimeLabel.hidden = NO;
         [self.messageTimeLabel setFrame:CGRectMake((self.bounds.size.width - timeTextSize_.width) / 2, TIME_LABEL_TOP,
                                                    timeTextSize_.width, TIME_LABEL_HEIGHT)];
-        [self.baseContentView setFrame:CGRectMake(0, CGRectGetMaxY(self.messageTimeLabel.frame)+TIME_LABEL_AND_BASE_CONTENT_VIEW_SPACE, self.bounds.size.width, self.bounds.size.height - CGRectGetMaxY(self.messageTimeLabel.frame)-TIME_LABEL_AND_BASE_CONTENT_VIEW_SPACE-BASE_CONTENT_VIEW_BOTTOM)];
+        [self.baseContentView setFrame:CGRectMake(0, CGRectGetMaxY(self.messageTimeLabel.frame) + TIME_LABEL_AND_BASE_CONTENT_VIEW_SPACE, self.bounds.size.width, self.bounds.size.height - CGRectGetMaxY(self.messageTimeLabel.frame) - TIME_LABEL_AND_BASE_CONTENT_VIEW_SPACE - BASE_CONTENT_VIEW_BOTTOM)];
+        // 不显示时间内容
     } else {
         if (self.messageTimeLabel) {
             self.messageTimeLabel.hidden = YES;
@@ -118,18 +131,22 @@ NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificatio
     }
 }
 
+/// 消息发送状态更新的通知回调
 - (void)messageCellUpdateSendingStatusEvent:(NSNotification *)notification {
     DebugLog(@"%s", __FUNCTION__);
 }
 
 #pragma mark - Multi select
+/// 多选状态改变的通知回调
 - (void)onChangedMessageMultiSelectStatus:(NSNotification *)notification {
     [self setDataModel:self.model];
 }
 
-
+/// 更新多选UI
 - (void)updateUIForMultiSelect {
+    // 移除多选手势
     [self.contentView removeGestureRecognizer:self.multiSelectTap];
+    // 开启多选
     if ([RCMessageSelectionUtility sharedManager].multiSelect) {
         self.baseContentView.userInteractionEnabled = NO;
         if (self.allowsSelection) {
@@ -138,6 +155,7 @@ NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificatio
         } else {
             self.selectButton.hidden = YES;
         }
+        //
     } else {
         self.baseContentView.userInteractionEnabled = YES;
         self.selectButton.hidden = YES;
@@ -146,12 +164,13 @@ NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificatio
         self.baseContentView.frame = frame;
         return;
     }
+    // 更新选择按钮状态
     [self updateSelectButtonStatus];
 
     CGRect frame = self.baseContentView.frame;
     CGFloat selectButtonY = frame.origin.y +
                             (RCKitConfigCenter.ui.globalMessagePortraitSize.height - SelectButtonSize.height) /
-                                2; //如果消息有头像，头像距离 baseContentView 顶部距离为 10
+                                2; // 如果消息有头像，头像距离 baseContentView 顶部距离为 10
     if (MessageDirection_RECEIVE == self.model.messageDirection) {
         if (frame.origin.x < 3) { // cell不是左顶边的时候才会偏移
             if ([RCKitUtility isRTL]) {
@@ -167,13 +186,13 @@ NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificatio
         if (MessageDirection_RECEIVE == self.model.messageDirection) {
             selectButtonFrame.origin.x = frame.origin.x + frame.size.width - SelectButtonSpaceLeft;
         } else {
-            
             selectButtonFrame.origin.x = CGRectGetMaxX(frame) - SelectButtonSpaceLeft - 20;
         }
     }
     self.selectButton.frame = selectButtonFrame;
 }
 
+/// 设置是否允许选择
 - (void)setAllowsSelection:(BOOL)allowsSelection {
     _allowsSelection = allowsSelection;
     if (self.model) {
@@ -181,7 +200,9 @@ NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificatio
     }
 }
 
+/// 选择事件
 - (void)onSelectMessageEvent {
+    //
     if ([[RCMessageSelectionUtility sharedManager] isContainMessage:self.model]) {
         [[RCMessageSelectionUtility sharedManager] removeMessageModel:self.model];
         [self updateSelectButtonStatus];
@@ -195,6 +216,7 @@ NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificatio
     }
 }
 
+/// 更新选择按钮状态
 - (void)updateSelectButtonStatus {
     NSString *imgName = [[RCMessageSelectionUtility sharedManager] isContainMessage:self.model]
                             ? @"message_cell_select"
@@ -204,7 +226,7 @@ NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificatio
 }
 
 #pragma mark - Getters and Setters
-
+/// 选择按钮
 - (RCBaseButton *)selectButton {
     if (!_selectButton) {
         _selectButton = [[RCBaseButton alloc] initWithFrame:CGRectZero];
@@ -220,6 +242,7 @@ NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificatio
     return _selectButton;
 }
 
+/// 多选手势
 - (UITapGestureRecognizer *)multiSelectTap {
     if (!_multiSelectTap) {
         _multiSelectTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(onSelectMessageEvent)];
@@ -229,7 +252,7 @@ NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificatio
     return _multiSelectTap;
 }
 
-//大量cell不显示时间，使用延时加载
+/// 大量cell不显示时间，使用延时加载
 - (RCTipLabel *)messageTimeLabel {
     if (!_messageTimeLabel) {
         _messageTimeLabel = [RCTipLabel greyTipLabel];

@@ -19,10 +19,14 @@
  */
 UIKIT_EXTERN NSString *const KNotificationMessageBaseCellUpdateSendingStatus;
 
+/// 时间内容的高度
 #define TIME_LABEL_HEIGHT 16
+/// 时间和内容View的间隔
 #define TIME_LABEL_AND_BASE_CONTENT_VIEW_SPACE 12
+/// 时间内容到Cell顶部间隔
 #define TIME_LABEL_TOP 8
-#define BASE_CONTENT_VIEW_BOTTOM 20 //每个 Cell 底部都有 20 个点
+/// 每个 Cell 底部都有 20 个点
+#define BASE_CONTENT_VIEW_BOTTOM 20
 
 /*!
  消息Cell基类

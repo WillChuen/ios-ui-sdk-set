@@ -14,13 +14,20 @@
 #import "RCBaseButton.h"
 #import "RCBaseImageView.h"
 
-#define HeadAndContentSpacing 8  // 头像与内容的间距
-#define PortraitViewEdgeSpace 12 // 头像与屏幕边缘距离
-#define NameAndContentSpace 8   // 昵称与内容的间距
-#define NameHeight 14 // 昵称高度
-#define ReceiptStatusLabelSize 14 // 已读标签的高度
-#define ReceiptStatusLabelSpacing 4 // 已读标签与内容的间距
-#define ReceiptStatusLabelSpacingPadding 4 // 已读标签与内容的间距补全
+/// 头像与内容的间距
+#define HeadAndContentSpacing 8
+/// 头像与屏幕边缘距离
+#define PortraitViewEdgeSpace 12
+/// 昵称与内容的间距
+#define NameAndContentSpace 8
+/// 昵称高度
+#define NameHeight 14
+/// 已读标签的高度
+#define ReceiptStatusLabelSize 14
+/// 已读标签与内容的间距
+#define ReceiptStatusLabelSpacing 4
+/// 已读标签与内容的间距补全
+#define ReceiptStatusLabelSpacingPadding 4
 
 @class RCloudImageView;
 @class RCCircularLoadingView;
@@ -50,7 +57,7 @@
 @property (nonatomic, strong) RCContentView *messageContentView;
 
 /*!
- 消息的背景View
+ 消息的背景View [气泡]
  */
 @property (nonatomic, strong) RCBaseImageView *bubbleBackgroundView;
 
@@ -75,7 +82,7 @@
 /// 消息编辑失败时，显示的按钮
 @property (nonatomic, strong) UIButton *editRetryButton;
 
-
+/// 圆形旋转Loading视图
 @property (nonatomic, strong) RCCircularLoadingView *editCircularLoadingView;
 
 /*!
@@ -103,10 +110,7 @@
 @property (nonatomic, strong) UILabel *receiptStatusLabel;
 
 /*!
- 消息已读状态的 Image View
- 已发送未读一个 勾
- 已读两个 勾
- 显示已读数
+ 业务消息已读状态图标
  */
 @property (nonatomic, strong) UIImageView * receiptStatusImageView;
 
@@ -116,7 +120,9 @@
  */
 @property (nonatomic, assign) BOOL showPortrait;
 
+/// 宿主 UICollectionView
 @property (nonatomic, weak, readonly) UICollectionView *hostCollectionView;
+
 /*!
  设置当前消息Cell的数据模型
 
@@ -137,6 +143,7 @@
 - Parameter show: 消息Cell的数据模型
 */
 - (void)showBubbleBackgroundView:(BOOL)show;
+
 
 /// 更新气泡背景视图的布局
 - (void)updateBubbleBackgroundViewFrame;
