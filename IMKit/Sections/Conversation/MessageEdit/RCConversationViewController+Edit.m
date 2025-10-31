@@ -533,10 +533,10 @@ static CGFloat RC_KIT_UNREAD_BOTTOM_ICON_HEIGHT = 35;
     }
     [self performOnMainThread: ^{
         self.referencingView.referModel = model;
-        self.referencingView.textLabel.text = [RCKitUtility formatMessage:model.content
-                                                                 targetId:model.targetId
-                                                         conversationType:model.conversationType
-                                                             isAllMessage:YES];
+//        self.referencingView.textLabel.text = [RCKitUtility formatMessage:model.content
+//                                                                 targetId:model.targetId
+//                                                         conversationType:model.conversationType
+//                                                             isAllMessage:YES];
     }];
 }
 

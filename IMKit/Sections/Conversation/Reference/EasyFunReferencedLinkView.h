@@ -9,6 +9,7 @@
 
 @class RCloudImageView;
 @class RCBaseLabel;
+@class RCMessageContent;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EasyFunReferencedLinkView : UIView
@@ -17,6 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) RCloudImageView *imageView;
 /// 被引用消息内容文本 label
 @property (nonatomic, strong) RCBaseLabel *textLabel;
+
+/// 更新引用消息内容
+- (void)updateMessageContent:(RCMessageContent *)content;
 
 @end
 

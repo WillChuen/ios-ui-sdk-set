@@ -8,6 +8,7 @@
 #import "EasyFunReferencedImageView.h"
 #import "RCloudImageView.h"
 #import "RCImageMessage.h"
+#import "RCRichContentMessage.h"
 #import <Masonry/Masonry.h>
 
 #define EasyFunReferencedImageWidth 40
@@ -41,6 +42,12 @@
     self.imageView.image = message.thumbnailImage;
 }
 
+/// 更新富文本消息
+- (void)updateRichContentMessage:(RCRichContentMessage *)message {
+    NSURL *imageURL = [NSURL URLWithString:message.imageURL];
+    self.imageView.imageURL = imageURL;
+}
+
 /// 图片引用视图
 - (RCloudImageView *)imageView {
     if (!_imageView) {
@@ -48,7 +55,7 @@
         _imageView.contentMode = UIViewContentModeScaleAspectFill;
         _imageView.layer.cornerRadius = 2;
         _imageView.layer.masksToBounds = YES;
-        _imageView.backgroundColor = [UIColor lightGrayColor];
+        _imageView.backgroundColor = [UIColor clearColor];
     }
     return _imageView;
 }

@@ -14,6 +14,11 @@
 #import "RCloudImageView.h"
 
 @class RCReferencingView;
+@class EasyFunReferencedTextView;
+@class EasyFunReferencedImageView;
+@class EasyFunReferencedSightView;
+@class EasyFunReferencedLinkView;
+@class EasyFunReferencedGameView;
 
 @protocol RCReferencingViewDelegate <NSObject>
 @optional
@@ -25,23 +30,29 @@
 
 @interface RCReferencingView : RCBaseView
 
+/// 所有内容
+@property (nonatomic, strong) UIView *contentView;
+
 /// 关闭引用 button
 @property (nonatomic, strong) RCBaseButton *dismissButton;
 
 /// 被引用消息发送者名称
 @property (nonatomic, strong) RCBaseLabel *nameLabel;
 
-/// 被引用消息内容文本 label
-@property (nonatomic, strong) RCBaseLabel *textLabel;
+/// 文本引用内容
+@property (nonatomic, strong) EasyFunReferencedTextView *textReferView;
 
-/// 当被引用的是图片消息时显示的 imageView
-//@property (nonatomic, strong) RCloudImageView *imageView;
+/// 图片引用内容
+@property (nonatomic, strong) EasyFunReferencedImageView *imageReferView;
 
-/// 当被引用的是小视频消息时显示的 sightView
-//@property (nonatomic, strong) UIImageView * sightView;
+/// 小视频引用内容
+@property (nonatomic, strong) EasyFunReferencedSightView *sightReferView;
 
-/// 当前是否正在显示图片
-//@property (nonatomic, assign) BOOL isReferencingImage;
+/// 链接引用内容
+@property (nonatomic, strong) EasyFunReferencedLinkView *linkReferView;
+
+/// 游戏引用内容
+@property (nonatomic, strong) EasyFunReferencedGameView *gameReferView;
 
 /// 被引用消息体
 @property (nonatomic, strong) RCMessageModel *referModel;

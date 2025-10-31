@@ -9,6 +9,7 @@
 
 @class RCloudImageView;
 @class RCImageMessage;
+@class RCRichContentMessage;
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EasyFunReferencedImageView : UIView
@@ -16,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) RCloudImageView *imageView;
 /// 更新图片消息
 - (void)updateImageMessage:(RCImageMessage *)message;
+/// 更新富文本消息
+- (void)updateRichContentMessage:(RCRichContentMessage *)message;
 
 @end
 

@@ -7,7 +7,17 @@
 
 #import <Foundation/Foundation.h>
 
+@class RCMessageContent;
+
 NS_ASSUME_NONNULL_BEGIN
+/// 自定义配置工厂
+@protocol RCKitCustomConfigFactory <NSObject>
+
+@optional
+/// 获取业务配置
+- (NSDictionary * _Nullable)getMessageCustomConfig:(RCMessageContent *)messageContent;
+
+@end
 
 /// 自定义业务配置类
 @interface RCKitCustomConfig : NSObject
@@ -16,6 +26,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *extensionPanelAlbumTitle;
 /// 扩展面板拍照标题
 @property (nonatomic, copy) NSString *extensionPanelCameraTitle;
+/// 自定义配置工厂
+@property (nonatomic, weak) id<RCKitCustomConfigFactory> factory;
+
+/// 获取业务配置
+- (NSDictionary * _Nullable)getMessageCustomConfig:(RCMessageContent *)messageContent;
 
 @end
 

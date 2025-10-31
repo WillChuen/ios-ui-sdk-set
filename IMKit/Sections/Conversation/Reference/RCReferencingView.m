@@ -14,6 +14,12 @@
 #import "RCIM.h"
 #import "RCStreamUtilities.h"
 #import "RCStreamMessage+Internal.h"
+#import "EasyFunReferencedTextView.h"
+#import "EasyFunReferencedImageView.h"
+#import "EasyFunReferencedSightView.h"
+#import "EasyFunReferencedLinkView.h"
+#import "EasyFunReferencedGameView.h"
+#import <Masonry/Masonry.h>
 
 @interface RCReferencingView ()
 @property (nonatomic, strong) UIView *inView;
@@ -24,12 +30,6 @@
 #define dismiss_right_space 8
 #define dismiss_width 18
 #define referencingView_height 32
-#define referencingView_image_height 40
-#define referencingView_x 12
-#define referencingImageView_width 40
-#define referencingImageView_height 23
-#define sightView_width 12
-#define sightView_height 12
 
 @implementation RCReferencingView
 
@@ -40,8 +40,9 @@
         self.inView = view;
         self.referModel = model;
         [self addNotification];
-        [self setContentInfo];
         [self setupSubviews];
+        [self setNameContent];
+        [self setContentInfo];
     }
     return self;
 }
@@ -62,96 +63,69 @@
 - (void)setupSubviews {
     //
     CGFloat referencingViewHeight = referencingView_height;
-    CGFloat referencingView_w = self.inView.frame.size.width - 2 * referencingView_x;
-    self.frame = CGRectMake(referencingView_x, self.inView.frame.size.height, referencingView_w, referencingViewHeight);
-    
-    [self addSubview:self.dismissButton];
-    [self addSubview:self.nameLabel];
-    [self addSubview:self.textLabel];
-//    [self addSubview:self.imageView];
-    
-    self.dismissButton.translatesAutoresizingMaskIntoConstraints = NO;
-    self.nameLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    self.textLabel.translatesAutoresizingMaskIntoConstraints = NO;
-//    self.imageView.translatesAutoresizingMaskIntoConstraints = NO;
-    
-    CGFloat nameLabelMaxWidth = 100;
-    
-    if ([RCKitUtility isRTL]) {
-        [NSLayoutConstraint activateConstraints:@[
-            [self.dismissButton.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:dismiss_right_space],
-            [self.dismissButton.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-            [self.dismissButton.widthAnchor constraintEqualToConstant:dismiss_width],
-            [self.dismissButton.heightAnchor constraintEqualToConstant:dismiss_width],
-            
-            [self.textLabel.leadingAnchor constraintEqualToAnchor:self.dismissButton.trailingAnchor constant:textlabel_and_dismiss_space],
-            [self.textLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-            
-            [self.nameLabel.leadingAnchor constraintEqualToAnchor:self.textLabel.trailingAnchor constant:4],
-            [self.nameLabel.trailingAnchor constraintLessThanOrEqualToAnchor:self.trailingAnchor constant:-textlabel_left_space],
-            [self.nameLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-            [self.nameLabel.widthAnchor constraintLessThanOrEqualToConstant:nameLabelMaxWidth],
-            
-//            [self.imageView.leadingAnchor constraintEqualToAnchor:self.nameLabel.trailingAnchor constant:4],
-//            [self.imageView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-//            [self.imageView.widthAnchor constraintEqualToConstant:referencingImageView_width],
-//            [self.imageView.heightAnchor constraintEqualToConstant:referencingImageView_height]
-        ]];
-        
-        [self.textLabel setContentCompressionResistancePriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisHorizontal];
-        [self.nameLabel setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
-        
-    } else {
-        [NSLayoutConstraint activateConstraints:@[
-            [self.dismissButton.trailingAnchor constraintEqualToAnchor:self.trailingAnchor constant:-dismiss_right_space],
-            [self.dismissButton.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-            [self.dismissButton.widthAnchor constraintEqualToConstant:dismiss_width],
-            [self.dismissButton.heightAnchor constraintEqualToConstant:dismiss_width],
-            
-            [self.nameLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:textlabel_left_space],
-            [self.nameLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-            [self.nameLabel.widthAnchor constraintLessThanOrEqualToConstant:nameLabelMaxWidth],
-            
-            [self.textLabel.leadingAnchor constraintEqualToAnchor:self.nameLabel.trailingAnchor constant:4],
-            [self.textLabel.trailingAnchor constraintLessThanOrEqualToAnchor:self.dismissButton.leadingAnchor constant:-textlabel_and_dismiss_space],
-            [self.textLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-            
-//            [self.imageView.leadingAnchor constraintEqualToAnchor:self.nameLabel.trailingAnchor constant:4],
-//            [self.imageView.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-//            [self.imageView.widthAnchor constraintEqualToConstant:referencingImageView_width],
-//            [self.imageView.heightAnchor constraintEqualToConstant:referencingImageView_height]
-        ]];
-        
-        [self.textLabel setContentCompressionResistancePriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisHorizontal];
-        [self.nameLabel setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
-    }
+    self.frame = CGRectMake(0, self.inView.frame.size.height, self.inView.frame.size.width, referencingViewHeight);
+    //
+    [self addSubview:self.contentView];
+    [self.contentView addSubview:self.dismissButton];
+    [self.contentView addSubview:self.nameLabel];
+    //
+    [self.contentView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(self.mas_leading).offset(12);
+        make.top.mas_equalTo(self.mas_top);
+        make.trailing.mas_equalTo(self.mas_trailing).inset(12);
+        make.bottom.mas_equalTo(self.mas_bottom);
+    }];
+    [self.dismissButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(self.contentView.mas_centerY);
+        make.width.mas_equalTo(dismiss_width);
+        make.height.mas_equalTo(dismiss_width);
+        make.trailing.mas_equalTo(self.contentView.mas_trailing).inset(dismiss_right_space);
+    }];
+    [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(self.contentView.mas_leading).offset(textlabel_left_space);
+        make.centerY.mas_equalTo(self.contentView.mas_centerY);
+        make.width.mas_lessThanOrEqualTo(100);
+    }];
 }
 
 /// 设置引用内容
 - (void)setContentInfo {
     //
-    NSString *messageInfo;
-    
     if ([self.referModel.content isKindOfClass:[RCFileMessage class]]) { // 引用的是文件消息
+        
         RCFileMessage *msg = (RCFileMessage *)self.referModel.content;
-        messageInfo = [NSString
+        NSString * messageInfo = [NSString
                        stringWithFormat:@"%@ %@", RCLocalizedString(@"RC:FileMsg"), msg.name];
+        [self layoutTextView:messageInfo];
+        
     } else if ([self.referModel.content isKindOfClass:[RCRichContentMessage class]]) { // 引用的是图文消息
-        NSURL *imageURL = [NSURL URLWithString:((RCRichContentMessage *)self.referModel.content).imageURL];
-//        [self.imageView setImageURL:imageURL];
+        
+        RCRichContentMessage * richMessage = (RCRichContentMessage *)self.referModel.content;
+        [self setRichContent:richMessage];
+        
     } else if ([self.referModel.content isKindOfClass:[RCImageMessage class]]) { // 引用的是图片消息
-//        self.imageView.image = ((RCImageMessage *)self.referModel.content).thumbnailImage;
+        
+        RCImageMessage * imageMessage = (RCImageMessage *)self.referModel.content;
+        [self layoutImageView:imageMessage];
+        
     } else if ([self.referModel.content isKindOfClass:[RCSightMessage class]]) { // 引用的是视频消息
-//        self.imageView.image = ((RCSightMessage *)self.referModel.content).thumbnailImage;
-//        self.sightView.hidden = NO;
+        
+        RCSightMessage * sightMessage = (RCSightMessage *)self.referModel.content;
+        [self layoutSightView:sightMessage];
+        
     } else if ([self.referModel.content isKindOfClass:[RCTextMessage class]] ||
                [self.referModel.content isKindOfClass:[RCReferenceMessage class]]) { // 引用的是文本消息或者引用消息
-        messageInfo = [RCKitUtility formatMessage:self.referModel.content
+        
+        NSString * messageInfo = [RCKitUtility formatMessage:self.referModel.content
                                          targetId:self.referModel.targetId
                                  conversationType:self.referModel.conversationType
                                      isAllMessage:YES];
+        [self layoutTextView:messageInfo];
+        
     } else if ([self.referModel.content isKindOfClass:[RCStreamMessage class]]) { // 引用的是流式消息
+        
         RCStreamMessage *msg = (RCStreamMessage *)self.referModel.content;
+        NSString * messageInfo;
         if (msg.isSync) {
             messageInfo = msg.content;
         } else {
@@ -161,8 +135,19 @@
                 msg.content = summary.summary;
             }
         }
-    }  else if ([self.referModel.content isKindOfClass:[RCMessageContent class]]) { // 引用其他类型消息
-        messageInfo = [RCKitUtility formatMessage:self.referModel.content
+        [self layoutTextView:messageInfo];
+        
+    } else if ([[[self.referModel.content class] getObjectName] isEqualToString:@"LD:GameCardMsg"]) { // 游戏卡片
+        
+        [self layoutGameView:self.referModel.content];
+        
+    } else if ([[[self.referModel.content class] getObjectName] isEqualToString:@"LD:LinkCardMsg"]) { // 连接卡片
+        
+        [self layoutLinkView:self.referModel.content];
+        
+    } else if ([self.referModel.content isKindOfClass:[RCMessageContent class]]) { // 引用其他类型消息
+        
+        NSString * messageInfo = [RCKitUtility formatMessage:self.referModel.content
                                          targetId:self.referModel.targetId
                                  conversationType:self.referModel.conversationType
                                      isAllMessage:YES];
@@ -170,18 +155,92 @@
             [messageInfo isEqualToString:[[self.referModel.content class] getObjectName]]) {
             messageInfo = RCLocalizedString(@"unknown_message_cell_tip");
         }
+        [self layoutTextView:messageInfo];
     }
+}
+
+/// 设置用户昵称
+- (void)setNameContent {
     // 设置用户昵称
     if([RCKitUtility isRTL]){
         self.nameLabel.text = [NSString stringWithFormat:@":%@",[self getUserDisplayName]];
     }else{
         self.nameLabel.text = [NSString stringWithFormat:@"%@：",[self getUserDisplayName]];
     }
+}
+
+/// 设置文本引用内容
+- (void)layoutTextView:(NSString *)messageInfo {
     // 替换换行符为空格
     messageInfo = [messageInfo stringByReplacingOccurrencesOfString:@"\r\n" withString:@" "];
     messageInfo = [messageInfo stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
     messageInfo = [messageInfo stringByReplacingOccurrencesOfString:@"\r" withString:@" "];
-    self.textLabel.text = [NSString stringWithFormat:@"%@",messageInfo];
+    //
+    [self.contentView addSubview:self.textReferView];
+    [self.textReferView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
+        make.trailing.mas_lessThanOrEqualTo(self.dismissButton.mas_leading).inset(8);
+        make.top.mas_equalTo(self.contentView.mas_top);
+        make.bottom.mas_equalTo(self.contentView.mas_bottom);
+    }];
+    [self.textReferView updateLableText:messageInfo];
+}
+
+/// 设置图文引用内容
+- (void)setRichContent:(RCRichContentMessage *)richMessage {
+    //
+    [self.contentView addSubview:self.imageReferView];
+    [self.imageReferView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
+        make.centerY.mas_equalTo(self.contentView.mas_centerY);
+    }];
+    [self.imageReferView updateRichContentMessage:richMessage];
+}
+
+/// 设置图片引用内容
+- (void)layoutImageView:(RCImageMessage *)imageMessage {
+    //
+    [self.contentView addSubview:self.imageReferView];
+    [self.imageReferView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
+        make.centerY.mas_equalTo(self.contentView.mas_centerY);
+    }];
+    [self.imageReferView updateImageMessage:imageMessage];
+}
+
+/// 设置小视频引用内容
+- (void)layoutSightView:(RCSightMessage *)sightMessage {
+    //
+    [self.contentView addSubview:self.sightReferView];
+    [self.sightReferView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
+        make.centerY.mas_equalTo(self.contentView.mas_centerY);
+    }];
+    [self.sightReferView updateSightMessage:sightMessage];
+}
+
+/// 设置连接引用内容
+- (void)layoutLinkView:(RCMessageContent *)messageContent {
+    //
+    [self.contentView addSubview:self.linkReferView];
+    [self.linkReferView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
+        make.centerY.mas_equalTo(self.contentView.mas_centerY);
+        make.trailing.mas_lessThanOrEqualTo(self.contentView.mas_trailing);
+    }];
+    [self.linkReferView updateMessageContent:messageContent];
+}
+
+/// 设置游戏引用内容
+- (void)layoutGameView:(RCMessageContent *)messageContent {
+    //
+    [self.contentView addSubview:self.gameReferView];
+    [self.gameReferView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
+        make.centerY.mas_equalTo(self.contentView.mas_centerY);
+        make.trailing.mas_lessThanOrEqualTo(self.contentView.mas_trailing);
+    }];
+    [self.gameReferView updateMessageContent:messageContent];
 }
 
 /// 点击关闭按钮
@@ -238,7 +297,7 @@
     if ([self.referModel.senderUserId isEqualToString:userInfoDic[@"userId"]]) {
         // 重新取一下混合的用户信息
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self setContentInfo];
+            [self setNameContent];
         });
     }
 }
@@ -250,13 +309,26 @@
             [self.referModel.senderUserId isEqualToString:groupUserInfoDic[@"userId"]]) {
             // 重新取一下混合的用户信息
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self setContentInfo];
+                [self setNameContent];
             });
         }
     }
 }
 
 #pragma mark - Getters and Setters
+
+/// 所有内容
+- (UIView *)contentView {
+    if (!_contentView) {
+        _contentView = [[UIView alloc] initWithFrame:(CGRectZero)];
+        _contentView.backgroundColor = HEXCOLOR(0xEBECED);
+        _contentView.layer.cornerRadius = 6;
+        _contentView.layer.masksToBounds = YES;
+    }
+    return _contentView;
+}
+
+/// 关闭引用 button
 - (RCBaseButton *)dismissButton {
     if (!_dismissButton) {
         _dismissButton = [RCBaseButton buttonWithType:UIButtonTypeCustom];
@@ -268,6 +340,7 @@
     return _dismissButton;
 }
 
+/// 被引用消息发送者名称
 - (RCBaseLabel *)nameLabel {
     if (!_nameLabel) {
         _nameLabel = [[RCBaseLabel alloc] init];
@@ -277,49 +350,44 @@
     return _nameLabel;
 }
 
-- (RCBaseLabel *)textLabel {
-    if (!_textLabel) {
-        _textLabel = [[RCBaseLabel alloc] init];
-        _textLabel.numberOfLines = 1;
-        [_textLabel setLineBreakMode:NSLineBreakByTruncatingTail];
-        _textLabel.font = [[RCKitConfig defaultConfig].font fontOfGuideLevel];
-        _textLabel.textColor = [RCKitUtility generateDynamicColor:HEXCOLOR(0x111f2c) darkColor:RCMASKCOLOR(0xffffff, 0.4)];
-        UITapGestureRecognizer *messageTap =
-        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapContentView:)];
-        messageTap.numberOfTapsRequired = 1;
-        messageTap.numberOfTouchesRequired = 1;
-        [_textLabel addGestureRecognizer:messageTap];
+/// 文本引用内容
+- (EasyFunReferencedTextView *)textReferView {
+    if (!_textReferView) {
+        _textReferView = [[EasyFunReferencedTextView alloc] initWithFrame:CGRectZero];
     }
-    return _textLabel;
+    return _textReferView;
 }
 
-//- (RCloudImageView *)imageView {
-//    if (!_imageView) {
-//        _imageView = [[RCloudImageView alloc] init];
-//        _imageView.backgroundColor = [UIColor clearColor];
-//        _imageView.contentMode = UIViewContentModeScaleAspectFill;
-//        _imageView.layer.cornerRadius = 2;
-//        _imageView.layer.masksToBounds = YES;
-//        [_imageView addSubview:self.sightView];
-//        
-//        self.sightView.translatesAutoresizingMaskIntoConstraints = NO;
-//        [NSLayoutConstraint activateConstraints:@[
-//            [self.sightView.centerYAnchor constraintEqualToAnchor:_imageView.centerYAnchor],
-//            [self.sightView.centerXAnchor constraintEqualToAnchor:_imageView.centerXAnchor],
-//            [self.sightView.widthAnchor constraintEqualToConstant:sightView_width],
-//            [self.sightView.heightAnchor constraintEqualToConstant:sightView_height]
-//        ]];
-//    }
-//    return _imageView;
-//}
-//
-//- (UIImageView *)sightView {
-//    if (!_sightView) {
-//        _sightView = [[UIImageView alloc] initWithImage:RCResourceImage(@"chat_sight_message_play_icon")];
-//        _sightView.contentMode = UIViewContentModeScaleAspectFit;
-//        _sightView.hidden = YES;
-//    }
-//    return _sightView;
-//}
+/// 图片引用内容
+- (EasyFunReferencedImageView *)imageReferView {
+    if (!_imageReferView) {
+        _imageReferView = [[EasyFunReferencedImageView alloc] initWithFrame:CGRectZero];
+    }
+    return _imageReferView;
+}
+
+/// 小视频引用内容
+- (EasyFunReferencedSightView *)sightReferView {
+    if (!_sightReferView) {
+        _sightReferView = [[EasyFunReferencedSightView alloc] initWithFrame:CGRectZero];
+    }
+    return _sightReferView;
+}
+
+/// 链接引用内容
+- (EasyFunReferencedLinkView *)linkReferView {
+    if (!_linkReferView) {
+        _linkReferView = [[EasyFunReferencedLinkView alloc] initWithFrame:CGRectZero];
+    }
+    return _linkReferView;
+}
+
+/// 游戏引用内容
+- (EasyFunReferencedGameView *)gameReferView {
+    if (!_gameReferView) {
+        _gameReferView = [[EasyFunReferencedGameView alloc] initWithFrame:CGRectZero];
+    }
+    return _gameReferView;
+}
 
 @end

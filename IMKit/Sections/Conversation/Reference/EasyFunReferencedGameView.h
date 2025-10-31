@@ -9,14 +9,20 @@
 
 @class RCloudImageView;
 @class RCBaseLabel;
+@class RCMessageContent;
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EasyFunReferencedGameView : UIView
+
 /// 图片引用视图
 @property (nonatomic, strong) RCloudImageView *imageView;
 /// 被引用消息内容文本 label
 @property (nonatomic, strong) RCBaseLabel *textLabel;
+
+/// 更新引用消息内容
+- (void)updateMessageContent:(RCMessageContent *)content;
+
 @end
 
 NS_ASSUME_NONNULL_END
