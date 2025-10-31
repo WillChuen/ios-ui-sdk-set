@@ -128,7 +128,7 @@
 - (void)initialize {
     [self showBubbleBackgroundView:YES];
     [self.messageContentView addSubview:self.referencedContentView];
-    [self.messageContentView addSubview:self.contentLabel];
+    [self.bubbleBackgroundView addSubview:self.contentLabel];
 }
 
 - (void)setAutoLayout {
@@ -170,8 +170,14 @@
 - (void)updateBubbleBackgroundViewFrame {
     // 这里的气泡只包含文本内容
     CGSize textLabelSize = self.contentLabel.frame.size;
-    CGSize messageContentSize = self.messageContentView.frame.size;
-    CGRect bubbleBackgroundFrame = CGRectMake(0, 0, messageContentSize.width, bubble_top_space + textLabelSize.height + bubble_bottom_space);
+    CGFloat bubbleBackgroundFrameX = 0;
+    CGFloat bubbleBackgroundFrameY = 0;
+    CGFloat bubbleBackgroundFrameW = content_space_left + textLabelSize.width + content_space_right;
+    CGFloat bubbleBackgroundFrameH = bubble_top_space + textLabelSize.height + bubble_bottom_space;
+    if (self.model.messageDirection == MessageDirection_SEND) {
+        bubbleBackgroundFrameX = self.messageContentView.frame.size.width - bubbleBackgroundFrameW;
+    }
+    CGRect bubbleBackgroundFrame = CGRectMake(bubbleBackgroundFrameX, bubbleBackgroundFrameY, bubbleBackgroundFrameW, bubbleBackgroundFrameH);
     self.bubbleBackgroundView.frame = bubbleBackgroundFrame;
 }
 
