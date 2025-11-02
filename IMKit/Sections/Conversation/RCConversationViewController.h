@@ -360,6 +360,11 @@ typedef enum : NSUInteger {
 
 #pragma mark - 消息操作的回调
 
+/// 自定义发送消息内容的校验回调
+/// - Parameter sendContentText: 发送的消息内容文本
+/// - Returns: 返回NO允许发送该消息内容 ，返回YES则不允许发送该消息内容
+- (BOOL)checkCustomSendContent:(NSString *)sendContentText;
+
 /// 准备发送消息的回调
 /// - Parameter messageContent: 消息内容
 /// - Returns: 修改后的消息内容
@@ -531,6 +536,14 @@ typedef enum : NSUInteger {
 /// - Parameter model:   消息Cell的数据模型
 /// SDK在此方法中会默认调用RCImageSlideController下载并展示图片。
 - (void)presentImagePreviewController:(RCMessageModel *)model;
+
+/// 查看图片消息中的图片
+/// - Parameters:
+/// - Parameter model:   消息Cell的数据模型
+///   - onlyPreviewCurrentMessage: 是否只预览当前图片消息，默认为 NO，支持当前会话图片消息滑动预览，如果设置为 YES， 只预览当前图片消息
+/// SDK在此方法中会默认调用RCImageSlideController下载并展示图片。
+- (void)presentImagePreviewController:(RCMessageModel *)model
+            onlyPreviewCurrentMessage:(BOOL)onlyPreviewCurrentMessage;
 
 /// 发送新拍照的图片完成之后，是否将图片在本地另行存储。
 /// 如果设置为YES，您需要在saveNewPhotoToLocalSystemAfterSendingSuccess:回调中自行保存。

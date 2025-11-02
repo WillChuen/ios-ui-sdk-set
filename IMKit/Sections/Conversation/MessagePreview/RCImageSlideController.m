@@ -19,25 +19,27 @@
 #import "RCImagePreviewCell.h"
 #import "RCPhotoPreviewCollectionViewFlowLayout.h"
 #import "RCBaseCollectionView.h"
+
+///
 @interface RCImageSlideController () <UIScrollViewDelegate, RCImagePreviewCellDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout>
 
-//当前图片消息的数据模型
-@property (nonatomic, strong) NSMutableArray<RCMessageModel *> *messageModelArray;
-//当前图片消息的index
-@property (nonatomic, assign) NSInteger currentIndex;
-
+/// 当前图片消息的数据模型
+@property (nonatomic, strong, readwrite) NSMutableArray<RCMessageModel *> *messageModelArray;
+/// 当前图片消息的index
+@property (nonatomic, assign, readwrite) NSInteger currentIndex;
+///
 @property (nonatomic, assign) long previousMessageId;
-
+///
 @property (nonatomic, strong) RCPhotoPreviewCollectionViewFlowLayout *flowLayout;
-
+///
 @property (nonatomic, strong) RCBaseCollectionView *collectionView;
-
+///
 @property (nonatomic, assign) CGFloat previousContentOffsetX;
-
+///
 @property (nonatomic, assign) BOOL isAppear;
-
+///
 @property (nonatomic, assign) BOOL isTouchScroll;
-
+///
 @property (nonatomic, assign) CGFloat viewWidth;
 
 @end
@@ -55,14 +57,13 @@
             _isNotchScreen = YES;
         }
     }
-    ////设置导航条透明
+    // 设置导航条透明
     [self.view addSubview:self.collectionView];
     [self strechToSuperview:self.collectionView];
     [self getMessageFromModel:self.messageModel];
     self.navigationController.navigationBarHidden = YES;
     [self performSelector:@selector(setStatusBarHidden:) withObject:@(YES) afterDelay:0.6];
     self.automaticallyAdjustsScrollViewInsets = NO;
-
     [self registerNotificationCenter];
 }
 
@@ -105,7 +106,7 @@
 }
 
 #pragma mark - 数据源处理
-////取当前界面中一定数量的图片
+/// 取当前界面中一定数量的图片
 - (void)getMessageFromModel:(RCMessageModel *)model {
     if (!model) {
         NSLog(@"Parameters are not allowed to be nil");
@@ -174,7 +175,7 @@
     return messages;
 }
 
-//过滤阅后即焚图片消息
+/// 过滤阅后即焚图片消息
 - (NSArray *)filterDestructImageMessage:(NSArray *)array {
     NSMutableArray *backwardMessages = [NSMutableArray array];
     for (RCMessage *mesage in array) {
@@ -217,7 +218,7 @@
 }
 
 #pragma mark - UIScrollViewDelegate
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     self.isTouchScroll = YES;
     if (self.onlyPreviewCurrentMessage) {
         return;
@@ -327,12 +328,12 @@
 }
 
 #pragma mark - RCImagePreviewCellDelegate
-- (void)imagePreviewCellDidSingleTap:(RCImagePreviewCell *)cell{
+- (void)imagePreviewCellDidSingleTap:(RCImagePreviewCell *)cell {
     self.isAppear = NO;
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (void)imagePreviewCellDidLongTap:(UILongPressGestureRecognizer *)sender{
+- (void)imagePreviewCellDidLongTap:(UILongPressGestureRecognizer *)sender {
     [self longPressed:sender];
 }
 
@@ -375,7 +376,7 @@
 }
 
 #pragma mark - helper
-- (void)scrollToCurrentIndex{
+- (void)scrollToCurrentIndex {
     if (_isNotchScreen) {
         [CATransaction begin];
         [CATransaction disableActions];
@@ -483,4 +484,5 @@
                      }];
     [[UIApplication sharedApplication] setStatusBarHidden:YES withAnimation:UIStatusBarAnimationNone];
 }
+
 @end

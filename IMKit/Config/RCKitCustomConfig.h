@@ -16,6 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 @optional
 /// 获取业务配置
 - (NSDictionary * _Nullable)getMessageCustomConfig:(RCMessageContent *)messageContent;
+/// 将秒转换成几小时前、几天前等字符串
+- (NSString * _Nullable)stringFromTimeInterval:(NSInteger)seconds;
 
 @end
 
@@ -34,6 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 获取业务配置
 - (NSDictionary * _Nullable)getMessageCustomConfig:(RCMessageContent *)messageContent;
+
+/// 将毫秒转换成几小时前、几天前等字符串
+- (NSString * _Nullable)stringFromTimeInterval:(long long)sentTime;
 
 @end
 

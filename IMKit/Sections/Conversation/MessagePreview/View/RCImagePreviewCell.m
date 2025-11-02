@@ -88,7 +88,7 @@
 #pragma mark -  RCloudImageViewDelegate
 
 - (void)imageViewLoadedImage:(RCloudImageView *)imageView {
-    //图片加载成功后，去掉加载中的标识
+    // 图片加载成功后，去掉加载中的标识
     if (!self.progressView.hidden) {
         [self.progressView stopAnimating];
         self.progressView.hidden = YES;

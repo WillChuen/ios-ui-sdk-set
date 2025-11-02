@@ -86,8 +86,8 @@ NSString *const KNotificationMessageBaseCellUpdateSendingStatus = @"KNotificatio
     self.messageDirection = model.messageDirection;
     _isDisplayMessageTime = model.isDisplayMessageTime;
     if (self.isDisplayMessageTime) {
-        [self.messageTimeLabel setText:[RCKitUtility convertMessageTime:model.sentTime / 1000]
-                   dataDetectorEnabled:NO];
+        NSString * timeText = [[RCKitConfig defaultConfig].custom stringFromTimeInterval:model.sentTime];
+        [self.messageTimeLabel setText:timeText dataDetectorEnabled:NO];
     }
 
     [self setBaseAutoLayout];

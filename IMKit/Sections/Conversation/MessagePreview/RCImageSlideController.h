@@ -18,6 +18,12 @@
  */
 @property (nonatomic, strong) RCMessageModel *messageModel;
 
+/// 当前图片消息的数据模型
+@property (nonatomic, strong, readonly) NSMutableArray<RCMessageModel *> *messageModelArray;
+
+/// 当前图片消息的index
+@property (nonatomic, assign, readonly) NSInteger currentIndex;
+
 /*!
  当前预览的图片消息
  */

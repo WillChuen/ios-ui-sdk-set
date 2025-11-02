@@ -1652,12 +1652,26 @@ referenceSizeForHeaderInSection:(NSInteger)section {
 }
 
 - (void)inputTextViewDidTouchSendKey:(UITextView *)inputTextView {
+    // 是否是发送引用消息
     if ([self sendReferenceMessage:inputTextView.text]) {
         return;
     }
-    RCTextMessage *rcTextMessage = [RCTextMessage messageWithContent:inputTextView.text];
+    // 发送内容
+    NSString * sendContentText = inputTextView.text;
+    // 检查发送的是否是其定义内容
+    if ([self checkCustomSendContent:sendContentText]) {
+        return;
+    }
+    RCTextMessage *rcTextMessage = [RCTextMessage messageWithContent:sendContentText];
     rcTextMessage.mentionedInfo = self.chatSessionInputBarControl.mentionedInfo;
     [self sendMessage:rcTextMessage pushContent:nil];
+}
+
+/// 自定义发送消息内容的校验回调
+/// - Parameter sendContentText: 发送的消息内容文本
+/// - Returns: 返回NO允许发送该消息内容 ，返回YES则不允许发送该消息内容
+- (BOOL)checkCustomSendContent:(NSString *)sendContentText {
+    return NO;
 }
 
 - (void)inputTextView:(UITextView *)inputTextView
