@@ -429,6 +429,24 @@ typedef enum : NSUInteger {
 /// 如果有自定义消息，在会话页面子类 registerCustomCellsAndMessages 方法中需优先注册自定义消息的 cell, 再做其他操作;  请不要在其他方法中进行注册, 可能会有渲染时序问题
 - (void)registerClass:(Class)cellClass forMessageClass:(Class)messageClass;
 
+/// 注册自定义消息的Cell
+/// - Parameters:
+///   - cellClass: Cell类
+///   - key: 自定义消息的唯一标识符
+- (void)customRegisterClass:(Class)cellClass withKey:(NSString *)key;
+
+/// 注册自定义消息的Cell
+/// - Parameters:
+///   - cellClass: Cell类
+///   - identifier: 自定义消息Cell的重用标识符
+- (void)registerClass:(Class)cellClass forCellWithReuseIdentifier:(NSString *)identifier;
+
+/// 获取额外的Cell高度
+/// - Parameters:
+///   - cellClass: Cell的类型
+///   - model: 消息模型
+- (CGFloat)extraHeightForCellClass:(Class)cellClass messageModel:(RCMessageModel *)model;
+
 /// 未注册消息Cell显示的回调
 /// - Parameter collectionView:  当前CollectionView
 /// - Parameter indexPath:       该Cell对应的消息Cell数据模型在数据源中的索引值

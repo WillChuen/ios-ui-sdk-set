@@ -1129,6 +1129,14 @@ static NSString *const rcMessageBaseCellIndentifier = @"rcMessageBaseCellIndenti
     [self updateUnreadMsgCountLabel];
 }
 
+/// 获取额外的Cell高度
+/// - Parameters:
+///   - cellClass: Cell的类型
+///   - model: 消息模型
+- (CGFloat)extraHeightForCellClass:(Class)cellClass messageModel:(RCMessageModel *)model {
+    return [self.util referenceExtraHeight:cellClass messageModel:model];
+}
+
 #pragma mark - UICollectionViewDataSource
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return self.conversationDataRepository.count;
@@ -1258,7 +1266,6 @@ static NSString *const rcMessageBaseCellIndentifier = @"rcMessageBaseCellIndenti
         CGSize _size = [self rcUnkownConversationCollectionView:collectionView
                                                          layout:collectionViewLayout
                                          sizeForItemAtIndexPath:indexPath];
-        _size.height += [self.util referenceExtraHeight:RCUnknownMessageCell.class messageModel:model];
         model.cellSize = _size;
     } else {
 #pragma clang diagnostic push

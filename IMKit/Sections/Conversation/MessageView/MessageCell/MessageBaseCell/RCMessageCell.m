@@ -580,7 +580,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
                 CGRectMake(nickNameX, PortraitImageViewTop, DefaultMessageContentViewWidth, NameHeight);
             }
         }
-        self.messageContentView.contentSize = CGSizeMake(DefaultMessageContentViewWidth,self.baseContentView.bounds.size.height - ContentViewBottom);
+        self.messageContentView.contentSize = CGSizeMake(DefaultMessageContentViewWidth, self.baseContentView.bounds.size.height - ContentViewBottom);
     }
     [self updateStatusContentView:self.model];
 }
