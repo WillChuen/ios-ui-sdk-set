@@ -171,7 +171,11 @@
         _sendBtn = [RCBaseButton buttonWithType:UIButtonTypeCustom];
         _sendBtn.tag = 333;
         _sendBtn.titleLabel.font = [[RCKitConfig defaultConfig].font fontOfFourthLevel];
-        [_sendBtn setTitle:RCLocalizedString(@"Send") forState:UIControlStateNormal];
+        NSString *sendTitle = [RCKitConfig defaultConfig].custom.emojiPanelSendText;
+        if (!sendTitle || sendTitle.length == 0) {
+            sendTitle = RCLocalizedString(@"Send");
+        }
+        [_sendBtn setTitle:sendTitle forState:UIControlStateNormal];
         [_sendBtn addTarget:self action:@selector(sendBtnHandle:) forControlEvents:UIControlEventTouchUpInside];
     }
     return _sendBtn;

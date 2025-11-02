@@ -26,6 +26,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *extensionPanelAlbumTitle;
 /// 扩展面板拍照标题
 @property (nonatomic, copy) NSString *extensionPanelCameraTitle;
+/// 表情面板发送按钮文本
+@property (nonatomic, copy) NSString *emojiPanelSendText;
+
 /// 自定义配置工厂
 @property (nonatomic, weak) id<RCKitCustomConfigFactory> factory;
 
