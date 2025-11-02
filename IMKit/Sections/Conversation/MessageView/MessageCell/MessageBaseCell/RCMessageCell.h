@@ -111,8 +111,9 @@
 
 /*!
  业务消息已读状态图标
+ 发送成功 一个对勾，已读 两个对勾 其它不显示
  */
-@property (nonatomic, strong) UIImageView * receiptStatusImageView;
+@property (nonatomic, strong) UIImageView * customReadStatusImageView;
 
 /*!
  是否显示头像
