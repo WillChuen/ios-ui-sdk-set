@@ -572,6 +572,14 @@ typedef enum : NSUInteger {
 - (void)presentImagePreviewController:(RCMessageModel *)model
             onlyPreviewCurrentMessage:(BOOL)onlyPreviewCurrentMessage;
 
+/// 查看小视频消息中的视频预览
+/// - Parameter model:  消息Cell的数据模型
+/// - Parameter onlyPreviewCurrentMessage: 是否只预览当前小视频消息，默认为 NO，支持当前会话小视频消息滑动预览，如果设置为 YES， 只预览当前小视频消息
+- (void)presentSightViewPreviewViewController:(RCMessageModel *)model onlyPreviewCurrentMessage:(BOOL)onlyPreviewCurrentMessage;
+
+/// 退出输入编辑状态
+- (void)exitEditModeForce;
+
 /// 发送新拍照的图片完成之后，是否将图片在本地另行存储。
 /// 如果设置为YES，您需要在saveNewPhotoToLocalSystemAfterSendingSuccess:回调中自行保存。
 @property (nonatomic, assign) BOOL enableSaveNewPhotoToLocalSystem;

@@ -1410,8 +1410,13 @@ referenceSizeForHeaderInSection:(NSInteger)section {
 }
 
 - (void)presentSightViewPreviewViewController:(RCMessageModel *)model {
+    [self presentSightViewPreviewViewController:model onlyPreviewCurrentMessage:NO];
+}
+
+- (void)presentSightViewPreviewViewController:(RCMessageModel *)model onlyPreviewCurrentMessage:(BOOL)onlyPreviewCurrentMessage {
     RCSightSlideViewController *svc = [[RCSightSlideViewController alloc] init];
     svc.messageModel = model;
+    svc.onlyPreviewCurrentMessage = onlyPreviewCurrentMessage;
     RCBaseNavigationController *navc = [[RCBaseNavigationController alloc] initWithRootViewController:svc];
     navc.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:navc animated:YES completion:nil];
@@ -3447,6 +3452,12 @@ shouldChangeTextInRange:(NSRange)range
     [self.chatSessionInputBarControl resetToDefaultStatus];
 }
 
+/// 退出输入编辑状态
+- (void)exitEditModeForce {
+    [self removeReferencingView];
+    [self.chatSessionInputBarControl resetToDefaultStatus];
+}
+
 - (void)dismissReferencingViewAndCommonPhrasesView:(RCReferencingView *)referencingView {
     [self removeReferencingView];
     __block CGRect messageCollectionView = self.conversationMessageCollectionView.frame;
@@ -3460,6 +3471,7 @@ shouldChangeTextInRange:(NSRange)range
         }
     }];
 }
+
 
 - (void)showCommonPhrasesViewIfNeeded {
     __block CGRect messageCollectionView = self.conversationMessageCollectionView.frame;

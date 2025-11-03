@@ -253,10 +253,20 @@
     return _backgroundContentView;
 }
 
+- (void)didTapContentView:(id)sender {
+    if ([self.delegate respondsToSelector:@selector(easyFunDidTapReferencedContentView:)]) {
+        [self.delegate easyFunDidTapReferencedContentView:self.referModel];
+    }
+}
+
 /// 堆栈视图
 - (UIView *)contentView {
     if (!_contentView) {
         _contentView = [[UIView alloc] initWithFrame:CGRectZero];
+        UITapGestureRecognizer *messageTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapContentView:)];
+        messageTap.numberOfTapsRequired = 1;
+        messageTap.numberOfTouchesRequired = 1;
+        [_contentView addGestureRecognizer:messageTap];
     }
     return _contentView;
 }

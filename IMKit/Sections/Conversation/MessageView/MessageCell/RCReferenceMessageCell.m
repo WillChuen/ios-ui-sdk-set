@@ -82,20 +82,9 @@
 #pragma mark - RCReferencedContentViewDelegate
 
 - (void)easyFunDidTapReferencedContentView:(RCMessageModel *)message {
-    RCReferenceMessage *refer = (RCReferenceMessage *)message.content;
-    if ([refer.referMsg isKindOfClass:[RCFileMessage class]] ||
-        [refer.referMsg isKindOfClass:[RCRichContentMessage class]] ||
-        [refer.referMsg isKindOfClass:[RCImageMessage class]]  ||
-        [refer.referMsg isKindOfClass:[RCTextMessage class]] ||
-        [refer.referMsg isKindOfClass:[RCReferenceMessage class]] ||
-        [refer.referMsg isKindOfClass:[RCStreamMessage class]]) {
-        if ([self.delegate respondsToSelector:@selector(didTapReferencedContentView:)]) {
-            [self.delegate didTapReferencedContentView:message];
-        }
-    } else {
-        if ([self.delegate respondsToSelector:@selector(didTapMessageCell:)]) {
-            [self.delegate didTapMessageCell:self.model];
-        }
+    // 点击了引用内容
+    if ([self.delegate respondsToSelector:@selector(didTapReferencedContentView:)]) {
+        [self.delegate didTapReferencedContentView:message];
     }
 }
 
