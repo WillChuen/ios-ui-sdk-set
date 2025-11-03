@@ -261,6 +261,8 @@ typedef enum : NSUInteger {
 /// 在聊天室加入失败SDK会调用此接口，提示用户并退出聊天室。如果您需要修改提示或者不退出，可以重写此方法。
 - (void)alertErrorAndLeft:(NSString *)errorInfo;
 
+/// 获取当前选中的消息Model
+- (RCMessageModel * _Nullable)fetchCurrentSelectedModel;
 
 #pragma mark - 界面操作
 
@@ -516,6 +518,13 @@ typedef enum : NSUInteger {
 /// 点击引用消息中被引用消息内容预览的回调
 /// - Parameter model: 引用消息Cell的数据模型
 - (void)didTapReferencedContentView:(RCMessageModel *)model;
+
+/// 点击引用中的消息内容的回调
+/// - Parameter messageModel: 引用消息的数据模型
+- (void)didTapReferencingView:(RCMessageModel *)messageModel;
+
+/// 强制关闭引用视图回调 输入框回到默认状态
+- (void)dismissReferencingViewForce:(RCReferencingView *)referencingView;
 
 /// 点击Cell中电话号码的回调
 /// - Parameter phoneNumber: 点击的电话号码

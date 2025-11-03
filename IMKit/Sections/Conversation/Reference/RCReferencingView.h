@@ -26,6 +26,8 @@
 
 - (void)dismissReferencingView:(RCReferencingView *)referencingView;
 
+- (void)dismissReferencingViewForce:(RCReferencingView *)referencingView;
+
 @end
 
 @interface RCReferencingView : RCBaseView

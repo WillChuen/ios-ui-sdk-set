@@ -43,6 +43,7 @@
         [self setupSubviews];
         [self setNameContent];
         [self setContentInfo];
+        [self addTapGesture];
     }
     return self;
 }
@@ -86,6 +87,14 @@
         make.centerY.mas_equalTo(self.contentView.mas_centerY);
         make.width.mas_lessThanOrEqualTo(100);
     }];
+}
+
+/// 添加点击事件
+- (void)addTapGesture {
+    
+    UITapGestureRecognizer *tapGesture =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapContentView:)];
+    [self.contentView addGestureRecognizer:tapGesture];
 }
 
 /// 设置引用内容
@@ -286,8 +295,13 @@
 }
 
 - (void)didTapContentView:(id)sender {
+    // 再通知代理跳转到被引用消息
     if ([self.delegate respondsToSelector:@selector(didTapReferencingView:)]) {
         [self.delegate didTapReferencingView:self.referModel];
+    }
+    // 先强制引用视图
+    if (self.delegate && [self.delegate respondsToSelector:@selector(dismissReferencingViewForce:)]) {
+        [self.delegate dismissReferencingViewForce:self];
     }
 }
 
@@ -332,6 +346,7 @@
 - (RCBaseButton *)dismissButton {
     if (!_dismissButton) {
         _dismissButton = [RCBaseButton buttonWithType:UIButtonTypeCustom];
+        _dismissButton.hitTestEdgeInsets = UIEdgeInsetsMake(-10, -10, -10, -10);
         [_dismissButton setImage:RCResourceImage(@"referencing_view_dismiss_icon") forState:UIControlStateNormal];
         [_dismissButton addTarget:self
                            action:@selector(didClickDismissButton:)

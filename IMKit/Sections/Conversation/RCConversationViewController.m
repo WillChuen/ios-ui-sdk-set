@@ -110,7 +110,7 @@ RCChatSessionInputBarControlDataSource, RCMessagesMultiSelectedProtocol, RCRefer
 @property (nonatomic, strong) NSMutableArray *typingMessageArray;
 @property (nonatomic, strong) NSArray<RCExtensionMessageCellInfo *> *extensionMessageCellInfoList;
 @property (nonatomic, strong) NSMutableDictionary *cellMsgDict;
-@property (nonatomic, strong) RCMessageModel *currentSelectedModel;
+@property (nonatomic, strong, readwrite) RCMessageModel *currentSelectedModel;
 @property (nonatomic, strong) NSMutableArray *needReadResponseArray;
 /// 正在编辑中的配置
 @property (nonatomic, strong) RCEditInputBarConfig *editingInputBarConfig;
@@ -2011,6 +2011,12 @@ shouldChangeTextInRange:(NSRange)range
 - (void)noMoreMessageToFetch {}
 
 #pragma mark - 单条消息处理
+
+/// 获取当前选中的消息Model
+- (RCMessageModel * _Nullable)fetchCurrentSelectedModel {
+    return self.currentSelectedModel;
+}
+
 /// 复制消息内容
 - (void)onCopyMessage:(id)sender {
     // self.msgInputBar.msgColumnTextView.disableActionMenu = NO;
@@ -3419,6 +3425,9 @@ shouldChangeTextInRange:(NSRange)range
 }
 
 #pragma mark RCReferencingViewDelegate
+/// 点击引用中的消息回调
+- (void)didTapReferencingView:(RCMessageModel *)messageModel { }
+/// 关闭引用视图回调 执行动画
 - (void)dismissReferencingView:(RCReferencingView *)referencingView {
     [self removeReferencingView];
     __block CGRect messageCollectionView = self.conversationMessageCollectionView.frame;
@@ -3429,8 +3438,13 @@ shouldChangeTextInRange:(NSRange)range
             CGRectGetMinY(self.chatSessionInputBarControl.frame) - messageCollectionView.origin.y;
             self.conversationMessageCollectionView.frame = messageCollectionView;
         }
-        
     }];
+}
+
+/// 强制关闭引用视图回调 输入框回到默认状态
+- (void)dismissReferencingViewForce:(RCReferencingView *)referencingView {
+    [self removeReferencingView];
+    [self.chatSessionInputBarControl resetToDefaultStatus];
 }
 
 - (void)dismissReferencingViewAndCommonPhrasesView:(RCReferencingView *)referencingView {
