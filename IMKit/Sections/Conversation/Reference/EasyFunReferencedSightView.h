@@ -8,6 +8,9 @@
 #import <UIKit/UIKit.h>
 #import "EasyFunReferencedBaseView.h"
 
+#define EasyFunReferencedSightWidth 40
+#define EasyFunReferencedSightHeight 23
+
 @class RCSightMessage;
 @class RCloudImageView;
 NS_ASSUME_NONNULL_BEGIN

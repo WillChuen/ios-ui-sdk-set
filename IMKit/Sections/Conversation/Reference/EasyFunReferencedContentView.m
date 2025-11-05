@@ -20,6 +20,11 @@
 #import "RCMessageEditUtil.h"
 #import <Masonry/Masonry.h>
 
+/// 最小的引用内容高度
+#define easyfun_referenced_content_min_height 32
+#define easyfun_referenced_content_top_bottom_margin 4
+#define easyfun_referenced_content_left_right_space 12
+
 @interface EasyFunReferencedContentView()
 
 @property (nonatomic, strong) RCMessageModel *referModel;
@@ -52,10 +57,10 @@
     }];
     //
     [self.contentView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.backgroundContentView.mas_top).offset(4);
-        make.bottom.mas_equalTo(self.backgroundContentView.mas_bottom).offset(-4);
-        make.leading.mas_equalTo(self.backgroundContentView.mas_leading).offset(12);
-        make.trailing.mas_equalTo(self.backgroundContentView.mas_trailing).offset(-12);
+        make.top.mas_equalTo(self.backgroundContentView.mas_top);
+        make.bottom.mas_equalTo(self.backgroundContentView.mas_bottom);
+        make.leading.mas_equalTo(self.backgroundContentView.mas_leading).offset(easyfun_referenced_content_left_right_space);
+        make.trailing.mas_equalTo(self.backgroundContentView.mas_trailing).offset(-easyfun_referenced_content_left_right_space);
     }];
 }
 
@@ -65,12 +70,6 @@
     [self hideAllReferencedViews];
     // 重新设置UI
     [self setupUI];
-    // 发送
-    if (message.messageDirection == MessageDirection_SEND) {
-        [self updateToRightAlignment];
-    } else {
-        [self updateToLeftAlignment];
-    }
     // 引用消息
     self.referModel = message;
     if (![self fetchReferedContentInfo]) {
@@ -78,26 +77,6 @@
     }
     // 设置内容
     [self setContentInfo];
-}
-
-/// 切换到左对齐
-- (void)updateToLeftAlignment {
-    [self.backgroundContentView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.mas_top);
-        make.leading.mas_equalTo(self.mas_leading);
-        make.trailing.mas_lessThanOrEqualTo(self.mas_trailing);
-        make.bottom.mas_equalTo(self.mas_bottom);
-    }];
-}
-
-/// 切换到右对齐
-- (void)updateToRightAlignment {
-    [self.backgroundContentView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.mas_top);
-        make.trailing.mas_equalTo(self.mas_trailing);
-        make.leading.mas_greaterThanOrEqualTo(self.mas_leading);
-        make.bottom.mas_equalTo(self.mas_bottom);
-    }];
 }
 
 - (BOOL)fetchReferedContentInfo {
@@ -138,35 +117,6 @@
     self.textView = nil;
 }
 
-- (NSString *)getUserDisplayName {
-    NSString *name = @"";
-    if ([self.referedContent.senderUserInfo.userId isEqualToString:self.referedSenderId] && [RCIM sharedRCIM].currentDataSourceType == RCDataSourceTypeInfoManagement) {
-        name = [RCKitUtility getDisplayName:self.referedContent.senderUserInfo];
-    } else {
-        NSString *referUserId = self.referedSenderId;
-        if (ConversationType_GROUP == self.referModel.conversationType) {
-            RCUserInfo *userInfo =
-            [[RCUserInfoCacheManager sharedManager] getUserInfo:referUserId inGroupId:self.referModel.targetId];
-            self.referModel.userInfo = userInfo;
-            if (userInfo) {
-                name = userInfo.name;
-            }
-        } else {
-            RCUserInfo *userInfo = [[RCUserInfoCacheManager sharedManager] getUserInfo:referUserId];
-            self.referModel.userInfo = userInfo;
-            if (userInfo) {
-                name = userInfo.name;
-            }
-        }
-    }
-    if([RCKitUtility isRTL]) {
-        name = [@":" stringByAppendingString:name ?: @""];
-    } else {
-        name = [name stringByAppendingString:@":"];
-    }
-    return name;
-}
-
 /// 设置内容
 - (void)setContentInfo {
     
@@ -183,8 +133,7 @@
     } else if ([self.referedContent isKindOfClass:[RCFileMessage class]]) { // 引用文件消息
         
         RCFileMessage *msg = (RCFileMessage *)self.referedContent;
-        NSString * messageInfo = [NSString
-            stringWithFormat:@"%@ %@", RCLocalizedString(@"RC:FileMsg"), msg.name];
+        NSString * messageInfo = [NSString stringWithFormat:@"%@ %@", RCLocalizedString(@"RC:FileMsg"), msg.name];
         [self layoutTextView:messageInfo isNeedName:YES];
         
     }  else if ([self.referedContent isKindOfClass:[RCRichContentMessage class]]) { // 图文消息被引用
@@ -198,7 +147,7 @@
         [self layoutImageView:msg];
         
     } else if ([self.referedContent isKindOfClass:[RCSightMessage class]]) { // 小视频消息被引用
-      
+        
         RCSightMessage *msg = (RCSightMessage *)self.referedContent;
         [self layoutSightView:msg];
         
@@ -215,11 +164,191 @@
         
         // 设置 text 之前设置 textColor，textLabel 的 attributeDictionary 设置才有效
         NSString * messageInfo = [RCKitUtility formatMessage:self.referedContent
-                                                 targetId:self.referModel.targetId
-                                         conversationType:self.referModel.conversationType
-                                             isAllMessage:YES];
+                                                    targetId:self.referModel.targetId
+                                            conversationType:self.referModel.conversationType
+                                                isAllMessage:YES];
         [self layoutTextView:messageInfo isNeedName:YES];
     }
+}
+
++ (NSString *)getUserDisplayName:(RCMessageModel *)referModel {
+    NSString *name = @"";
+    RCReferenceMessage * content = (RCReferenceMessage *)referModel.content;
+    RCMessageContent *referedContent = content.referMsg;
+    NSString * referedSenderId = content.referMsgUserId;
+    
+    if ([referedContent.senderUserInfo.userId isEqualToString: referedSenderId] && [RCIM sharedRCIM].currentDataSourceType == RCDataSourceTypeInfoManagement) {
+        name = [RCKitUtility getDisplayName:referedContent.senderUserInfo];
+    } else {
+        NSString *referUserId = referedSenderId;
+        if (ConversationType_GROUP == referModel.conversationType) {
+            RCUserInfo *userInfo =
+            [[RCUserInfoCacheManager sharedManager] getUserInfo:referUserId inGroupId:referModel.targetId];
+            referModel.userInfo = userInfo;
+            if (userInfo) {
+                name = userInfo.name;
+            }
+        } else {
+            RCUserInfo *userInfo = [[RCUserInfoCacheManager sharedManager] getUserInfo:referUserId];
+            referModel.userInfo = userInfo;
+            if (userInfo) {
+                name = userInfo.name;
+            }
+        }
+    }
+    if([RCKitUtility isRTL]) {
+        name = [@":" stringByAppendingString:name ?: @""];
+    } else {
+        name = [name stringByAppendingString:@":"];
+    }
+    return name;
+}
+
+/// 追加内容上下边距
++ (CGFloat)contentHeightWithOriginalHeight:(CGFloat)originalHeight {
+    CGFloat totalHeight = originalHeight + easyfun_referenced_content_top_bottom_margin *2;
+    if (totalHeight < easyfun_referenced_content_min_height) {
+        totalHeight = easyfun_referenced_content_min_height;
+    }
+    return totalHeight;
+}
+/// 追加内容的左右边距
++ (CGFloat)contentWidthWithOriginalWidth:(CGFloat)originalWidth maxWidth:(CGFloat)maxWidth {
+    CGFloat totalWidth = originalWidth + easyfun_referenced_content_left_right_space *2;
+    if (totalWidth > maxWidth) {
+        totalWidth = maxWidth;
+    }
+    return totalWidth;
+}
+/// 获取可计算内容的最大宽度
++ (CGFloat)maxContentWidthWithMaxWidth:(CGFloat)maxWidth {
+    return maxWidth - easyfun_referenced_content_left_right_space *2;
+}
+/// 计算被引用消息内容的大小
++ (CGSize)contentInfoSizeWithContent:(RCMessageModel *)model maxWidth:(CGFloat)maxWidth {
+    
+    // 引用消息的内容
+    RCReferenceMessage *refenceMessage = (RCReferenceMessage *)model.content;
+    // 真正被引用的消息
+    RCMessageContent *content = refenceMessage.referMsg;
+    // 文本字号
+    UIFont * textFont = [UIFont systemFontOfSize:12];
+    // 最大文本内容大小
+    CGFloat contentMaxWidth = [EasyFunReferencedContentView maxContentWidthWithMaxWidth:maxWidth];
+    CGSize constrainedSize = CGSizeMake(contentMaxWidth, CGFLOAT_MAX);
+    // 引用消息被撤回
+    if (refenceMessage.referMsgStatus == RCReferenceMessageStatusRecalled) {
+        NSString * recalledText = RCLocalizedString(@"ReferencedMessageRecalled");
+        CGSize textSize = [RCKitUtility getTextDrawingSize:recalledText font:textFont constrainedSize:constrainedSize];
+        CGFloat contentHeight = [self contentHeightWithOriginalHeight:textSize.height];
+        CGFloat contentWidth = [self contentWidthWithOriginalWidth:textSize.width maxWidth:maxWidth];
+        return CGSizeMake(ceil(contentWidth), ceil(contentHeight));
+    }
+    // 引用消息被删除
+    if (refenceMessage.referMsgStatus == RCReferenceMessageStatusDeleted) {
+        NSString * deletedText = RCLocalizedString(@"ReferencedMessageDeleted");
+        CGSize textSize = [RCKitUtility getTextDrawingSize:deletedText font:textFont constrainedSize:constrainedSize];
+        CGFloat contentHeight = [self contentHeightWithOriginalHeight:textSize.height];
+        CGFloat contentWidth = [self contentWidthWithOriginalWidth:textSize.width maxWidth:maxWidth];
+        return CGSizeMake(ceil(contentWidth), ceil(contentHeight));
+    }
+    // 引用文件消息
+    if ([content isKindOfClass:[RCFileMessage class]]) {
+        NSString * messageInfo = [NSString stringWithFormat:@"%@ %@", RCLocalizedString(@"RC:FileMsg"), ((RCFileMessage *)content).name];
+        CGSize textSize = [RCKitUtility getTextDrawingSize:messageInfo font:textFont constrainedSize:constrainedSize];
+        textSize.width = ceil(textSize.width);
+        textSize.height = ceil(textSize.height);
+        CGFloat contentHeight = [self contentHeightWithOriginalHeight:textSize.height];
+        CGFloat contentWidth = [self contentWidthWithOriginalWidth:textSize.width maxWidth:maxWidth];
+        return CGSizeMake(ceil(contentWidth), ceil(contentHeight));
+    }
+    // 图文消息被引用
+    if ([content isKindOfClass:[RCRichContentMessage class]]) {
+        NSString * nameText = [EasyFunReferencedContentView getUserDisplayName:model];
+        CGSize nameSize = [RCKitUtility getTextDrawingSize:nameText font:textFont constrainedSize:CGSizeMake(easyfun_referenced_name_max_width, CGFLOAT_MAX)];
+        nameSize.width = ceil(nameSize.width);
+        nameSize.height = ceil(nameSize.height);
+        CGSize imageSize = CGSizeMake(EasyFunReferencedImageWidth, EasyFunReferencedImageHeight);
+        CGFloat totalWidth = nameSize.width + imageSize.width + easyfun_referenced_content_margin;
+        CGFloat contentHeight = [self contentHeightWithOriginalHeight:EasyFunReferencedImageHeight];
+        CGFloat contentWidth = [self contentWidthWithOriginalWidth:totalWidth maxWidth:maxWidth];
+        return CGSizeMake(ceil(contentWidth), ceil(contentHeight));
+    }
+    // 图片消息被引用
+    if ([content isKindOfClass:[RCImageMessage class]]) {
+        NSString * nameText = [EasyFunReferencedContentView getUserDisplayName:model];
+        CGSize nameSize = [RCKitUtility getTextDrawingSize:nameText font:textFont constrainedSize:CGSizeMake(easyfun_referenced_name_max_width, CGFLOAT_MAX)];
+        nameSize.width = ceil(nameSize.width);
+        nameSize.height = ceil(nameSize.height);
+        CGSize imageSize = CGSizeMake(EasyFunReferencedImageWidth, EasyFunReferencedImageHeight);
+        CGFloat totalWidth = nameSize.width + imageSize.width + easyfun_referenced_content_margin;
+        CGFloat contentHeight = [self contentHeightWithOriginalHeight:EasyFunReferencedImageHeight];
+        CGFloat contentWidth = [self contentWidthWithOriginalWidth:totalWidth maxWidth:maxWidth];
+        return CGSizeMake(ceil(contentWidth), ceil(contentHeight));
+    }
+    // 小视频消息被引用
+    if ([content isKindOfClass:[RCSightMessage class]]) {
+        NSString * nameText = [EasyFunReferencedContentView getUserDisplayName:model];
+        CGSize nameSize = [RCKitUtility getTextDrawingSize:nameText font:textFont constrainedSize:CGSizeMake(easyfun_referenced_name_max_width, CGFLOAT_MAX)];
+        nameSize.width = ceil(nameSize.width);
+        nameSize.height = ceil(nameSize.height);
+        CGSize imageSize = CGSizeMake(EasyFunReferencedSightWidth, EasyFunReferencedSightHeight);
+        CGFloat totalWidth = nameSize.width + imageSize.width + easyfun_referenced_content_margin;
+        CGFloat contentHeight = [self contentHeightWithOriginalHeight:EasyFunReferencedSightHeight];
+        CGFloat contentWidth = [self contentWidthWithOriginalWidth:totalWidth maxWidth:maxWidth];
+        return CGSizeMake(ceil(contentWidth), ceil(contentHeight));
+    }
+    // 链接消息被引用
+    if ([[[content class] getObjectName] isEqualToString:@"LD:LinkCardMsg"]) {
+        NSString * nameText = [EasyFunReferencedContentView getUserDisplayName:model];
+        CGSize nameSize = [RCKitUtility getTextDrawingSize:nameText font:textFont constrainedSize:CGSizeMake(easyfun_referenced_name_max_width, CGFLOAT_MAX)];
+        CGSize iconSize = CGSizeMake(EasyFunReferencedLinkImageSize, EasyFunReferencedLinkImageSize);
+        NSDictionary *extraDic = [[RCKitConfig defaultConfig].custom getMessageCustomConfig:content];
+        NSString * urlContent = extraDic[@"url"];
+        CGFloat urlContentMaxWidth = contentMaxWidth - nameSize.width - iconSize.width - easyfun_referenced_content_margin - EasyFunReferencedLinkImageMargin;
+        CGSize urlSize = [RCKitUtility getTextDrawingSize:urlContent font:textFont constrainedSize:CGSizeMake(urlContentMaxWidth, CGFLOAT_MAX)];
+        urlSize.width = ceil(urlSize.width);
+        urlSize.height = ceil(urlSize.height);
+        CGFloat totalWidth = nameSize.width + iconSize.width + urlSize.width + easyfun_referenced_content_margin + EasyFunReferencedLinkImageMargin;
+        CGFloat contentHeight = [self contentHeightWithOriginalHeight:EasyFunReferencedLinkImageSize];
+        CGFloat contentWidth = [self contentWidthWithOriginalWidth:totalWidth maxWidth:maxWidth];
+        return CGSizeMake(ceil(contentWidth), ceil(contentHeight));
+    }
+    // 游戏消息被引用
+    if ([[[content class] getObjectName] isEqualToString:@"LD:GameCardMsg"]) {
+        NSString * nameText = [EasyFunReferencedContentView getUserDisplayName:model];
+        CGSize nameSize = [RCKitUtility getTextDrawingSize:nameText font:textFont constrainedSize:CGSizeMake(easyfun_referenced_name_max_width, CGFLOAT_MAX)];
+        nameSize.width = ceil(nameSize.width);
+        nameSize.height = ceil(nameSize.height);
+        CGSize iconSize = CGSizeMake(EasyFunReferencedGameImageSize, EasyFunReferencedGameImageSize);
+        NSDictionary *customConfig = [[RCKitConfig defaultConfig].custom getMessageCustomConfig:content];
+        NSString * gameName = customConfig[@"name"];
+        CGFloat ganeNameMaxWidth = contentMaxWidth - nameSize.width - iconSize.width - easyfun_referenced_content_margin - EasyFunReferencedGameViewMaigin;
+        CGSize gameNameSize = [RCKitUtility getTextDrawingSize:gameName font:textFont constrainedSize:CGSizeMake(ganeNameMaxWidth, CGFLOAT_MAX)];
+        gameNameSize.width = ceil(gameNameSize.width);
+        gameNameSize.height = ceil(gameNameSize.height);
+        CGFloat totalWidth = nameSize.width + iconSize.width + gameNameSize.width + easyfun_referenced_content_margin + EasyFunReferencedGameViewMaigin;
+        CGFloat contentHeight = [self contentHeightWithOriginalHeight:EasyFunReferencedGameImageSize];
+        CGFloat contentWidth = [self contentWidthWithOriginalWidth:totalWidth maxWidth:maxWidth];
+        return CGSizeMake(ceil(contentWidth), ceil(contentHeight));
+    }
+    // 文本消息 或者 引用消息被引用
+    if ([content isKindOfClass:[RCTextMessage class]] || [content isKindOfClass:[RCReferenceMessage class]]) {
+        NSString * nameText = [EasyFunReferencedContentView getUserDisplayName:model];
+        NSString * messageInfo = [RCKitUtility formatMessage:content
+                                                 targetId:model.targetId
+                                         conversationType:model.conversationType
+                                             isAllMessage:YES];
+        NSString * completedText = [NSString stringWithFormat:@"%@ %@", nameText, messageInfo];
+        CGSize textSize = [RCKitUtility getTextDrawingSize:completedText font:textFont constrainedSize:constrainedSize];
+        textSize.width = ceil(textSize.width);
+        textSize.height = ceil(textSize.height);
+        CGFloat contentHeight = [self contentHeightWithOriginalHeight:textSize.height];
+        CGFloat contentWidth = [self contentWidthWithOriginalWidth:textSize.width maxWidth:maxWidth];
+        return CGSizeMake(ceil(contentWidth), ceil(contentHeight));
+    }
+    // 默认返回最小高度
+    return CGSizeMake(maxWidth, easyfun_referenced_content_min_height);
 }
 
 /// 背景内容
@@ -272,7 +401,7 @@
         make.leading.mas_equalTo(self.contentView.mas_leading);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
-    NSString * nameText = [self getUserDisplayName];
+    NSString * nameText = [EasyFunReferencedContentView getUserDisplayName:self.referModel];
     NSString * completedText = needName ? [NSString stringWithFormat:@"%@ %@", nameText, messageInfo] : messageInfo;
     completedText = [completedText stringByReplacingOccurrencesOfString:@"\r\n" withString:@" "];
     completedText = [completedText stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
@@ -298,7 +427,7 @@
         make.leading.mas_equalTo(self.contentView.mas_leading);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
-    NSString * nameText = [self getUserDisplayName];
+    NSString * nameText = [EasyFunReferencedContentView getUserDisplayName:self.referModel];
     [self.imageView updateNameLabelText:nameText];
     [self.imageView updateRichContentMessage:message];
 }
@@ -312,7 +441,7 @@
         make.leading.mas_equalTo(self.contentView.mas_leading);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
-    NSString * nameText = [self getUserDisplayName];
+    NSString * nameText = [EasyFunReferencedContentView getUserDisplayName:self.referModel];
     [self.imageView updateNameLabelText:nameText];
     [self.imageView updateImageMessage:message];
 }
@@ -335,7 +464,7 @@
         make.leading.mas_equalTo(self.contentView.mas_leading);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
-    NSString * nameText = [self getUserDisplayName];
+    NSString * nameText = [EasyFunReferencedContentView getUserDisplayName:self.referModel];
     [self.sightView updateNameLabelText:nameText];
     [self.sightView updateSightMessage:message];
 }
@@ -345,6 +474,7 @@
     if (!_linkView) {
         _linkView = [[EasyFunReferencedLinkView alloc] initWithFrame:CGRectZero];
         _linkView.hidden = YES;
+        _linkView.textLabel.font = [UIFont systemFontOfSize:12];
     }
     return _linkView;
 }
@@ -358,7 +488,7 @@
         make.leading.mas_equalTo(self.contentView.mas_leading);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
-    NSString * nameText = [self getUserDisplayName];
+    NSString * nameText = [EasyFunReferencedContentView getUserDisplayName:self.referModel];
     [self.linkView updateNameLabelText:nameText];
     [self.linkView updateMessageContent:content];
 }
@@ -383,7 +513,7 @@
         make.leading.mas_equalTo(self.contentView.mas_leading);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
-    NSString * nameText = [self getUserDisplayName];
+    NSString * nameText = [EasyFunReferencedContentView getUserDisplayName:self.referModel];
     [self.gameView updateNameLabelText:nameText];
     [self.gameView updateMessageContent:content];
 }

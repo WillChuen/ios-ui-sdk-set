@@ -8,6 +8,11 @@
 #import <UIKit/UIKit.h>
 #import "EasyFunReferencedBaseView.h"
 
+/// 链接引用视图图片大小
+#define EasyFunReferencedLinkImageSize 16
+/// 链接引用视图图片间距
+#define EasyFunReferencedLinkImageMargin 4
+
 @class RCloudImageView;
 @class RCBaseLabel;
 @class RCMessageContent;

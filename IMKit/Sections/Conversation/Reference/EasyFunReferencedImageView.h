@@ -8,6 +8,9 @@
 #import <UIKit/UIKit.h>
 #import "EasyFunReferencedBaseView.h"
 
+#define EasyFunReferencedImageWidth 40
+#define EasyFunReferencedImageHeight 23
+
 @class RCloudImageView;
 @class RCImageMessage;
 @class RCRichContentMessage;

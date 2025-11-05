@@ -45,11 +45,11 @@
         make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(easyfun_referenced_content_margin);
         make.top.mas_equalTo(self.mas_top);
         make.bottom.mas_equalTo(self.mas_bottom);
-        make.width.mas_equalTo(16);
-        make.height.mas_equalTo(16);
+        make.width.mas_equalTo(EasyFunReferencedLinkImageSize);
+        make.height.mas_equalTo(EasyFunReferencedLinkImageSize);
     }];
     [self.textLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(self.imageView.mas_trailing).offset(4);
+        make.leading.mas_equalTo(self.imageView.mas_trailing).offset(EasyFunReferencedLinkImageMargin);
         make.trailing.mas_equalTo(self.mas_trailing);
         make.centerY.mas_equalTo(self.mas_centerY);
     }];
@@ -81,7 +81,7 @@
         _textLabel = [[RCBaseLabel alloc] initWithFrame:CGRectZero];
         _textLabel.numberOfLines = 1;
         [_textLabel setLineBreakMode:NSLineBreakByTruncatingTail];
-        _textLabel.font = [[RCKitConfig defaultConfig].font fontOfFourthLevel];
+        _textLabel.font = [UIFont systemFontOfSize:12];
         _textLabel.textAlignment = NSTextAlignmentLeft;
         _textLabel.textColor = HEXCOLOR(0xFFA100);
     }

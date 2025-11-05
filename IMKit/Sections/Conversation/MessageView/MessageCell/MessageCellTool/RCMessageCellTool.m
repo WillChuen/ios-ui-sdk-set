@@ -54,7 +54,7 @@
 }
 
 + (CGFloat)getMessageContentViewMaxWidth{
-    float screenRatio = 0.637;
+    float screenRatio = 0.7;
     if (SCREEN_WIDTH <= 320) {
         screenRatio = 0.6;
     }

@@ -59,7 +59,7 @@
     // 计算引用内容尺寸
     CGSize contentSize = [[self class] contentInfoSizeWithContent:model maxWidth:maxWidth];
     // 计算消息内容尺寸
-    CGFloat messageContentSizeWidth = MAX(textLabelSize.width, contentSize.width);
+    CGFloat messageContentSizeWidth = MAX(textLabelSize.width + content_space_left + content_space_right, contentSize.width);
     // 消息内容尺寸
     CGSize messageContentSize =
     CGSizeMake(messageContentSizeWidth, bubble_top_space + textLabelSize.height + bubble_bottom_space + refer_and_text_space + contentSize.height);
@@ -145,24 +145,20 @@
     // 引用内容位置
     self.referencedContentView.frame = CGRectMake(0, CGRectGetMaxY(self.contentLabel.frame) + bubble_bottom_space + refer_and_text_space, contentSize.width, contentSize.height);
     // 消息内容尺寸
-    CGFloat messageContentSizeWidth = MAX(textLabelSize.width, contentSize.width);
+    CGFloat messageContentSizeWidth = MAX(textLabelSize.width + content_space_left + content_space_right, contentSize.width);
     CGSize messageContentSize =
     CGSizeMake(messageContentSizeWidth, textLabelSize.height + contentSize.height + bubble_top_space +
                bubble_bottom_space + refer_and_text_space);
+    // 更新引用内用位置
+    CGFloat referencedContentViewX = 0;
+    if (self.model.messageDirection == MessageDirection_SEND) {
+        referencedContentViewX = messageContentSizeWidth - contentSize.width;
+    }
+    CGRect referencedContentViewFrame = self.referencedContentView.frame;
+    referencedContentViewFrame.origin.x = referencedContentViewX;
+    self.referencedContentView.frame = referencedContentViewFrame;
     // 消息内容尺
     self.messageContentView.contentSize = CGSizeMake(messageContentSize.width, messageContentSize.height);
-    // 发送状态视图
-    self.statusContentView.backgroundColor = [UIColor blueColor];
-    self.baseContentView.backgroundColor = [UIColor purpleColor];
-    self.messageContentView.backgroundColor = [UIColor greenColor];
-    
-    /*
-     CGRect statusFrame = CGRectMake(CGRectGetMaxX(frame)+StatusViewAndContentViewSpace, frame.origin.y, StatusContentViewWidth, frame.size.height);
-     strongSelf.statusContentView.frame = statusFrame;
-     
-     CGRect statusFrame = CGRectMake(frame.origin.x - StatusContentViewWidth-StatusViewAndContentViewSpace, frame.origin.y, StatusContentViewWidth, frame.size.height);
-     strongSelf.statusContentView.frame = statusFrame;
-     */
 }
 
 /// 更新背景气泡位置
@@ -185,18 +181,7 @@
 }
 
 + (CGSize)contentInfoSizeWithContent:(RCMessageModel *)model maxWidth:(CGFloat)maxWidth {
-//    RCReferenceMessage *refenceMessage = (RCReferenceMessage *)model.content;
-//    RCMessageContent *content = refenceMessage.referMsg;
-//    CGFloat height = 17;//名字显示高度
-//    BOOL isDeletedOrRecalled = (refenceMessage.referMsgStatus == RCReferenceMessageStatusRecalled
-//                                || refenceMessage.referMsgStatus == RCReferenceMessageStatusDeleted);
-//    if ([content isKindOfClass:[RCImageMessage class]] && !isDeletedOrRecalled) {
-//        RCImageMessage *msg = (RCImageMessage *)content;
-//        height = [RCMessageCellTool getThumbnailImageSize:msg.thumbnailImage].height + height + name_and_image_view_space;
-//    } else {
-//        height = 34;//两行文本高度
-//    }
-    return CGSizeMake(maxWidth, 32);
+    return [EasyFunReferencedContentView contentInfoSizeWithContent:model maxWidth:maxWidth];
 }
 
 + (CGSize)getTextLabelSize:(NSString *)message maxWidth:(CGFloat)maxWidth font:(UIFont *)font {

@@ -55,6 +55,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// 在Cell重用的时候调用
 - (void)prepareForReuse;
 
+/// 计算被引用消息内容的大小
+/// - Parameters:
+///   - model: 消息Cell的数据模型类
+///   - maxWidth: 最大宽度
++ (CGSize)contentInfoSizeWithContent:(RCMessageModel *)model maxWidth:(CGFloat)maxWidth;
+
 @end
 
 NS_ASSUME_NONNULL_END

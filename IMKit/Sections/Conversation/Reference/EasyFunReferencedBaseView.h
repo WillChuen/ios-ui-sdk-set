@@ -12,7 +12,7 @@
 /// 引用视图名称内容与边距
 #define easyfun_referenced_content_margin 6
 /// 最长的昵称内容
-#define easyfun_referenced_name_max_width 80
+#define easyfun_referenced_name_max_width 100
 
 NS_ASSUME_NONNULL_BEGIN
 /// 引用基础视图

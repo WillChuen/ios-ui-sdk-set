@@ -12,9 +12,6 @@
 #import "RCRichContentMessage.h"
 #import <Masonry/Masonry.h>
 
-#define EasyFunReferencedImageWidth 40
-#define EasyFunReferencedImageHeight 23
-
 @implementation EasyFunReferencedImageView
 ///
 - (instancetype)initWithFrame:(CGRect)frame {

@@ -41,11 +41,11 @@
         make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(easyfun_referenced_content_margin);
         make.top.mas_equalTo(self.mas_top);
         make.bottom.mas_equalTo(self.mas_bottom);
-        make.width.mas_equalTo(24);
-        make.height.mas_equalTo(24);
+        make.width.mas_equalTo(EasyFunReferencedGameImageSize);
+        make.height.mas_equalTo(EasyFunReferencedGameImageSize);
     }];
     [self.textLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.leading.mas_equalTo(self.imageView.mas_trailing).offset(4);
+        make.leading.mas_equalTo(self.imageView.mas_trailing).offset(EasyFunReferencedGameViewMaigin);
         make.trailing.mas_equalTo(self.mas_trailing);
         make.centerY.mas_equalTo(self.mas_centerY);
     }];

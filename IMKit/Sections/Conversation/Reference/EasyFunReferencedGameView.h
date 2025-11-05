@@ -8,6 +8,12 @@
 #import <UIKit/UIKit.h>
 #import "EasyFunReferencedBaseView.h"
 
+/// 引用游戏消息视图高度
+#define EasyFunReferencedGameImageSize 24
+/// 引用游戏消息视图内距离
+#define EasyFunReferencedGameViewMaigin 4
+
+// 24
 @class RCloudImageView;
 @class RCBaseLabel;
 @class RCMessageContent;

@@ -38,8 +38,8 @@
         make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(easyfun_referenced_content_margin);
         make.trailing.mas_equalTo(self.mas_trailing);
         make.centerY.mas_equalTo(self.mas_centerY);
-        make.width.mas_equalTo(40);
-        make.height.mas_equalTo(23);
+        make.width.mas_equalTo(EasyFunReferencedSightWidth);
+        make.height.mas_equalTo(EasyFunReferencedSightHeight);
     }];
     [self.iconImageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.mas_equalTo(self.coverImageView.mas_centerX);
