@@ -6,6 +6,7 @@
 //
 
 #import "EasyFunReferencedImageView.h"
+#import "RCBaseLabel.h"
 #import "RCloudImageView.h"
 #import "RCImageMessage.h"
 #import "RCRichContentMessage.h"
@@ -27,8 +28,15 @@
 /// 设置UI
 - (void)setUpUI {
     [self addSubview:self.imageView];
-    [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self addSubview:self.nameLabel];
+    
+    [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(self.mas_centerY);
+        make.width.mas_lessThanOrEqualTo(easyfun_referenced_name_max_width);
         make.leading.mas_equalTo(self.mas_leading);
+    }];
+    [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(easyfun_referenced_content_margin);
         make.trailing.mas_equalTo(self.mas_trailing);
         make.centerY.mas_equalTo(self.mas_centerY);
         make.width.mas_equalTo(EasyFunReferencedImageWidth);

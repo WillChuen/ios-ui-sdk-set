@@ -6,6 +6,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EasyFunReferencedBaseView.h"
 
 @class RCloudImageView;
 @class RCBaseLabel;
@@ -13,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EasyFunReferencedGameView : UIView
+@interface EasyFunReferencedGameView : EasyFunReferencedBaseView
 
 /// 图片引用视图
 @property (nonatomic, strong) RCloudImageView *imageView;

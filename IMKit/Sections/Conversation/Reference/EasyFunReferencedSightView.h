@@ -6,13 +6,14 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EasyFunReferencedBaseView.h"
 
 @class RCSightMessage;
 @class RCloudImageView;
 NS_ASSUME_NONNULL_BEGIN
 
 /// 视屏引用视图
-@interface EasyFunReferencedSightView : UIView
+@interface EasyFunReferencedSightView : EasyFunReferencedBaseView
 
 /// 视屏封面
 @property (nonatomic, strong) RCloudImageView *coverImageView;

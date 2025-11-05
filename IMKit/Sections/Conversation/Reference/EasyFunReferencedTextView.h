@@ -6,11 +6,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "EasyFunReferencedBaseView.h"
 
 @class RCBaseLabel;
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EasyFunReferencedTextView : UIView
+@interface EasyFunReferencedTextView : EasyFunReferencedBaseView
 /// 被引用消息内容文本 label
 @property (nonatomic, strong) RCBaseLabel *textLabel;
 /// 直接更新文本

@@ -59,9 +59,8 @@
     // 计算引用内容尺寸
     CGSize contentSize = [[self class] contentInfoSizeWithContent:model maxWidth:maxWidth];
     // 计算消息内容尺寸
-    
     CGFloat messageContentSizeWidth = MAX(textLabelSize.width, contentSize.width);
-    
+    // 消息内容尺寸
     CGSize messageContentSize =
     CGSizeMake(messageContentSizeWidth, bubble_top_space + textLabelSize.height + bubble_bottom_space + refer_and_text_space + contentSize.height);
     // 计算最终高度
@@ -145,17 +144,28 @@
     [self.referencedContentView setMessage:self.model contentSize:contentSize];
     // 引用内容位置
     self.referencedContentView.frame = CGRectMake(0, CGRectGetMaxY(self.contentLabel.frame) + bubble_bottom_space + refer_and_text_space, contentSize.width, contentSize.height);
-    
-    CGFloat messageContentSizeWidth = MAX(textLabelSize.width, contentSize.width);
     // 消息内容尺寸
+    CGFloat messageContentSizeWidth = MAX(textLabelSize.width, contentSize.width);
     CGSize messageContentSize =
     CGSizeMake(messageContentSizeWidth, textLabelSize.height + contentSize.height + bubble_top_space +
                bubble_bottom_space + refer_and_text_space);
-    //
+    // 消息内容尺
     self.messageContentView.contentSize = CGSizeMake(messageContentSize.width, messageContentSize.height);
+    // 发送状态视图
+    self.statusContentView.backgroundColor = [UIColor blueColor];
+    self.baseContentView.backgroundColor = [UIColor purpleColor];
+    self.messageContentView.backgroundColor = [UIColor greenColor];
+    
+    /*
+     CGRect statusFrame = CGRectMake(CGRectGetMaxX(frame)+StatusViewAndContentViewSpace, frame.origin.y, StatusContentViewWidth, frame.size.height);
+     strongSelf.statusContentView.frame = statusFrame;
+     
+     CGRect statusFrame = CGRectMake(frame.origin.x - StatusContentViewWidth-StatusViewAndContentViewSpace, frame.origin.y, StatusContentViewWidth, frame.size.height);
+     strongSelf.statusContentView.frame = statusFrame;
+     */
 }
 
-///
+/// 更新背景气泡位置
 - (void)updateBubbleBackgroundViewFrame {
     // 这里的气泡只包含文本内容
     CGSize textLabelSize = self.contentLabel.frame.size;

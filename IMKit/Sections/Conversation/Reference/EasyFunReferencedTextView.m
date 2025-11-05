@@ -42,7 +42,7 @@
 - (RCBaseLabel *)textLabel {
     if (!_textLabel) {
         _textLabel = [[RCBaseLabel alloc] initWithFrame:CGRectZero];
-        _textLabel.numberOfLines = 1;
+        _textLabel.numberOfLines = 2;
         [_textLabel setLineBreakMode:NSLineBreakByTruncatingTail];
         _textLabel.font = [[RCKitConfig defaultConfig].font fontOfFourthLevel];
     }

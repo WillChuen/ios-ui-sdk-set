@@ -38,9 +38,6 @@
 /// 关闭引用 button
 @property (nonatomic, strong) RCBaseButton *dismissButton;
 
-/// 被引用消息发送者名称
-@property (nonatomic, strong) RCBaseLabel *nameLabel;
-
 /// 文本引用内容
 @property (nonatomic, strong) EasyFunReferencedTextView *textReferView;
 

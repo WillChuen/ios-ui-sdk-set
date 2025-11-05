@@ -32,11 +32,17 @@
 /// 设置UI
 - (void)setUpUI {
     //
+    [self addSubview:self.nameLabel];
     [self addSubview:self.imageView];
     [self addSubview:self.textLabel];
     //
-    [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(self.mas_centerY);
+        make.width.mas_lessThanOrEqualTo(easyfun_referenced_name_max_width);
         make.leading.mas_equalTo(self.mas_leading);
+    }];
+    [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(easyfun_referenced_content_margin);
         make.top.mas_equalTo(self.mas_top);
         make.bottom.mas_equalTo(self.mas_bottom);
         make.width.mas_equalTo(16);

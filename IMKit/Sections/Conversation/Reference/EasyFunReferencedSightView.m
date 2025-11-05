@@ -8,11 +8,11 @@
 #import "EasyFunReferencedSightView.h"
 #import "RCloudImageView.h"
 #import "RCKitCommonDefine.h"
+#import "RCBaseLabel.h"
 #import <Masonry/Masonry.h>
 
 ///
 @implementation EasyFunReferencedSightView
-
 ///
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];
@@ -25,11 +25,17 @@
 /// 设置UI
 - (void)setUpUI {
     //
+    [self addSubview:self.nameLabel];
     [self addSubview:self.coverImageView];
     [self addSubview:self.iconImageView];
     //
-    [self.coverImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+    [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.centerY.mas_equalTo(self.mas_centerY);
+        make.width.mas_lessThanOrEqualTo(easyfun_referenced_name_max_width);
         make.leading.mas_equalTo(self.mas_leading);
+    }];
+    [self.coverImageView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(easyfun_referenced_content_margin);
         make.trailing.mas_equalTo(self.mas_trailing);
         make.centerY.mas_equalTo(self.mas_centerY);
         make.width.mas_equalTo(40);
