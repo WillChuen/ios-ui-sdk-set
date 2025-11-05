@@ -43,7 +43,6 @@
     //
     [self addSubview:self.backgroundContentView];
     [self.backgroundContentView addSubview:self.contentView];
-    [self.contentView addSubview:self.nameLabel];
     //
     [self.backgroundContentView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.mas_top);
@@ -57,13 +56,6 @@
         make.bottom.mas_equalTo(self.backgroundContentView.mas_bottom).offset(-4);
         make.leading.mas_equalTo(self.backgroundContentView.mas_leading).offset(12);
         make.trailing.mas_equalTo(self.backgroundContentView.mas_trailing).offset(-12);
-    }];
-    //
-    [self.nameLabel mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.contentView.mas_top);
-        make.bottom.mas_equalTo(self.contentView.mas_bottom);
-        make.leading.mas_equalTo(self.contentView.mas_leading);
-        make.width.mas_lessThanOrEqualTo(100);
     }];
 }
 
@@ -84,8 +76,6 @@
     if (![self fetchReferedContentInfo]) {
         return;
     }
-    // 设置用户名称
-    [self setUserDisplayName];
     // 设置内容
     [self setContentInfo];
 }
@@ -141,7 +131,6 @@
     }
     self.backgroundContentView = nil;
     self.contentView = nil;
-    self.nameLabel = nil;
     self.imageView = nil;
     self.sightView = nil;
     self.linkView = nil;
@@ -149,8 +138,8 @@
     self.textView = nil;
 }
 
-- (void)setUserDisplayName {
-    NSString *name;
+- (NSString *)getUserDisplayName {
+    NSString *name = @"";
     if ([self.referedContent.senderUserInfo.userId isEqualToString:self.referedSenderId] && [RCIM sharedRCIM].currentDataSourceType == RCDataSourceTypeInfoManagement) {
         name = [RCKitUtility getDisplayName:self.referedContent.senderUserInfo];
     } else {
@@ -170,20 +159,12 @@
             }
         }
     }
-    __weak typeof(self) weakSelf = self;
-    dispatch_main_async_safe(^{
-        if (name == nil || name.length == 0) {
-            self.nameLabel.text = @"";
-            self.nameLabel.hidden = YES; return;
-        } else {
-            self.nameLabel.hidden = NO;
-        }
-        if([RCKitUtility isRTL]) {
-            weakSelf.nameLabel.text = [@":" stringByAppendingString:name ?: @""];
-        } else {
-            weakSelf.nameLabel.text = [name stringByAppendingString:@":"];
-        }
-    });
+    if([RCKitUtility isRTL]) {
+        name = [@":" stringByAppendingString:name ?: @""];
+    } else {
+        name = [name stringByAppendingString:@":"];
+    }
+    return name;
 }
 
 /// 设置内容
@@ -192,19 +173,19 @@
     if (self.referMsgStatus == RCReferenceMessageStatusDeleted) { // 引用被删除
         
         NSString * deletedText = RCLocalizedString(@"ReferencedMessageDeleted");
-        [self layoutTextView:deletedText];
+        [self layoutTextView:deletedText isNeedName:NO];
         
     }else if (self.referMsgStatus == RCReferenceMessageStatusRecalled) { // 引用被取消
         
         NSString * recalledText = RCLocalizedString(@"ReferencedMessageRecalled");
-        [self layoutTextView:recalledText];
+        [self layoutTextView:recalledText isNeedName:NO];
         
     } else if ([self.referedContent isKindOfClass:[RCFileMessage class]]) { // 引用文件消息
         
         RCFileMessage *msg = (RCFileMessage *)self.referedContent;
         NSString * messageInfo = [NSString
             stringWithFormat:@"%@ %@", RCLocalizedString(@"RC:FileMsg"), msg.name];
-        [self layoutTextView:messageInfo];
+        [self layoutTextView:messageInfo isNeedName:YES];
         
     }  else if ([self.referedContent isKindOfClass:[RCRichContentMessage class]]) { // 图文消息被引用
         
@@ -237,8 +218,7 @@
                                                  targetId:self.referModel.targetId
                                          conversationType:self.referModel.conversationType
                                              isAllMessage:YES];
-        [self layoutTextView:messageInfo];
-        
+        [self layoutTextView:messageInfo isNeedName:YES];
     }
 }
 
@@ -271,18 +251,6 @@
     return _contentView;
 }
 
-/// 显示用户名称的标签
-- (RCBaseLabel *)nameLabel {
-    if (!_nameLabel) {
-        _nameLabel = [[RCBaseLabel alloc] initWithFrame:CGRectZero];
-        _nameLabel.text = @"NAME";
-        _nameLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
-        _nameLabel.font = [UIFont systemFontOfSize:12];
-        _nameLabel.textColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
-    }
-    return _nameLabel;
-}
-
 /// 显示文本引用的视图
 - (EasyFunReferencedTextView *)textView {
     if (!_textView) {
@@ -295,19 +263,21 @@
 }
 
 /// 布局文本引用视图
-- (void)layoutTextView:(NSString *)messageInfo {
+- (void)layoutTextView:(NSString *)messageInfo isNeedName:(BOOL)needName {
     self.textView.hidden = NO;
     [self.contentView addSubview:self.textView];
     [self.textView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.mas_equalTo(self.contentView.mas_top);
         make.bottom.mas_equalTo(self.contentView.mas_bottom);
-        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
+        make.leading.mas_equalTo(self.contentView.mas_leading);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
-    messageInfo = [messageInfo stringByReplacingOccurrencesOfString:@"\r\n" withString:@" "];
-    messageInfo = [messageInfo stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
-    messageInfo = [messageInfo stringByReplacingOccurrencesOfString:@"\r" withString:@" "];
-    [self.textView updateLableText:messageInfo];
+    NSString * nameText = [self getUserDisplayName];
+    NSString * completedText = needName ? [NSString stringWithFormat:@"%@ %@", nameText, messageInfo] : messageInfo;
+    completedText = [completedText stringByReplacingOccurrencesOfString:@"\r\n" withString:@" "];
+    completedText = [completedText stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
+    completedText = [completedText stringByReplacingOccurrencesOfString:@"\r" withString:@" "];
+    [self.textView updateLableText:completedText];
 }
 
 /// 显示图片引用的视图
@@ -325,9 +295,11 @@
     [self.contentView addSubview:self.imageView];
     [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(self.contentView.mas_centerY);
-        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
+        make.leading.mas_equalTo(self.contentView.mas_leading);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
+    NSString * nameText = [self getUserDisplayName];
+    [self.imageView updateNameLabelText:nameText];
     [self.imageView updateRichContentMessage:message];
 }
 
@@ -337,9 +309,11 @@
     [self.contentView addSubview:self.imageView];
     [self.imageView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(self.contentView.mas_centerY);
-        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
+        make.leading.mas_equalTo(self.contentView.mas_leading);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
+    NSString * nameText = [self getUserDisplayName];
+    [self.imageView updateNameLabelText:nameText];
     [self.imageView updateImageMessage:message];
 }
 
@@ -358,9 +332,11 @@
     [self.contentView addSubview:self.sightView];
     [self.sightView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(self.contentView.mas_centerY);
-        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
+        make.leading.mas_equalTo(self.contentView.mas_leading);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
+    NSString * nameText = [self getUserDisplayName];
+    [self.sightView updateNameLabelText:nameText];
     [self.sightView updateSightMessage:message];
 }
 
@@ -379,9 +355,11 @@
     [self.contentView addSubview:self.linkView];
     [self.linkView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(self.contentView.mas_centerY);
-        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
+        make.leading.mas_equalTo(self.contentView.mas_leading);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
+    NSString * nameText = [self getUserDisplayName];
+    [self.linkView updateNameLabelText:nameText];
     [self.linkView updateMessageContent:content];
 }
 
@@ -402,9 +380,11 @@
     [self.contentView addSubview:self.gameView];
     [self.gameView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerY.mas_equalTo(self.contentView.mas_centerY);
-        make.leading.mas_equalTo(self.nameLabel.mas_trailing).offset(4);
+        make.leading.mas_equalTo(self.contentView.mas_leading);
         make.trailing.mas_equalTo(self.contentView.mas_trailing);
     }];
+    NSString * nameText = [self getUserDisplayName];
+    [self.gameView updateNameLabelText:nameText];
     [self.gameView updateMessageContent:content];
 }
 

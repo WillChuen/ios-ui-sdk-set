@@ -38,8 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) UIView * backgroundContentView;
 /// 全部内容
 @property (nonatomic, strong, nullable) UIView * contentView;
-/// 被引用消息发送者名称
-@property (nonatomic, strong, nullable) RCBaseLabel *nameLabel;
 /// 显示文本引用的视图
 @property (nonatomic, strong, nullable) EasyFunReferencedTextView * textView;
 /// 显示图片引用的视图
