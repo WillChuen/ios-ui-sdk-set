@@ -11,6 +11,7 @@
 #import "RCChatSessionInputBarControl.h"
 #import "RCExtensionService.h"
 #import "RCKitConfig.h"
+#import <Masonry/Masonry.h>
 
 #define TextViewLineHeight 20.f              //输入框每行文字高度
 #define TextViewSpaceHeight_LessThanMax 17.f //输入框小于最大行时除文字外上下空隙高度
@@ -231,13 +232,21 @@
 
 #pragma mark - UI
 - (void)setupSubViews {
-    
+    //
     [self addSubview:self.switchButton];
     [self addSubview:self.inputTextViewBackgroundView];
+    [self addSubview:self.inputTextViewRightAccessoryView];
     [self addSubview:self.inputTextView];
     [self addSubview:self.recordButton];
     [self addSubview:self.emojiButton];
     [self addSubview:self.additionalButton];
+    // 布局 inputTextViewRightAccessoryView
+    [self.inputTextViewRightAccessoryView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(self.inputTextViewBackgroundView.mas_top).offset(4);
+        make.width.mas_equalTo(10);
+        make.height.mas_equalTo(15);
+        make.leading.mas_equalTo(self.inputTextViewBackgroundView.mas_trailing).offset(-7);
+    }];
 }
 
 - (void)showInputTextView {
@@ -507,8 +516,8 @@
         _inputTextView.delegate = self;
         _inputTextView.textChangeDelegate = self;
         UIEdgeInsets textEdge = self.inputTextView.textContainerInset;
-        textEdge.left = 5;
-        textEdge.right = 5;
+        textEdge.left = 16;
+        textEdge.right = 16;
         _inputTextView.textContainerInset = textEdge;
         [_inputTextView setExclusiveTouch:YES];
         [_inputTextView setTextColor:[RCKitUtility generateDynamicColor:HEXCOLOR(0x000000) darkColor:RCMASKCOLOR(0xffffff, 0.8)]];
@@ -532,6 +541,17 @@
         _inputTextViewBackgroundView.image = [backgroundImage resizableImageWithCapInsets:UIEdgeInsetsMake(backgroundImage.size.height * 0.5, backgroundImage.size.width * 0.5, backgroundImage.size.height * 0.5, backgroundImage.size.width * 0.5)];
     }
     return _inputTextViewBackgroundView;
+}
+
+- (UIImageView *)inputTextViewRightAccessoryView {
+    if (!_inputTextViewRightAccessoryView) {
+        _inputTextViewRightAccessoryView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 10, 15)];
+        _inputTextViewRightAccessoryView.backgroundColor = [UIColor clearColor];
+        _inputTextViewRightAccessoryView.contentMode = UIViewContentModeScaleToFill;
+        UIImage * image = [RCKitConfig defaultConfig].custom.inputTextViewDecorationImage;
+        _inputTextViewRightAccessoryView.image = image;
+    }
+    return _inputTextViewRightAccessoryView;
 }
 
 - (RCButton *)recordButton {

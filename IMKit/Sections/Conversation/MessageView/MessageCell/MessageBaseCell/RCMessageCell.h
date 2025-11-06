@@ -51,6 +51,12 @@
  */
 @property (nonatomic, strong) UILabel *nicknameLabel;
 
+/// 消息发送者的用户名称字体
+@property (nonatomic, strong) UIFont * nicknameFont;
+
+/// 消息发送者的用户名称颜色
+@property (nonatomic, strong) UIColor * nicknameTextColor;
+
 /*!
  消息内容的View
  */

@@ -847,7 +847,9 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
             if (model.conversationType != ConversationType_Encrypted) {
                 [self.portraitImageView setImageURL:[NSURL URLWithString:model.content.senderUserInfo.portraitUri]];
             }
-            [self.nicknameLabel setText:[RCKitUtility getDisplayName:model.content.senderUserInfo]];
+            NSString * originNameText = [RCKitUtility getDisplayName:model.content.senderUserInfo];
+            NSMutableAttributedString * attributedName = [[RCKitConfig defaultConfig].custom assembleUserName:originNameText font:self.nicknameFont textColor:self.nicknameTextColor messageModel:model];
+            [self.nicknameLabel setAttributedText:attributedName];
         } else {
             RCUserInfo *userInfo = [[RCUserInfoCacheManager sharedManager] getUserInfo:userId];
             model.userInfo = userInfo;
@@ -855,10 +857,12 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
                 if (model.conversationType != ConversationType_Encrypted) {
                     [self.portraitImageView setImageURL:[NSURL URLWithString:userInfo.portraitUri]];
                 }
-                [self.nicknameLabel setText:[RCKitUtility getDisplayName:userInfo]];
+                NSString * originNameText = [RCKitUtility getDisplayName:userInfo];
+                NSMutableAttributedString * attributedName = [[RCKitConfig defaultConfig].custom assembleUserName:originNameText font:self.nicknameFont textColor:self.nicknameTextColor messageModel:model];
+                [self.nicknameLabel setAttributedText:attributedName];
             } else {
                 [self.portraitImageView setImageURL:nil];
-                [self.nicknameLabel setText:nil];
+                [self.nicknameLabel setAttributedText:nil];
             }
         }
     }
@@ -872,10 +876,12 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
         model.userInfo = model.content.senderUserInfo;
         if (model.content.senderUserInfo != nil) {
             [self.portraitImageView setImageURL:[NSURL URLWithString:model.content.senderUserInfo.portraitUri]];
-            [self.nicknameLabel setText:[RCKitUtility getDisplayName:model.content.senderUserInfo]];
+            NSString * originNameText = [RCKitUtility getDisplayName:model.content.senderUserInfo];
+            NSMutableAttributedString * attributedName = [[RCKitConfig defaultConfig].custom assembleUserName:originNameText font:self.nicknameFont textColor:self.nicknameTextColor messageModel:model];
+            [self.nicknameLabel setAttributedText:attributedName];
         } else {
             [self.portraitImageView setImage:RCResourceImage(@"portrait_kefu")];
-            [self.nicknameLabel setText:nil];
+            [self.nicknameLabel setAttributedText:nil];
         }
     } else {
         RCUserInfo *userInfo = [[RCUserInfoCacheManager sharedManager] getUserInfo:model.senderUserId];
@@ -883,10 +889,12 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
         [self.portraitImageView setPlaceholderImage:RCResourceImage(@"default_portrait_msg")];
         if (userInfo) {
             [self.portraitImageView setImageURL:[NSURL URLWithString:userInfo.portraitUri]];
-            [self.nicknameLabel setText:[RCKitUtility getDisplayName:userInfo]];
+            NSString * originNameText = [RCKitUtility getDisplayName:userInfo];
+            NSMutableAttributedString * attributedName = [[RCKitConfig defaultConfig].custom assembleUserName:originNameText font:self.nicknameFont textColor:self.nicknameTextColor messageModel:model];
+            [self.nicknameLabel setAttributedText:attributedName];
         } else {
             [self.portraitImageView setImageURL:nil];
-            [self.nicknameLabel setText:nil];
+            [self.nicknameLabel setAttributedText:nil];
         }
     }
 }
@@ -905,28 +913,34 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
         model.userInfo = model.content.senderUserInfo;
         if (serviceProfile) {
             [self.portraitImageView setImageURL:[NSURL URLWithString:serviceProfile.portraitUrl]];
-            [self.nicknameLabel setText:serviceProfile.name];
+            NSString * originNameText = serviceProfile.name;
+            NSMutableAttributedString * attributedName = [[RCKitConfig defaultConfig].custom assembleUserName:originNameText font:self.nicknameFont textColor:self.nicknameTextColor messageModel:model];
+            [self.nicknameLabel setAttributedText:attributedName];
         }
     } else {
         RCUserInfo *userInfo = [[RCUserInfoCacheManager sharedManager] getUserInfo:model.senderUserId];
         model.userInfo = userInfo;
         if (userInfo) {
             [self.portraitImageView setImageURL:[NSURL URLWithString:userInfo.portraitUri]];
-            [self.nicknameLabel setText:[RCKitUtility getDisplayName:userInfo]];
+            NSString * originNameText = [RCKitUtility getDisplayName:userInfo];
+            NSMutableAttributedString * attributedName = [[RCKitConfig defaultConfig].custom assembleUserName:originNameText font:self.nicknameFont textColor:self.nicknameTextColor messageModel:model];
+            [self.nicknameLabel setAttributedText:attributedName];
         } else {
             [self.portraitImageView setImageURL:nil];
-            [self.nicknameLabel setText:nil];
+            [self.nicknameLabel setAttributedText:nil];
         }
     }
 }
 
 /// 设置群组信息
-- (void)p_setGroupInfo:(RCMessageModel *)model{
+- (void)p_setGroupInfo:(RCMessageModel *)model {
     if ([RCIM sharedRCIM].currentDataSourceType == RCDataSourceTypeInfoManagement && [model.content.senderUserInfo.userId isEqualToString:model.senderUserId]) {
         if (model.conversationType != ConversationType_Encrypted) {
             [self.portraitImageView setImageURL:[NSURL URLWithString:model.content.senderUserInfo.portraitUri]];
         }
-        [self.nicknameLabel setText:[RCKitUtility getDisplayName:model.content.senderUserInfo]];
+        NSString * originNameText = [RCKitUtility getDisplayName:model.content.senderUserInfo];
+        NSMutableAttributedString * attributedName = [[RCKitConfig defaultConfig].custom assembleUserName:originNameText font:self.nicknameFont textColor:self.nicknameTextColor messageModel:model];
+        [self.nicknameLabel setAttributedText:attributedName];
         return;
     }
     RCUserInfo *userInfo = [[RCUserInfoCacheManager sharedManager] getUserInfo:model.senderUserId inGroupId:self.model.targetId];
@@ -939,10 +953,12 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
     if (model.userInfo) {
         [self.portraitImageView setImageURL:[NSURL URLWithString:model.userInfo.portraitUri]];
-        [self.nicknameLabel setText:[RCKitUtility getDisplayName:model.userInfo]];
+        NSString * originNameText = [RCKitUtility getDisplayName:model.userInfo];
+        NSMutableAttributedString * attributedName = [[RCKitConfig defaultConfig].custom assembleUserName:originNameText font:self.nicknameFont textColor:self.nicknameTextColor messageModel:model];
+        [self.nicknameLabel setAttributedText:attributedName];
     } else {
         [self.portraitImageView setImageURL:nil];
-        [self.nicknameLabel setText:nil];
+        [self.nicknameLabel setAttributedText:nil];
     }
 }
 
@@ -1006,7 +1022,9 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     if (userInfo.portraitUri.length > 0) {
         [self.portraitImageView setImageURL:[NSURL URLWithString:userInfo.portraitUri]];
     }
-    [self.nicknameLabel setText:[RCKitUtility getDisplayName:userInfo]];
+    NSString * originNameText = [RCKitUtility getDisplayName:userInfo];
+    NSMutableAttributedString * attributedName = [[RCKitConfig defaultConfig].custom assembleUserName:originNameText font:self.nicknameFont textColor:self.nicknameTextColor messageModel:self.model];
+    [self.nicknameLabel setAttributedText:attributedName];
 }
 
 /// 是不是同一个用户信息
@@ -1220,6 +1238,22 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
          setTextColor:[RCKitUtility generateDynamicColor:[UIColor grayColor] darkColor:HEXCOLOR(0x707070)]];
     }
     return _nicknameLabel;
+}
+
+/// 用户昵称字体
+- (UIFont *)nicknameFont {
+    if (!_nicknameFont) {
+        _nicknameFont = [UIFont systemFontOfSize:12];
+    }
+    return _nicknameFont;
+}
+
+/// 用户昵称颜色
+- (UIColor *)nicknameTextColor {
+    if (!_nicknameTextColor) {
+        _nicknameTextColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+    }
+    return _nicknameTextColor;
 }
 
 /// 消失状态内容

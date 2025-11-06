@@ -7,6 +7,7 @@
 
 #import "RCKitCustomConfig.h"
 #import "RCKitUtility.h"
+#import "RCMessageModel.h"
 
 @implementation RCKitCustomConfig
 
@@ -28,6 +29,32 @@
         timeText = [RCKitUtility convertMessageTime:sentTime / 1000];
     }
     return timeText;
+}
+
+/// 二次组装用户昵称
+- (NSMutableAttributedString * _Nullable)assembleUserName:(NSString *)originName
+                                                    font:(UIFont *)font
+                                                textColor:(UIColor *)textColor
+                                             messageModel:(RCMessageModel * _Nullable)messageModel {
+    // 没有自定义组装逻辑，返回默认昵称
+    if (messageModel == nil) {
+        return [[NSMutableAttributedString alloc] initWithString:originName attributes:@{
+            NSFontAttributeName: font,
+            NSForegroundColorAttributeName: textColor
+        }];
+    }
+    // 有自定义组装逻辑，调用自定义逻辑
+    if (self.factory && [self.factory respondsToSelector:@selector(assembleUserName:font:textColor:messageModel:)]) {
+        NSMutableAttributedString * customName = [self.factory assembleUserName:originName font:font textColor:textColor messageModel:messageModel];
+        if (customName) {
+            return customName;
+        }
+    }
+    // 自定义逻辑没有返回值，返回默认昵称
+    return [[NSMutableAttributedString alloc] initWithString:originName attributes:@{
+        NSFontAttributeName: font,
+        NSForegroundColorAttributeName: textColor
+    }];
 }
 
 @end
