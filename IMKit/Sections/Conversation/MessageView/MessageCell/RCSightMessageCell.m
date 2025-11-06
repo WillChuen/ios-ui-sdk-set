@@ -91,10 +91,10 @@ extern NSString *const RCKitDispatchDownloadMediaNotification;
                                                   self.thumbnailView.bounds.size.height / 2)];
             self.progressView.center = self.playImage.center;
             CGRect durationLabelBgFrame =
-                CGRectMake(0, self.thumbnailView.bounds.size.height - 21, self.thumbnailView.bounds.size.width, 21);
+                CGRectMake(0, self.thumbnailView.bounds.size.height - 22, self.thumbnailView.bounds.size.width, 22);
             self.durationLabel.superview.frame = durationLabelBgFrame;
             self.durationLabel.frame =
-                CGRectMake(0, 0, durationLabelBgFrame.size.width-5, durationLabelBgFrame.size.height);
+                CGRectMake(0, 0, durationLabelBgFrame.size.width-6, durationLabelBgFrame.size.height);
         }
     } else {
         DebugLog(@"[RongIMKit]: RCMessageModel.content is NOT RCsightMessage object");
@@ -105,7 +105,7 @@ extern NSString *const RCKitDispatchDownloadMediaNotification;
     [self updateSightPlayStatus];
 }
 
-- (void)updateSightPlayStatus{
+- (void)updateSightPlayStatus {
     if (self.model.sentStatus == SentStatus_SENDING || [[RCResendManager sharedManager] needResend:self.model.messageId]) {
         [self.playButtonView setHidden:YES];
         [self.progressView startIndeterminateAnimation];
@@ -117,7 +117,7 @@ extern NSString *const RCKitDispatchDownloadMediaNotification;
     }
 }
 
-- (void)updateStatusContentView:(RCMessageModel *)model{
+- (void)updateStatusContentView:(RCMessageModel *)model {
     [super updateStatusContentView:model];
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -138,7 +138,7 @@ extern NSString *const RCKitDispatchDownloadMediaNotification;
     [super setDestructViewLayout];
 }
 
-- (void)updateDestructViews{
+- (void)updateDestructViews {
     self.destructBackgroundView.hidden = NO;
     self.destructBackgroundView.frame = CGRectZero;
     self.thumbnailView.frame = CGRectZero;
@@ -161,11 +161,11 @@ extern NSString *const RCKitDispatchDownloadMediaNotification;
 }
 
 #pragma mark - Private Methods
-+ (CGSize)getSightImageSize:(RCMessageModel *)model{
++ (CGSize)getSightImageSize:(RCMessageModel *)model {
     RCSightMessage *sightMessage = (RCSightMessage *)model.content;
 
     CGSize imageSize = sightMessage.thumbnailImage.size;
-    //兼容240
+    // 兼容240
     CGFloat rate = imageSize.width / imageSize.height;
     CGFloat imageWidth = 0;
     CGFloat imageHeight = 0;
@@ -199,7 +199,7 @@ extern NSString *const RCKitDispatchDownloadMediaNotification;
                                                object:nil];
 }
 
-- (NSString *)getSightDurationLabelText:(long)duration{
+- (NSString *)getSightDurationLabelText:(long)duration {
     NSInteger minutes = duration / 60;
     NSInteger seconds = round(duration - minutes * 60);
     if (seconds == 60) {
@@ -290,7 +290,7 @@ extern NSString *const RCKitDispatchDownloadMediaNotification;
         [_durationLabel setTextAlignment:NSTextAlignmentRight];
         [_durationLabel setBackgroundColor:[UIColor clearColor]];
         [_durationLabel setTextColor:[UIColor whiteColor]];
-        [_durationLabel setFont:[[RCKitConfig defaultConfig].font fontOfAnnotationLevel]];
+        [_durationLabel setFont:[UIFont systemFontOfSize:10]];
     }
     return _durationLabel;
 }
@@ -310,8 +310,8 @@ extern NSString *const RCKitDispatchDownloadMediaNotification;
         [_playButtonView addSubview:self.playImage];
         [self.thumbnailView addSubview:_playButtonView];
         RCBaseImageView *backgroudView =
-            [[RCBaseImageView alloc] initWithFrame:CGRectMake(0, self.thumbnailView.bounds.size.height - 21,
-                                                          self.thumbnailView.bounds.size.width, 21)];
+            [[RCBaseImageView alloc] initWithFrame:CGRectMake(0, self.thumbnailView.bounds.size.height - 22,
+                                                          self.thumbnailView.bounds.size.width, 22)];
         backgroudView.image = RCResourceImage(@"player_shadow_bottom");
         [_playButtonView addSubview:backgroudView];
         [backgroudView addSubview:self.durationLabel];
@@ -319,7 +319,7 @@ extern NSString *const RCKitDispatchDownloadMediaNotification;
     return _playButtonView;
 }
 
-- (RCBaseImageView *)thumbnailView{
+- (RCBaseImageView *)thumbnailView {
     if (!_thumbnailView) {
         _thumbnailView = [[RCBaseImageView alloc] initWithFrame:CGRectZero];
         _thumbnailView.layer.masksToBounds = YES;
@@ -328,21 +328,21 @@ extern NSString *const RCKitDispatchDownloadMediaNotification;
     return _thumbnailView;
 }
 
-- (RCBaseImageView *)destructBackgroundView{
+- (RCBaseImageView *)destructBackgroundView {
     if (!_destructBackgroundView) {
         _destructBackgroundView = [[RCBaseImageView alloc] initWithFrame:CGRectZero];
     }
     return _destructBackgroundView;
 }
 
-- (RCBaseImageView *)destructPicture{
+- (RCBaseImageView *)destructPicture {
     if (!_destructPicture) {
         _destructPicture = [[RCBaseImageView alloc] initWithFrame:CGRectMake(0, 0, 31, 26)];
     }
     return _destructPicture;
 }
 
-- (UILabel *)destructLabel{
+- (UILabel *)destructLabel {
     if (!_destructLabel) {
         _destructLabel = [[UILabel alloc] init];
         _destructLabel.text = RCLocalizedString(@"ClickToPlay");
@@ -352,7 +352,7 @@ extern NSString *const RCKitDispatchDownloadMediaNotification;
     return _destructLabel;
 }
 
-- (UILabel *)destructDurationLabel{
+- (UILabel *)destructDurationLabel {
     if (!_destructDurationLabel) {
         _destructDurationLabel = [[UILabel alloc] init];
         _destructDurationLabel.font = [[RCKitConfig defaultConfig].font fontOfAnnotationLevel];

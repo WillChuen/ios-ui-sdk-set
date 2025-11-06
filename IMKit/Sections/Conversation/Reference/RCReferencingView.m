@@ -41,7 +41,7 @@
 /// 初始化引用视图
 - (instancetype)initWithModel:(RCMessageModel *)model inView:(UIView *)view {
     if (self = [super init]) {
-        self.backgroundColor = [RCKitUtility generateDynamicColor:HEXCOLOR(0xffffff) darkColor:HEXCOLOR(0x1c1c1c)];
+        self.backgroundColor = [UIColor clearColor];
         self.inView = view;
         self.referModel = model;
         [self addNotification];
