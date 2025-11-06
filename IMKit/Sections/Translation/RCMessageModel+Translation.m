@@ -18,8 +18,8 @@ NSString *const RCTextTranslatingMessageCellIdentifier = @"RCTextTranslatingMess
 NSString *const RCVoiceTranslatingMessageCellIdentifier = @"RCVoiceTranslatingMessageCellIdentifier";
 NSInteger const RCTranslationTextSpaceLeft = 12;
 NSInteger const RCTranslationTextSpaceRight = 12;
-NSInteger const RCTranslationTextSpaceTop = 9.5;
-NSInteger const RCTranslationTextSpaceBottom = 9.5;
+NSInteger const RCTranslationTextSpaceTop = 12;
+NSInteger const RCTranslationTextSpaceBottom = 12;
 NSInteger const RCTranslationTextSpaceOffset = 6;
 NSInteger const RCTranslationContentTranslatingSize = 40;
 
