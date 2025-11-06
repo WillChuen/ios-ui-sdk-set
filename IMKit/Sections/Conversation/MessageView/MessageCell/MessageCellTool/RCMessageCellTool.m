@@ -9,8 +9,10 @@
 #import "RCMessageCellTool.h"
 #import "RCKitCommonDefine.h"
 #import "RCKitUtility.h"
+#import "RCKitConfig.h"
 
 @implementation RCMessageCellTool
+
 + (UIImage *)getDefaultMessageCellBackgroundImage:(RCMessageModel *)model{
     UIImage *bubbleImage;
     if (MessageDirection_RECEIVE == model.messageDirection) {
@@ -39,6 +41,19 @@
     return [self getResizableImage:bubbleImage];
 }
 
+///
++ (UIImage *)getSendBubbleDecorationImage {
+    UIImage *bubbleImage = [RCKitConfig defaultConfig].custom.bubbleRightImage;
+    return bubbleImage;
+}
+
+///
++ (UIImage *)getReceiveBubbleDecorationImage {
+    UIImage *bubbleImage = [RCKitConfig defaultConfig].custom.bubbleLeftImage;
+    return bubbleImage;
+}
+
+///
 + (UIImage *)translationTextBackgroundImage {
     UIImage *bubbleImage = RCResourceImage(@"translation_from_bg_normal");
     bubbleImage = [self getResizableImage:bubbleImage];

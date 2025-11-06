@@ -336,13 +336,17 @@
     if ([content isKindOfClass:[RCTextMessage class]] || [content isKindOfClass:[RCReferenceMessage class]]) {
         NSString * nameText = [EasyFunReferencedContentView getUserDisplayName:model];
         NSString * messageInfo = [RCKitUtility formatMessage:content
-                                                 targetId:model.targetId
-                                         conversationType:model.conversationType
-                                             isAllMessage:YES];
+                                                    targetId:model.targetId
+                                            conversationType:model.conversationType
+                                                isAllMessage:YES];
         NSString * completedText = [NSString stringWithFormat:@"%@ %@", nameText, messageInfo];
         CGSize textSize = [RCKitUtility getTextDrawingSize:completedText font:textFont constrainedSize:constrainedSize];
         textSize.width = ceil(textSize.width);
         textSize.height = ceil(textSize.height);
+        // 最大的高度
+        if (textSize.height > textFont.lineHeight * 2) {
+            textSize.height = ceil(textFont.lineHeight * 2);
+        }
         CGFloat contentHeight = [self contentHeightWithOriginalHeight:textSize.height];
         CGFloat contentWidth = [self contentWidthWithOriginalWidth:textSize.width maxWidth:maxWidth];
         return CGSizeMake(ceil(contentWidth), ceil(contentHeight));

@@ -15,7 +15,7 @@
 #import "RCBaseImageView.h"
 
 /// 头像与内容的间距
-#define HeadAndContentSpacing 8
+#define HeadAndContentSpacing 10
 /// 头像与屏幕边缘距离
 #define PortraitViewEdgeSpace 12
 /// 昵称与内容的间距
@@ -28,6 +28,14 @@
 #define ReceiptStatusLabelSpacing 4
 /// 已读标签与内容的间距补全
 #define ReceiptStatusLabelSpacingPadding 4
+/// 气泡装扮宽度
+#define BubbleDecorationViewWidth 10
+/// 气泡装扮高度
+#define BubbleDecorationViewHeight 15
+/// 气泡装扮距离气泡顶部距离
+#define BubbleDecorationViewTopSpace 4
+/// 气泡装扮与气泡相交部分宽度
+#define BubbleDecorationViewOverlapWidth 5
 
 @class RCloudImageView;
 @class RCCircularLoadingView;
@@ -66,6 +74,9 @@
  消息的背景View [气泡]
  */
 @property (nonatomic, strong) RCBaseImageView *bubbleBackgroundView;
+
+/// 气泡装扮
+@property (nonatomic, strong) RCBaseImageView *bubbleDecorationView;
 
 /*!
  显示发送状态的View
@@ -154,6 +165,12 @@
 
 /// 更新气泡背景视图的布局
 - (void)updateBubbleBackgroundViewFrame;
+
+/// 设置气泡图片
+- (void)p_showBubbleBackgroundView;
+
+/// 设置气泡装扮图标
+- (void)p_showBubbleDecorationView;
 
 /*!
 阅后即焚的回调

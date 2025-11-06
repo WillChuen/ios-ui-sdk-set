@@ -13,11 +13,24 @@
 #import "RCKitConfig.h"
 #import <Masonry/Masonry.h>
 
-#define TextViewLineHeight 20.f              //输入框每行文字高度
-#define TextViewSpaceHeight_LessThanMax 17.f //输入框小于最大行时除文字外上下空隙高度
-#define TextViewSpaceHeight 13.f             //输入框大于等于最大行时除文字外上下空隙高度
-#define TextViewMaxInputLines 6 //输入框最大行数设置
-#define TextViewMinInputLines 1 //输入框最小行数设置
+/// 输入框每行文字高度
+#define TextViewLineHeight 20.f
+/// 输入框小于最大行时除文字外上下空隙高度
+#define TextViewSpaceHeight_LessThanMax 17.f
+/// 输入框大于等于最大行时除文字外上下空隙高度
+#define TextViewSpaceHeight 13.f
+/// 输入框最大行数设置
+#define TextViewMaxInputLines 6
+/// 输入框最小行数设置
+#define TextViewMinInputLines 1
+/// 输入框装扮距离背景上间隔
+#define InputTextViewDecorationTopMargin 4
+/// 输入框装扮宽度
+#define InputTextViewDecorationWidth 10
+/// 输入框装扮高度
+#define InputTextViewDecorationHeight 15
+/// 输入框装扮距离背景相交距离
+#define InputTextViewDecorationIntersectingMargin 5
 
 @interface RCInputContainerView ()<UITextViewDelegate, RCTextViewDelegate>
 {
@@ -242,10 +255,10 @@
     [self addSubview:self.additionalButton];
     // 布局 inputTextViewRightAccessoryView
     [self.inputTextViewRightAccessoryView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.mas_equalTo(self.inputTextViewBackgroundView.mas_top).offset(4);
-        make.width.mas_equalTo(10);
-        make.height.mas_equalTo(15);
-        make.leading.mas_equalTo(self.inputTextViewBackgroundView.mas_trailing).offset(-7);
+        make.top.mas_equalTo(self.inputTextViewBackgroundView.mas_top).offset(InputTextViewDecorationTopMargin);
+        make.width.mas_equalTo(InputTextViewDecorationWidth);
+        make.height.mas_equalTo(InputTextViewDecorationHeight);
+        make.leading.mas_equalTo(self.inputTextViewBackgroundView.mas_trailing).offset(-InputTextViewDecorationIntersectingMargin);
     }];
 }
 

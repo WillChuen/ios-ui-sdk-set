@@ -20,6 +20,7 @@
 #import <RongPublicService/RongPublicService.h>
 #import "RCIM.h"
 #import "RCMessageModel+StreamCellVM.h"
+#import <Masonry/Masonry.h>
 
 /// 头像
 #define PortraitImageViewTop 0
@@ -104,8 +105,10 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 - (void)setDataModel:(RCMessageModel *)model {
     // 调用父类方法
     [super setDataModel:model];
-    // 显示气派
+    // 显示气泡背景
     [self p_showBubbleBackgroundView];
+    // 显示气泡装饰视图
+    [self p_showBubbleDecorationView];
     // 隐藏失败状态
     self.messageFailedStatusView.hidden = YES;
     // 设置已读状态
@@ -301,6 +304,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     [self.baseContentView addSubview:self.statusContentView];
     [self.baseContentView addSubview:self.editStatusContentView];
     [self.baseContentView addSubview:self.customReadStatusImageView];
+    [self.baseContentView addSubview:self.bubbleDecorationView];
     
     // 阅后即焚视图
     [self.messageContentView addSubview:self.destructView];
@@ -391,6 +395,7 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
                 }
             }
             [strongSelf updateBubbleBackgroundViewFrame];
+            [strongSelf updateBubbleDecorationViewFrame];
         }
     }];
 }
@@ -402,6 +407,25 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
     }
 }
 
+/// 更新气泡状态的Fram
+- (void)updateBubbleDecorationViewFrame {
+    // 显示气泡装饰视图
+    if (self.showBubbleBackgroundView) {
+        self.bubbleDecorationView.hidden = NO;
+        // 发送方和接收方不同的装饰视图
+        if (self.model.messageDirection == MessageDirection_SEND) {
+            CGFloat bubbleDecorationVieX = CGRectGetMaxX(self.messageContentView.frame) - BubbleDecorationViewOverlapWidth;
+            CGFloat bubbleDecorationVieY = self.messageContentView.frame.origin.y + BubbleDecorationViewTopSpace;
+            self.bubbleDecorationView.frame = CGRectMake(bubbleDecorationVieX, bubbleDecorationVieY, BubbleDecorationViewWidth, BubbleDecorationViewHeight);
+        } else {
+            CGFloat bubbleDecorationVieX = CGRectGetMinX(self.messageContentView.frame) + BubbleDecorationViewOverlapWidth - BubbleDecorationViewWidth;
+            CGFloat bubbleDecorationVieY = self.messageContentView.frame.origin.y + BubbleDecorationViewTopSpace;
+            self.bubbleDecorationView.frame = CGRectMake(bubbleDecorationVieX, bubbleDecorationVieY, BubbleDecorationViewWidth, BubbleDecorationViewHeight);
+        }
+    } else {
+        self.bubbleDecorationView.hidden = YES;
+    }
+}
 /// 注册 messageContentView 的 Size 更新
 - (void)registerSizeUpdateLayoutIfNeed {
     __weak typeof(self) weakSelf = self;
@@ -783,6 +807,20 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 - (void)p_showBubbleBackgroundView {
     if (self.showBubbleBackgroundView) {
         self.bubbleBackgroundView.image = [RCMessageCellTool getDefaultMessageCellBackgroundImage:self.model];
+    }
+}
+
+/// 设置气泡装扮图标
+- (void)p_showBubbleDecorationView {
+    if (self.showBubbleBackgroundView) {
+        self.bubbleDecorationView.hidden = NO;
+        if (self.model.messageDirection == MessageDirection_SEND) {
+            self.bubbleDecorationView.image = [RCMessageCellTool getSendBubbleDecorationImage];
+        } else {
+            self.bubbleDecorationView.image = [RCMessageCellTool getReceiveBubbleDecorationImage];
+        }
+    } else {
+        self.bubbleDecorationView.hidden = YES;
     }
 }
 
@@ -1287,9 +1325,18 @@ NSString *const KNotificationMessageBaseCellUpdateCanReceiptStatus =
 - (RCBaseImageView *)bubbleBackgroundView {
     if (!_bubbleBackgroundView) {
         _bubbleBackgroundView = [[RCBaseImageView alloc] initWithFrame:CGRectZero];
-        [self.messageContentView addSubview:self.bubbleBackgroundView];
+        [self.messageContentView addSubview:_bubbleBackgroundView];
     }
     return _bubbleBackgroundView;
+}
+
+/// 气泡装扮
+- (RCBaseImageView *)bubbleDecorationView {
+    if (!_bubbleDecorationView) {
+        _bubbleDecorationView = [[RCBaseImageView alloc] initWithFrame:CGRectZero];
+        _bubbleDecorationView.backgroundColor = [UIColor clearColor];
+    }
+    return _bubbleDecorationView;
 }
 
 #pragma mark - Edit
