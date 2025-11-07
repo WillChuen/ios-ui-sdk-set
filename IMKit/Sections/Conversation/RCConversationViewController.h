@@ -280,6 +280,10 @@ typedef enum : NSUInteger {
 
 #pragma mark 发送消息
 
+/// 接收到消息通知
+/// - Parameter notification: 消息通知
+- (void)didReceiveMessageNotification:(NSNotification *)notification;
+
 /// 发送消息
 /// - Parameter messageContent: 消息的内容
 /// - Parameter pushContent:    接收方离线时需要显示的远程推送内容
@@ -498,6 +502,13 @@ typedef enum : NSUInteger {
 /// SDK在此长按事件中，会默认展示菜单。
 /// 您在重写此回调时，如果想保留SDK原有的功能，需要注意调用super。
 - (void)didLongTouchMessageCell:(RCMessageModel *)model inView:(UIView *)view;
+
+/// 长按消息然后弹出菜单
+/// - Parameters:
+///   - model: 消息Cell的数据模型
+///   - view: 长按区域的View
+/// 业务可以通过重写改回调 实现自己的菜单
+- (void)showLongTouchMessageCellMenu:(RCMessageModel *)model inView:(UIView *)view;
 
 /// 获取长按Cell中的消息时的菜单
 /// - Parameter model: 消息Cell的数据模型

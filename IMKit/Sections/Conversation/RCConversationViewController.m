@@ -2568,9 +2568,12 @@ shouldChangeTextInRange:(NSRange)range
         // inputTextView 是第一响应者时，不需要再设置 self 为第一响应者，否则会导致键盘收起
         [self becomeFirstResponder];
     }
-    
+    [self showLongTouchMessageCellMenu:model inView:view];
+}
+
+/// 长按消息然后弹出菜单
+- (void)showLongTouchMessageCellMenu:(RCMessageModel *)model inView:(UIView *)view {
     CGRect rect = [self.view convertRect:view.frame fromView:view.superview];
-    
     UIMenuController *menu = [UIMenuController sharedMenuController];
     [menu setMenuItems:[self getLongTouchMessageCellMenuList:model]];
     if (@available(iOS 13.0, *)) {
@@ -2580,7 +2583,7 @@ shouldChangeTextInRange:(NSRange)range
         [menu setMenuVisible:YES animated:YES];
     }
 }
-
+///
 - (NSArray<UIMenuItem *> *)getLongTouchMessageCellMenuList:(RCMessageModel *)model {
     //
     if ([model.content isKindOfClass:RCStreamMessage.class]) {
