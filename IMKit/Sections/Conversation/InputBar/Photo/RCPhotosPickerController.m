@@ -85,7 +85,6 @@ static NSString *const reuseIdentifier = @"Cell";
     self.assetArray = [NSMutableArray arrayWithArray:photos];
     self.isLoad = YES;
     for (int i = 0; i < photos.count; i++) {
-        
         for (int j = 0; j < self.selectedAssets.count; j++) {
             if ([self.selectedAssets[j].asset isEqual:photos[i].asset]) {
                 self.assetArray[i].isSelect = YES;
@@ -99,16 +98,15 @@ static NSString *const reuseIdentifier = @"Cell";
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
     self.view.backgroundColor = [UIColor whiteColor];
     self.previousPreheatRect = CGRectZero;
     CGFloat scale = [UIScreen mainScreen].scale;
     self.thumbnailSize = (CGSize){WIDTH * scale, WIDTH * scale};
-    
     if (RC_IOS_SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"7.0")) {
         self.extendedLayoutIncludesOpaqueBars = YES;
     }
     [self.collectionView registerClass:[RCPhotoPickerCollectCell class] forCellWithReuseIdentifier:reuseIdentifier];
-    
     [self setNaviItem];
     [self createTopView];
 }
@@ -375,17 +373,21 @@ static NSString *const reuseIdentifier = @"Cell";
     [self _updateBottomSendImageCountButton];
 }
 
-- (void)setNaviItem{
+- (void)setNaviItem {
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
     btn.titleLabel.font = [[RCKitConfig defaultConfig].font fontOfSecondLevel];
     UIColor *color = [RCKitUtility
-                       generateDynamicColor:RCResourceColor(@"photoPicker_cancel", @"0x0099ff")
-                       darkColor:RCResourceColor(@"photoPicker_cancel", @"0x0099ff")];
+                      generateDynamicColor:RCResourceColor(@"photoPicker_cancel", @"0x0099ff")
+                      darkColor:RCResourceColor(@"photoPicker_cancel", @"0x0099ff")];
     [btn setTitleColor:color forState:UIControlStateNormal];
     [btn addTarget:self
             action:@selector(dismissCurrentModelViewController)
   forControlEvents:UIControlEventTouchUpInside];
-    [btn setTitle:RCLocalizedString(@"Cancel") forState:UIControlStateNormal];
+    NSString * cancelText = [RCKitConfig defaultConfig].custom.photoAlbumCancelTitle;
+    if (!cancelText) {
+        cancelText = RCLocalizedString(@"Cancel");
+    }
+    [btn setTitle:cancelText forState:UIControlStateNormal];
     [btn sizeToFit];
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:btn];
     [self.navigationItem setRightBarButtonItem:rightItem];
@@ -399,13 +401,18 @@ static NSString *const reuseIdentifier = @"Cell";
     
     // add button for bottom bar
     _btnSend = [[RCBaseButton alloc] init];
-    [_btnSend setTitle:RCLocalizedString(@"Send") forState:UIControlStateNormal];
+    
+    NSString * sendText = [RCKitConfig defaultConfig].custom.photoAlbumSendTitle;
+    if (!sendText) { sendText = RCLocalizedString(@"Send"); }
+    [_btnSend setTitle:sendText forState:UIControlStateNormal];
     [_btnSend addTarget:self action:@selector(btnSendCliced:) forControlEvents:UIControlEventTouchUpInside];
     _btnSend.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     [_toolBar addSubview:_btnSend];
     
     _previewBtn = [[RCBaseButton alloc] init];
-    [_previewBtn setTitle:RCLocalizedString(@"Preview") forState:UIControlStateNormal];
+    NSString * previewText = [RCKitConfig defaultConfig].custom.photoAlbumPreviewTitle;
+    if (!previewText) { previewText = RCLocalizedString(@"Preview"); }
+    [_previewBtn setTitle:previewText forState:UIControlStateNormal];
     _previewBtn.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     [_previewBtn addTarget:self action:@selector(previewBtnCliced:) forControlEvents:UIControlEventTouchUpInside];
     [_toolBar addSubview:_previewBtn];
@@ -509,10 +516,12 @@ static NSString *const reuseIdentifier = @"Cell";
 
 - (void)_updateBottomSendImageCountButton {
     dispatch_async(dispatch_get_main_queue(), ^{
+        NSString * sendText = [RCKitConfig defaultConfig].custom.photoAlbumSendTitle;
+        if (!sendText) { sendText = RCLocalizedString(@"Send"); }
         if (self.selectedAssets.count && self.toolBar) {
-            [self.btnSend setTitle:[NSString stringWithFormat:@"%@ (%lu)",RCLocalizedString(@"Send"), (unsigned long)self.selectedAssets.count] forState:(UIControlStateNormal)];
+            [self.btnSend setTitle:[NSString stringWithFormat:@"%@ (%lu)", sendText, (unsigned long)self.selectedAssets.count] forState:(UIControlStateNormal)];
         } else {
-            [self.btnSend setTitle:RCLocalizedString(@"Send") forState:(UIControlStateNormal)];
+            [self.btnSend setTitle:sendText forState:(UIControlStateNormal)];
         }
     });
 }

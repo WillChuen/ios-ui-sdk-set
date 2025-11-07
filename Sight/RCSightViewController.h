@@ -8,13 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import "RongSightAdaptiveHeader.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class RCSightViewController;
 @protocol RCSightViewControllerDelegate;
 
 typedef NS_ENUM(NSInteger, RCSightViewControllerCameraCaptureMode) {
-    RCSightViewControllerCameraCaptureModeSight, /// 录制小视频  拍照  默认使用这种模式
+    RCSightViewControllerCameraCaptureModeSight, // 录制小视频  拍照  默认使用这种模式
     RCSightViewControllerCameraCaptureModePhoto  // 仅拍照
 };
 

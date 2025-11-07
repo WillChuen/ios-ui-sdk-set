@@ -19,6 +19,8 @@
 #import "RCKitConfig.h"
 #import "RCSemanticContext.h"
 #import "RCBaseButton.h"
+
+
 static NSString *const reuseIdentifier = @"Cell";
 static NSString *const videoCellReuseIdentifier = @"VideoPreviewCell";
 
@@ -404,14 +406,19 @@ static NSString *const videoCellReuseIdentifier = @"VideoPreviewCell";
     [self.view addSubview:_bottomView];
     // add button for bottom bar
     _sendButton = [[RCBaseButton alloc] init];
-    [_sendButton setTitle:RCLocalizedString(@"Send") forState:UIControlStateNormal];
+    NSString * sendText = [RCKitConfig defaultConfig].custom.photoAlbumSendTitle;
+    if (!sendText) { sendText = RCLocalizedString(@"Send"); }
+    [_sendButton setTitle:sendText forState:UIControlStateNormal];
     [_sendButton setTitleColor:RCResourceColor(@"photoPreview_send_disable", @"0x959595")
                       forState:UIControlStateDisabled];
     [_sendButton addTarget:self action:@selector(sendImageMessageButton:) forControlEvents:UIControlEventTouchUpInside];
     [_bottomView addSubview:_sendButton];
     [self _updateBottomSendImageCountButton];
     _fullButton = [[RCBaseButton alloc] init];
-    [_fullButton setTitle:[NSString stringWithFormat: @"%@", RCLocalizedString(@"Full_Image")]
+    
+    NSString * fullText = [RCKitConfig defaultConfig].custom.photoAlbumOriginalTitle;
+    if (!fullText) { fullText = RCLocalizedString(@"Full_Image"); }
+    [_fullButton setTitle:[NSString stringWithFormat: @"%@", fullText]
                  forState:UIControlStateNormal];
     _fullButton.contentMode = UIViewContentModeLeft;
     _fullButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -621,16 +628,18 @@ static NSString *const videoCellReuseIdentifier = @"VideoPreviewCell";
 
 - (void)_updateBottomSendImageCountButton {
     dispatch_async(dispatch_get_main_queue(), ^{
+        NSString * sendText = [RCKitConfig defaultConfig].custom.photoAlbumSendTitle;
+        if (!sendText) { sendText = RCLocalizedString(@"Send"); }
         if (self.selectedArr.count && self.bottomView) {
             self.sendButton.enabled = YES;
             if ([RCKitUtility isRTL]) {
-                [self.sendButton setTitle:[NSString stringWithFormat:@"(%lu) %@", (unsigned long)self.selectedArr.count, RCLocalizedString(@"Send")] forState:(UIControlStateNormal)];
+                [self.sendButton setTitle:[NSString stringWithFormat:@"(%lu) %@", (unsigned long)self.selectedArr.count, sendText] forState:(UIControlStateNormal)];
             } else {
-                [self.sendButton setTitle:[NSString stringWithFormat:@"%@ (%lu)",RCLocalizedString(@"Send"), (unsigned long)self.selectedArr.count] forState:(UIControlStateNormal)];
+                [self.sendButton setTitle:[NSString stringWithFormat:@"%@ (%lu)", sendText, (unsigned long)self.selectedArr.count] forState:(UIControlStateNormal)];
             }
         } else {
             self.sendButton.enabled = NO;
-            [self.sendButton setTitle:RCLocalizedString(@"Send") forState:(UIControlStateNormal)];
+            [self.sendButton setTitle:sendText forState:(UIControlStateNormal)];
         }
     });
 }

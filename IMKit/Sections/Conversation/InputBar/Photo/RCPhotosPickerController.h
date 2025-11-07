@@ -8,12 +8,17 @@
 
 #import "RCAssetHelper.h"
 #import "RCBaseCollectionViewController.h"
+
+/// 资源对象
 @class RCAssetModel;
+/// 照片选择器
 @interface RCPhotosPickerController : RCBaseCollectionViewController
+
 @property (nonatomic, strong) NSMutableArray<RCAssetModel *> *assetArray;
 @property (nonatomic, assign) long count;
 @property (nonatomic, strong) id currentAsset;
 @property (nonatomic, copy) void (^sendPhotosBlock)(NSArray *photos, BOOL isFull);
 
 + (instancetype)imagePickerViewController;
+
 @end

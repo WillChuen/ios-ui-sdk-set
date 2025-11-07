@@ -35,6 +35,21 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *extensionPanelCameraTitle;
 /// 表情面板发送按钮文本
 @property (nonatomic, copy) NSString *emojiPanelSendText;
+
+/// 相册选择: 相册列表
+@property (nonatomic, copy) NSString *photoAlbumTitle;
+/// 相册选择: 取消按钮
+@property (nonatomic, copy) NSString *photoAlbumCancelTitle;
+/// 相册选择: 预览
+@property (nonatomic, copy) NSString *photoAlbumPreviewTitle;
+/// 相册选择: 发送
+@property (nonatomic, copy) NSString *photoAlbumSendTitle;
+/// 相册选择: 原图
+@property (nonatomic, copy) NSString *photoAlbumOriginalTitle;
+
+/// 小视频: 轻触拍摄，按住摄像
+@property (nonatomic, copy) NSString *sightCaptureHintText;
+
 /// 默认头像
 @property (nonatomic, strong, nullable) UIImage *defaultAvatar;
 /// 长方形默认占位图

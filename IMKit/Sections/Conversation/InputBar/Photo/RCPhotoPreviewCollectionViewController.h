@@ -8,8 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "RCBaseCollectionViewController.h"
+
+///
 @class RCAssetModel;
 
+/// 照片预览控制器
 @interface RCPhotoPreviewCollectionViewController : RCBaseCollectionViewController
 
 @property (nonatomic, copy) void (^finishPreviewAndBackPhotosPicker)

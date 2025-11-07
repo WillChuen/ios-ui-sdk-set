@@ -20,6 +20,8 @@
 #import "RCSightExtensionModule.h"
 #import "RCToastView.h"
 #import "RCSightPlayerOverlay.h"
+#import "RCKitConfig.h"
+
 #define ActionBtnSize 120
 #define BottomSpace 10
 #define OKBtnSize 74
@@ -30,13 +32,13 @@
 
 AVCaptureVideoOrientation orientationBaseOnAcceleration(CMAcceleration acceleration) {
     AVCaptureVideoOrientation result;
-    if (acceleration.x >= 0.75) { /// UIDeviceOrientationLandscapeRight
+    if (acceleration.x >= 0.75) { // UIDeviceOrientationLandscapeRight
         result = AVCaptureVideoOrientationLandscapeLeft;
-    } else if (acceleration.x <= -0.75) { /// UIDeviceOrientationLandscapeLeft
+    } else if (acceleration.x <= -0.75) { // UIDeviceOrientationLandscapeLeft
         result = AVCaptureVideoOrientationLandscapeRight;
-    } else if (acceleration.y <= -0.75) { /// UIDeviceOrientationPortrait
+    } else if (acceleration.y <= -0.75) { // UIDeviceOrientationPortrait
         result = AVCaptureVideoOrientationPortrait;
-    } else if (acceleration.y >= 0.75) { /// UIDeviceOrientationPortraitUpsideDown
+    } else if (acceleration.y >= 0.75) { // UIDeviceOrientationPortraitUpsideDown
         result = AVCaptureVideoOrientationPortraitUpsideDown;
     } else {
         result = AVCaptureVideoOrientationPortrait;
@@ -193,10 +195,13 @@ AVCaptureVideoOrientation orientationBaseOnAcceleration(CMAcceleration accelerat
         _tipsLable = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 150, 21)];
         _tipsLable.font = [UIFont systemFontOfSize:14.0f];
         _tipsLable.textAlignment = NSTextAlignmentCenter;
-        NSString *text = RCLocalizedString(@"TouchToTakeAPictureAndPressAndholdTheRecordingVideo");
-        CGSize textSize = [text sizeWithAttributes:@{NSFontAttributeName : _tipsLable.font}];
+        NSString * tipText = [RCKitConfig defaultConfig].custom.sightCaptureHintText;
+        if (!tipText) {
+            tipText = RCLocalizedString(@"TouchToTakeAPictureAndPressAndholdTheRecordingVideo");
+        }
+        CGSize textSize = [tipText sizeWithAttributes:@{NSFontAttributeName : _tipsLable.font}];
         _tipsLable.frame = CGRectMake(0, 0, textSize.width, textSize.height);
-        _tipsLable.text = text;
+        _tipsLable.text = tipText;
         _tipsLable.textColor = [UIColor whiteColor];
     }
     return _tipsLable;
