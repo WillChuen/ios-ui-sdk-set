@@ -376,21 +376,24 @@ static NSString *const reuseIdentifier = @"Cell";
 - (void)setNaviItem {
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
     btn.titleLabel.font = [[RCKitConfig defaultConfig].font fontOfSecondLevel];
-    UIColor *color = [RCKitUtility
-                      generateDynamicColor:RCResourceColor(@"photoPicker_cancel", @"0x0099ff")
-                      darkColor:RCResourceColor(@"photoPicker_cancel", @"0x0099ff")];
-    [btn setTitleColor:color forState:UIControlStateNormal];
-    [btn addTarget:self
-            action:@selector(dismissCurrentModelViewController)
-  forControlEvents:UIControlEventTouchUpInside];
-    NSString * cancelText = [RCKitConfig defaultConfig].custom.photoAlbumCancelTitle;
-    if (!cancelText) {
-        cancelText = RCLocalizedString(@"Cancel");
+    UIColor * color = [RCKitConfig defaultConfig].custom.photoAlbumCancelTitleColor;
+    if (!color) {
+        color = [RCKitUtility generateDynamicColor:RCResourceColor(@"photoPicker_cancel", @"0x0099ff") darkColor:RCResourceColor(@"photoPicker_cancel", @"0x0099ff")];
     }
+    [btn setTitleColor:color forState:UIControlStateNormal];
+    [btn addTarget:self action:@selector(dismissCurrentModelViewController) forControlEvents:UIControlEventTouchUpInside];
+    NSString * cancelText = [RCKitConfig defaultConfig].custom.photoAlbumCancelTitle;
+    if (!cancelText) { cancelText = RCLocalizedString(@"Cancel"); }
     [btn setTitle:cancelText forState:UIControlStateNormal];
     [btn sizeToFit];
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:btn];
     [self.navigationItem setRightBarButtonItem:rightItem];
+    //
+    UIColor * tintColor = [RCKitConfig defaultConfig].custom.photoAlbumNavigationTintColor;
+    if (!tintColor) {
+        tintColor = self.navigationController.navigationBar.tintColor;
+    }
+    self.navigationController.navigationBar.tintColor = tintColor;
 }
 
 - (void)createTopView {
@@ -404,7 +407,11 @@ static NSString *const reuseIdentifier = @"Cell";
     
     NSString * sendText = [RCKitConfig defaultConfig].custom.photoAlbumSendTitle;
     if (!sendText) { sendText = RCLocalizedString(@"Send"); }
+    
+    UIColor * sendColor = [RCKitConfig defaultConfig].custom.photoAlbumSendTitleColor;
+    if (!sendColor) { sendColor = _btnSend.tintColor; }
     [_btnSend setTitle:sendText forState:UIControlStateNormal];
+    [_btnSend setTitleColor:sendColor forState:(UIControlStateNormal)];
     [_btnSend addTarget:self action:@selector(btnSendCliced:) forControlEvents:UIControlEventTouchUpInside];
     _btnSend.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     [_toolBar addSubview:_btnSend];
@@ -483,9 +490,17 @@ static NSString *const reuseIdentifier = @"Cell";
                                                               constant:10]];
     }
     
-    [_btnSend setTitleColor:RCResourceColor(@"photoPicker_send_disable", @"0x9fcdfd")
+    UIColor * disableSendColor = [[RCKitConfig defaultConfig].custom.photoAlbumSendTitleColor colorWithAlphaComponent:0.5];
+    if (!disableSendColor) {
+        disableSendColor = RCResourceColor(@"photoPicker_send_disable", @"0x9fcdfd");
+    }
+    UIColor * sendNormalColor = [RCKitConfig defaultConfig].custom.photoAlbumSendTitleColor;
+    if (!sendNormalColor) {
+        sendNormalColor = RCResourceColor(@"photoPicker_send_normal", @"0x0099ff");
+    }
+    [_btnSend setTitleColor: disableSendColor
                    forState:UIControlStateDisabled];
-    [_btnSend setTitleColor:RCResourceColor(@"photoPicker_send_normal", @"0x0099ff")
+    [_btnSend setTitleColor:sendNormalColor
                    forState:UIControlStateNormal];
     [self.btnSend setEnabled:NO];
     [_previewBtn setTitleColor:RCResourceColor(@"photoPicker_preview_disable", @"0x959595")

@@ -47,6 +47,14 @@ NS_ASSUME_NONNULL_BEGIN
 /// 相册选择: 原图
 @property (nonatomic, copy) NSString *photoAlbumOriginalTitle;
 
+/// 相册选择: 取消按钮标题颜色
+@property (nonatomic, strong) UIColor *photoAlbumCancelTitleColor;
+/// 相册选择: 导航栏的tintColor
+@property (nonatomic, strong) UIColor *photoAlbumNavigationTintColor;
+/// 相册选择: 发送按钮标题颜色
+@property (nonatomic, strong) UIColor *photoAlbumSendTitleColor;
+
+
 /// 小视频: 轻触拍摄，按住摄像
 @property (nonatomic, copy) NSString *sightCaptureHintText;
 

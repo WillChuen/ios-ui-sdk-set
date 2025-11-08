@@ -75,9 +75,10 @@ static NSString *const cellReuseIdentifier = @"cell";
 - (void)setNavigationItem {
     UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
     btn.titleLabel.font = [[RCKitConfig defaultConfig].font fontOfSecondLevel];
-    UIColor *color = [RCKitUtility
-                      generateDynamicColor:RCResourceColor(@"photoPicker_cancel", @"0x0099ff")
-                      darkColor:RCResourceColor(@"photoPicker_cancel", @"0x0099ff")];
+    UIColor * color = [RCKitConfig defaultConfig].custom.photoAlbumCancelTitleColor;
+    if (!color) {
+        color = [RCKitUtility generateDynamicColor:RCResourceColor(@"photoPicker_cancel", @"0x0099ff") darkColor:RCResourceColor(@"photoPicker_cancel", @"0x0099ff")];
+    }
     [btn setTitleColor:color forState:UIControlStateNormal];
     [btn addTarget:self action:@selector(dismissCurrentModelViewController) forControlEvents:UIControlEventTouchUpInside];
     NSString *cancelTitle = [RCKitConfig defaultConfig].custom.photoAlbumCancelTitle;
@@ -88,6 +89,12 @@ static NSString *const cellReuseIdentifier = @"cell";
     [btn sizeToFit];
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:btn];
     [self.navigationItem setRightBarButtonItem:rightItem];
+    //
+    UIColor * tintColor = [RCKitConfig defaultConfig].custom.photoAlbumNavigationTintColor;
+    if (!tintColor) {
+        tintColor = self.navigationController.navigationBar.tintColor;
+    }
+    self.navigationController.navigationBar.tintColor = tintColor;
 }
 
 - (void)setupTableView {

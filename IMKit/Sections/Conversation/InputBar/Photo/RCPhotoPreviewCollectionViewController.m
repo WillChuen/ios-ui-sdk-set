@@ -409,8 +409,11 @@ static NSString *const videoCellReuseIdentifier = @"VideoPreviewCell";
     NSString * sendText = [RCKitConfig defaultConfig].custom.photoAlbumSendTitle;
     if (!sendText) { sendText = RCLocalizedString(@"Send"); }
     [_sendButton setTitle:sendText forState:UIControlStateNormal];
-    [_sendButton setTitleColor:RCResourceColor(@"photoPreview_send_disable", @"0x959595")
-                      forState:UIControlStateDisabled];
+    UIColor * sendColor = [RCKitConfig defaultConfig].custom.photoAlbumSendTitleColor;
+    if (!sendColor) {
+        sendColor = RCResourceColor(@"photoPreview_send_normal", @"0x0099ff");
+    }
+    [_sendButton setTitleColor:sendColor forState:UIControlStateDisabled];
     [_sendButton addTarget:self action:@selector(sendImageMessageButton:) forControlEvents:UIControlEventTouchUpInside];
     [_bottomView addSubview:_sendButton];
     [self _updateBottomSendImageCountButton];
@@ -532,8 +535,11 @@ static NSString *const videoCellReuseIdentifier = @"VideoPreviewCell";
                                                                multiplier:1
                                                                  constant:0]];
     }
-
-    [_sendButton setTitleColor:RCResourceColor(@"photoPreview_send_normal", @"0x0099ff")
+    UIColor * sendNormalColor = [RCKitConfig defaultConfig].custom.photoAlbumSendTitleColor;
+    if (!sendNormalColor) {
+        sendNormalColor = RCResourceColor(@"photoPreview_send_normal", @"0x0099ff");
+    }
+    [_sendButton setTitleColor:sendNormalColor
                       forState:UIControlStateNormal];
     [_fullButton setTitleColor:RCResourceColor(@"photoPreview_original_normal_text", @"0x999999")
                       forState:UIControlStateNormal];
