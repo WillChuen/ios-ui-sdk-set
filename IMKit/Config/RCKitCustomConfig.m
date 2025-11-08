@@ -36,6 +36,10 @@
                                                     font:(UIFont *)font
                                                 textColor:(UIColor *)textColor
                                              messageModel:(RCMessageModel * _Nullable)messageModel {
+    // 原始昵称为空，返回空字符串
+    if (!originName || originName.length == 0) {
+        return [[NSMutableAttributedString alloc] initWithString:@""];
+    }
     // 没有自定义组装逻辑，返回默认昵称
     if (messageModel == nil) {
         return [[NSMutableAttributedString alloc] initWithString:originName attributes:@{
