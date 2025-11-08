@@ -297,7 +297,7 @@ extern NSString *const RCKitDispatchDownloadMediaNotification;
 
 - (RCBaseImageView *)playImage {
     if (!_playImage) {
-        _playImage = [[RCBaseImageView alloc] initWithFrame:CGRectMake(0, 0, 41, 41)];
+        _playImage = [[RCBaseImageView alloc] initWithFrame:CGRectMake(0, 0, 36, 36)];
         UIImage *image = RCResourceImage(@"sight_message_icon");
         _playImage.image = image;
     }
