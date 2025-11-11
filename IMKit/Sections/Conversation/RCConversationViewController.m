@@ -1417,6 +1417,7 @@ referenceSizeForHeaderInSection:(NSInteger)section {
     RCSightSlideViewController *svc = [[RCSightSlideViewController alloc] init];
     svc.messageModel = model;
     svc.onlyPreviewCurrentMessage = onlyPreviewCurrentMessage;
+    svc.topRightBtnHidden = YES;
     RCBaseNavigationController *navc = [[RCBaseNavigationController alloc] initWithRootViewController:svc];
     navc.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:navc animated:YES completion:nil];
