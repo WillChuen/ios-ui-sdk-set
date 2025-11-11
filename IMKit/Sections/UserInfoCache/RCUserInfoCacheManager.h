@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - UserInfo
 
 //从cache现取，没有值直接返回nil，并调用用户信息提供者
-- (RCUserInfo *)getUserInfo:(NSString *)userId;
+- (RCUserInfo * _Nullable)getUserInfo:(NSString *)userId;
 
 //从cache和用户信息提供者取
 - (void)getUserInfo:(NSString *)userId complete:(void (^)(RCUserInfo *userInfo))completeBlock;
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - GroupUserInfo (sugar for ConversationUserInfo)
 
-- (RCUserInfo *)getUserInfo:(NSString *)userId inGroupId:(NSString *)groupId;
+- (RCUserInfo * _Nullable)getUserInfo:(NSString *)userId inGroupId:(NSString *)groupId;
 
 - (void)getUserInfo:(NSString *)userId
           inGroupId:(NSString *)groupId
